@@ -6,6 +6,11 @@ set -euo pipefail
 command -v node >/dev/null && command -v npm >/dev/null && command -v claude >/dev/null \
   || { echo "Need node, npm and claude on PATH" >&2; exit 1; }
 
+# Back up existing Claude config before touching anything.
+backup="$HOME/.claude-config-backup-$(date +%Y%m%d-%H%M%S).tgz"
+tar -czf "$backup" -C "$HOME" --ignore-failed-read .claude/settings.json .claude/CLAUDE.md .claude.json .claude-mem/settings.json 2>/dev/null || true
+echo "Config backup: $backup"
+
 has_market() { claude plugin marketplace list 2>/dev/null | grep -q "> $1\$"; }
 has_plugin() { claude plugin list 2>/dev/null | grep -q "> $1\$"; }
 
@@ -27,6 +32,8 @@ fi
 npx -y claude-mem@latest telemetry disable
 
 # Redact secrets before storage and skip commands that tend to print them.
+# Key memory by git remote (owner/repo) so same-named folders never share memory
+# and a repo keeps one memory wherever it is checked out.
 python3 - <<'EOF'
 import json, os
 p = os.path.expanduser('~/.claude-mem/settings.json')
@@ -34,6 +41,7 @@ d = json.load(open(p)) if os.path.exists(p) else {}
 d.update({
     "CLAUDE_MEM_REDACT_ENABLED": "true",
     "CLAUDE_MEM_REDACT_GENERIC_ENABLED": "true",
+    "CLAUDE_MEM_PROJECT_NAME_SOURCE": "git-remote",
     "CLAUDE_MEM_SKIP_BASH_PATTERNS": r"^\s*(env|printenv|export|set)\b|(cat|less|more|head|tail)\s+\S*(\.env|credentials|\.netrc|id_rsa|\.pem|\.key)\b|gcloud auth print|aws configure get|gh auth token",
 })
 os.makedirs(os.path.dirname(p), exist_ok=True)
