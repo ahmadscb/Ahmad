@@ -131,6 +131,13 @@ button { font: inherit; color: inherit; }
 .callout b { font: 800 italic 15px var(--display); letter-spacing: .02em; }
 .callout span { font-size: 12.5px; color: var(--muted); line-height: 1.35; }
 .callout.on { opacity: 1; }
+/* the drawing becomes the real car */
+.realshot { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.realshot img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 55%; filter: brightness(.62) contrast(1.18) saturate(.75) hue-rotate(-8deg); will-change: transform; }
+.realshot::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(3,6,10,.92) 0%, rgba(3,6,10,.45) 45%, rgba(3,6,10,.1) 75%), linear-gradient(0deg, rgba(3,6,10,.95), transparent 45%), linear-gradient(180deg, rgba(3,6,10,.6), transparent 25%); }
+.realshot::after { content: ""; position: absolute; inset: 0; z-index: 2; background: linear-gradient(100deg, transparent 35%, rgba(220,238,255,.55) 50%, transparent 65%); transform: translateX(var(--sw, -120%)); mix-blend-mode: screen; }
+.photo-credit { position: absolute; right: max(20px, env(safe-area-inset-right, 0px)); bottom: 2%; font: 400 10px var(--mono); color: var(--faint); opacity: 0; }
+.photo-credit a { color: inherit; }
 .scrollcue { position: absolute; right: max(20px, env(safe-area-inset-right, 0px)); bottom: 5%; font: 500 10px var(--mono); letter-spacing: .3em; color: var(--faint); writing-mode: vertical-rl; }
 
 /* ===== sections ===== */
@@ -147,6 +154,23 @@ section { position: relative; padding-block: 140px; }
 .blueprint::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(rgba(169,212,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(169,212,255,.05) 1px, transparent 1px); background-size: 28px 28px; pointer-events: none; }
 .blueprint .meta { position: relative; display: flex; justify-content: space-between; gap: 10px; }
 .blueprint svg { position: relative; width: 100%; height: auto; display: block; margin-top: 10px; }
+.shot { position: relative; margin-top: 14px; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; background: #0a111c; }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(.85) contrast(1.08) saturate(.9); transition: opacity .5s, transform 6s ease-out; }
+.shot img.swap { opacity: 0; }
+.in .shot img { transform: scale(1.06); }
+.shot::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,8,13,.85), transparent 45%); pointer-events: none; }
+.shot svg { position: absolute; left: 4%; right: 4%; bottom: 2%; width: 92%; margin: 0; z-index: 1; opacity: .9; mix-blend-mode: screen; }
+.no-photo .shot, .no-photo .thumbrow { display: none; }
+.has-photo > svg#bp { display: none; }
+.thumbrow { position: relative; display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; }
+.thumbrow button { flex: none; width: 92px; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); padding: 0; cursor: pointer; background: #0a111c; opacity: .55; transition: opacity .25s, border-color .25s; }
+.thumbrow button[aria-pressed="true"] { opacity: 1; border-color: var(--ice); }
+.thumbrow img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mcard .pic { aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; margin: 8px 0 14px; background: #0a111c; }
+.mcard .pic img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s; }
+.mcard:hover .pic img { transform: scale(1.05); }
+.mcard.ok svg { display: none; }
+.mcard:not(.ok) .pic { display: none; }
 .bp-draw { fill: none; stroke: var(--ice); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
 .bp-fill { fill: url(#bpFill); }
 .thumbs { position: relative; display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
@@ -248,6 +272,11 @@ input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 
 .mini { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 18px; border: 1px solid var(--line);
   background: radial-gradient(50% 70% at 50% 0, rgba(169,212,255,.25), transparent 70%), linear-gradient(180deg, #0b1522 55%, #04070b 55%); }
 .mini svg { position: absolute; left: 50%; bottom: 6%; width: 64%; transform: translateX(-50%); overflow: visible; }
+.mini img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.55) contrast(1.15) saturate(.7); }
+.mini.ok svg { display: none; }
+.mini::after { content: ""; position: absolute; inset: 0; background: radial-gradient(40% 40% at 50% 60%, rgba(255,240,210,.85), transparent 70%); opacity: 0; mix-blend-mode: screen; pointer-events: none; }
+.mini.flash::after { animation: flash .9s 2; }
+@keyframes flash { 0%, 100% { opacity: 0; } 30%, 60% { opacity: 1; } }
 .mini.flash { --drl: #fff; --neonf: url(#neon); --lens: url(#lensOn); animation: blink .9s 2; }
 @keyframes blink { 0%, 100% { --glow: 0; } 30%, 60% { --glow: 1; } }
 .summary { display: grid; gap: 10px; margin-top: 18px; font-size: 15px; }
@@ -437,6 +466,7 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
         <div class="callout" style="right:0;top:101%;text-align:right;justify-items:end"><b>Service</b><span>Workshop and parts in Muscat.</span></div>
       </div>
 
+      <div class="realshot" id="realshot" aria-hidden="true"><img id="realImg" alt="" decoding="async"></div>
       <div class="torch" id="torch" aria-hidden="true"></div>
       <div class="pull" id="pull"><i></i>SCROLL TO PULL THE COVER</div>
 
@@ -454,6 +484,7 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
         </div>
       </div>
       <span class="scrollcue" aria-hidden="true">SCROLL</span>
+      <span class="photo-credit" id="heroCredit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Jetour_T2.jpg" target="_blank" rel="noopener">Milhouse35, CC BY-SA 4.0</a></span>
     </div>
   </div>
 
@@ -465,9 +496,11 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
         <p class="lede">Four Jetours, drawn to scale. Pick one and every section below remembers it.</p>
       </div>
       <div class="showcase">
-        <div class="blueprint panel rv">
+        <div class="blueprint panel rv no-photo" id="bpPanel">
           <div class="meta"><span class="kicker" id="bpCode">JT-T2 · side elevation</span><span class="kicker" id="bpSeats">5 seats</span></div>
+          <div class="shot"><img id="shotImg" alt="" decoding="async"><svg viewBox="0 0 620 230" id="bpOver" aria-hidden="true"></svg></div>
           <svg viewBox="0 0 620 230" id="bp" aria-label="Side profile drawing of the selected model"></svg>
+          <div class="thumbrow" id="thumbs" role="group" aria-label="Photos"></div>
           <div class="thumbs" id="tags"></div>
         </div>
         <div class="specs panel rv">
@@ -594,7 +627,7 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
       <div class="rv">
         <h2 class="display h-l sweep">Your key.</h2>
         <p class="lede" style="margin-top:18px">Hold the unlock button. Everything you picked on this page reaches the showroom as one WhatsApp message.</p>
-        <div class="mini" id="mini" style="margin-top:26px"><svg viewBox="0 0 640 440" aria-hidden="true"><use href="#car"/></svg></div>
+        <div class="mini" id="mini" style="margin-top:26px"><img id="miniImg" alt="" decoding="async"><svg viewBox="0 0 640 440" aria-hidden="true"><use href="#car"/></svg></div>
         <div class="summary">
           <div><span>Car</span><span id="sCar">Jetour T2</span></div>
           <div><span>Monthly rate</span><span id="sRate">Not chosen yet</span></div>
@@ -613,7 +646,8 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
       <a class="brand" href="#top"><svg aria-hidden="true"><use href="#logo"/></svg>JETOUR · MUSCAT</a>
       <a class="btn" href="#top">Back under the cover ↑</a>
     </div>
-    <p class="disclaimer">Concept design. Not an official Jetour website. Cars are illustrations, specs are indicative, and prices, finance terms, hours and address are placeholders to replace before going live.</p>
+    <p class="disclaimer">Concept design. Not an official Jetour website. Specs are indicative, and prices, finance terms, hours and address are placeholders to replace before going live.</p>
+    <p class="disclaimer" id="credits">Photos from Wikimedia Commons, used under their licences:</p>
   </div>
 </footer>
 
@@ -678,18 +712,36 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
     p.style.transition = 'none'; p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
     requestAnimationFrame(() => requestAnimationFrame(() => { p.style.transition = `stroke-dashoffset 1.6s ${i * 0.04}s cubic-bezier(.4,.1,.2,1)`; p.style.strokeDashoffset = 0; }));
   });
+  // Real photos, loaded from Wikimedia Commons in the viewer's browser; drawings stay as the fallback.
+  const FILE = f => `https://commons.wikimedia.org/wiki/File:${encodeURIComponent(f)}`;
+  const PIC = (f, w = 1600) => `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f)}?width=${w}`;
+  const PHOTOS = {
+    'T2': ['Jetour_T2.jpg', 'Jetour_Shanhai_T2_002.jpg', 'Jetour_Shanhai_T2_003.jpg', 'Jetour_T2_interior.jpg'],
+    'X90 PLUS': ['Jetour_X90_Plus_390T_2024_(53563828689).jpg'],
+    'X70 PLUS': ['2025_Jetour_X70_Plus_1.6T_DCT_Comfort_white_front.jpg'],
+    'DASHING': ['Jetour_Dashing_1.5T_Lux_2023_(53286194790).jpg']
+  };
+  const load = (img, src, ok, fail) => { img.onload = ok; img.onerror = fail || (() => {}); img.src = src; };
+  $('#credits').insertAdjacentHTML('beforeend', ' ' + Object.values(PHOTOS).flat().map(f => `<a href="${FILE(f)}" target="_blank" rel="noopener">${f.replace(/_/g, ' ').replace(/\.jpg$/, '')}</a>`).join(' · ') + '. Authors and licences (CC BY-SA and others) are on each file page.');
+  const bpPanel = $('#bpPanel'), shotImg = $('#shotImg');
+  const showPhoto = f => { shotImg.classList.add('swap'); setTimeout(() => load(shotImg, PIC(f), () => { shotImg.classList.remove('swap'); bpPanel.classList.remove('no-photo'); bpPanel.classList.add('has-photo'); }, () => { bpPanel.classList.remove('has-photo'); bpPanel.classList.add('no-photo'); }), 200);
+    $$('#thumbs button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === f)); };
   const showModel = (m, animate = true) => {
     state.model = m;
-    bp.innerHTML = side(m); $('#mName').textContent = m.id; $('#bpCode').textContent = `${m.code} · side elevation`; $('#bpSeats').textContent = `${m.seats} seats`;
+    bp.innerHTML = side(m); $('#bpOver').innerHTML = side(m, 'bp-draw', 'none');
+    const list = PHOTOS[m.id] || [];
+    $('#thumbs').innerHTML = list.length > 1 ? list.map(f => `<button data-f="${f}" aria-label="Show photo"><img alt="" loading="lazy" src="${PIC(f, 240)}"></button>`).join('') : '';
+    $$('#thumbs button').forEach(b => b.onclick = () => showPhoto(b.dataset.f));
+    if (list.length) showPhoto(list[0]); else { bpPanel.classList.remove('has-photo'); bpPanel.classList.add('no-photo'); } $('#mName').textContent = m.id; $('#bpCode').textContent = `${m.code} · side elevation`; $('#bpSeats').textContent = `${m.seats} seats`;
     $('#tags').innerHTML = m.tags.map(t => `<span>${t}</span>`).join('');
     $('#kv').innerHTML = [['Engine', m.engine], ['Torque', m.nm + ' Nm'], ['Gearbox', m.box], ['Drive', m.drive], ['Seats', m.seats], ['Price', 'On request']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
     $('#needle').style.transform = `rotate(${ang(m.hp) + 90}deg)`; countTo($('#hp'), m.hp);
-    if (animate) drawIn(bp);
+    if (animate) { drawIn(bp); drawIn($('#bpOver')); }
     $$('.mcard').forEach(c => c.setAttribute('aria-pressed', c.dataset.id === m.id));
     $('#fModel').value = m.id; $('#sCar').textContent = 'Jetour ' + m.id;
   };
   $('#rail').innerHTML = MODELS.map(m => `<button class="mcard panel" data-id="${m.id}" aria-pressed="false">
-      <span class="kicker">${m.code}</span><svg viewBox="0 0 620 230" aria-hidden="true">${side(m)}</svg>
+      <span class="kicker">${m.code}</span><div class="pic"><img alt="Jetour ${m.id}" src="${PIC(PHOTOS[m.id][0], 900)}" onload="this.closest('.mcard').classList.add('ok')"></div><svg viewBox="0 0 620 230" aria-hidden="true">${side(m)}</svg>
       <span class="nm">${m.id}</span><span class="row"><span>${m.engine} · ${m.hp} hp</span><span>${m.seats} seats</span></span></button>`).join('');
   $$('.mcard').forEach(c => c.onclick = () => { showModel(MODELS.find(m => m.id === c.dataset.id)); document.getElementById('lineup').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); });
   $('#fModel').innerHTML = MODELS.map(m => `<option value="${m.id}">Jetour ${m.id}</option>`).join('');
@@ -799,22 +851,31 @@ footer { padding-block: 70px 50px; border-top: 1px solid var(--line); background
   title.innerHTML = [...'Unveiled.'].map(ch => `<span aria-hidden="true">${ch}</span>`).join('');
   const letters = [...title.children], lines = $$('.cl'), dots = $$('.cd'), callouts = $$('.callout');
   lines.forEach(l => { const n = l.getTotalLength(); l.style.strokeDasharray = n; l.style.strokeDashoffset = n; l.dataset.len = n; });
-  let lit = false;
+  let lit = false, photoOK = false;
+  const realshot = $('#realshot'), realImg = $('#realImg');
+  load(realImg, PIC('Jetour_T2.jpg', 2000), () => { photoOK = true; hero(); });
+  load($('#miniImg'), PIC('Jetour_Shanhai_T2_002.jpg', 1200), () => $('#mini').classList.add('ok'));
   const hero = () => {
     const r = zone.getBoundingClientRect(), p = reduce ? 1 : clamp(-r.top / (r.height - innerHeight));
     const c = smooth(p, .08, .42);
     q.style.opacity = 1 - smooth(p, .05, .18); q.style.transform = `translateX(${-smooth(p, .05, .2) * 80}px)`;
     pull.style.opacity = 1 - smooth(p, .02, .1);
     cover.style.transform = `translateY(${-c * 620}px) rotate(${-c * 9}deg) scaleX(${1 - c * .25}) scaleY(${1 + c * .35})`;
-    cover.style.opacity = 1 - smooth(p, .34, .44);
+    cover.style.opacity = 1 - smooth(p, .3, .4);
     disp.setAttribute('scale', (Math.sin(c * Math.PI) * 38).toFixed(1));
-    torch.style.opacity = 1 - smooth(p, .3, .46);
-    const on = p > .44; if (on !== lit) { lit = on; carwrap.classList.toggle('lit', on); }
-    carwrap.style.transform = `translateX(-50%) scale(${1 + smooth(p, .3, 1) * .1})`;
-    letters.forEach((s, i) => { const k = smooth(p, .47 + i * .012, .57 + i * .012); s.style.transform = `translateY(${(1 - k) * 110}%) skewX(${(1 - k) * -20}deg)`; s.style.opacity = k; });
-    if (p > .55) title.classList.add('in', 'sweep');
-    sub.style.opacity = smooth(p, .58, .66); sub.style.transform = `translateY(${(1 - smooth(p, .58, .66)) * 20}px)`;
-    lines.forEach((l, i) => { const k = smooth(p, .64 + i * .05, .74 + i * .05); l.style.strokeDashoffset = l.dataset.len * (1 - k); dots[i].style.opacity = k > 0 ? 1 : 0; callouts[i].classList.toggle('on', k > .9); });
+    torch.style.opacity = 1 - smooth(p, .28, .42);
+    const on = p > .38; if (on !== lit) { lit = on; carwrap.classList.toggle('lit', on); }
+    lines.forEach((l, i) => { const k = smooth(p, .4 + i * .025, .46 + i * .025); l.style.strokeDashoffset = l.dataset.len * (1 - k); dots[i].style.opacity = k > 0 ? 1 : 0; callouts[i].classList.toggle('on', k > .9); });
+    // the drawing dissolves into the real T2 with a flash of light
+    const ph = photoOK ? smooth(p, .54, .66) : 0;
+    realshot.style.opacity = ph; realImg.style.transform = `scale(${1.18 - smooth(p, .54, 1) * .14})`;
+    realshot.style.setProperty('--sw', `${-120 + smooth(p, .56, .7) * 260}%`);
+    $('#heroCredit').style.opacity = ph;
+    carwrap.style.opacity = 1 - ph; document.querySelector('.cone').style.opacity = 1 - ph * .7; document.querySelector('.lamp').style.opacity = 1 - ph;
+    carwrap.style.transform = `translateX(-50%) scale(${1 + smooth(p, .3, .66) * .1 + ph * .25})`;
+    letters.forEach((s, i) => { const k = smooth(p, .62 + i * .012, .72 + i * .012); s.style.transform = `translateY(${(1 - k) * 110}%) skewX(${(1 - k) * -20}deg)`; s.style.opacity = k; });
+    if (p > .7) title.classList.add('in', 'sweep');
+    sub.style.opacity = smooth(p, .72, .8); sub.style.transform = `translateY(${(1 - smooth(p, .72, .8)) * 20}px)`;
   };
 
   // horizontal rail and street parallax
