@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jetour T2 Untamed</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;1,800;1,900&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one fixed WebGL world under a tall scroll track; chapters are captions that fade in over it, then the T2 film takes over. Single dark look by design. */
+:root {
+  --void: #020512;
+  --deep: #06103a;
+  --fg: #eef3fb;
+  --muted: #8f9dbb;
+  --gold: #ffb347;
+  --ember: #ff4d1f;
+  --ice: #9ed2ff;
+  --display: "Exo 2", "Arial Narrow", system-ui, sans-serif;
+  --body: "Barlow", "Helvetica Neue", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--void); color: var(--fg); }
+body { font: 400 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 90; background: var(--void); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--ice); outline-offset: 3px; border-radius: 6px; }
+
+#gl, #film { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+#film { opacity: 0; pointer-events: none; background: #05080d; }
+.flash { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #fff, #cfe8ff 40%, transparent 75%); opacity: 0; pointer-events: none; z-index: 3; }
+.vignette { position: fixed; inset: 0; pointer-events: none; z-index: 2; background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(1,3,10,.8) 100%); }
+.grain { position: fixed; inset: -50%; z-index: 4; pointer-events: none; opacity: .05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 1s steps(4) infinite; }
+@keyframes grain { 25% { transform: translate(-3%, 2%); } 50% { transform: translate(2%, -3%); } 75% { transform: translate(-1%, -2%); } }
+
+/* nav */
+.nav { position: fixed; left: 0; right: 0; top: env(safe-area-inset-top, 0px); z-index: 20; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 18px max(22px, env(safe-area-inset-right, 0px)) 0 max(22px, env(safe-area-inset-left, 0px)); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font: italic 900 17px var(--display); letter-spacing: .16em; }
+.brand svg { width: 28px; height: 28px; }
+.mid { font: 500 11px var(--mono); letter-spacing: .4em; color: var(--muted); text-transform: uppercase; }
+.mid b { color: var(--fg); font-weight: 500; }
+.enq { justify-self: end; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 18px; border-radius: 99px; border: 1px solid rgba(158,210,255,.3);
+  background: rgba(6,16,58,.35); backdrop-filter: blur(8px); text-decoration: none; font: 600 13px var(--body); letter-spacing: .04em; transition: background .25s, box-shadow .25s; }
+.enq:hover { background: rgba(158,210,255,.15); box-shadow: 0 0 30px rgba(158,210,255,.25); }
+
+/* chapter rail */
+.rail { position: fixed; right: max(22px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); z-index: 20; display: grid; gap: 14px; list-style: none; margin: 0; padding: 0; }
+.rail li { display: flex; align-items: center; gap: 10px; justify-content: flex-end; font: 500 10px var(--mono); letter-spacing: .2em; color: transparent; transition: color .4s; text-transform: uppercase; }
+.rail li i { width: 6px; height: 6px; border-radius: 50%; background: rgba(158,210,255,.3); transition: all .4s; flex: none; }
+.rail li.on { color: var(--fg); }
+.rail li.on i { background: var(--gold); box-shadow: 0 0 12px var(--gold); transform: scale(1.5); }
+.rail li:hover { color: var(--muted); }
+
+/* loader */
+#loader { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; align-content: center; gap: 18px; background: var(--void); transition: opacity .9s, visibility .9s; }
+#loader.done { opacity: 0; visibility: hidden; }
+#loader .eyes { display: flex; gap: 34px; }
+#loader .eyes i { width: 26px; height: 9px; border-radius: 50%; background: radial-gradient(circle, #fff6d0, var(--gold) 45%, transparent 72%); box-shadow: 0 0 24px var(--gold); animation: blinkEye 2.4s infinite; }
+#loader .eyes i:last-child { transform: scaleX(-1); }
+@keyframes blinkEye { 0%, 44%, 52%, 100% { transform: scaleY(1); } 48% { transform: scaleY(.1); } }
+#loader p { font: 500 11px var(--mono); letter-spacing: .35em; color: var(--muted); text-transform: uppercase; margin: 0; }
+
+/* the scroll track and its captions */
+.track { position: relative; height: 1500vh; z-index: 1; }
+.cap { position: fixed; z-index: 10; pointer-events: none; opacity: 0; will-change: opacity, transform, filter; max-width: min(620px, 88vw); }
+.cap .k { display: block; font: 500 11px var(--mono); letter-spacing: .35em; color: var(--gold); text-transform: uppercase; margin-bottom: 16px; }
+.cap h2, .cap h1 { margin: 0; font: italic 900 clamp(42px, 6.4vw, 96px) / .92 var(--display); letter-spacing: -.02em; text-wrap: balance; text-shadow: 0 6px 40px rgba(0,0,0,.6); }
+.cap p { margin: 18px 0 0; color: #c9d4ea; font-size: 18px; max-width: 40ch; text-shadow: 0 2px 20px rgba(0,0,0,.8); }
+.cap em { font-style: italic; font-weight: 300; font-family: var(--display); color: var(--gold); }
+.cap .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.cap .chips span { font: 500 11px var(--mono); letter-spacing: .1em; padding: 7px 12px; border-radius: 99px; border: 1px solid rgba(255,179,71,.35); background: rgba(10,6,4,.4); color: #ffd9a8; }
+.cap.c-intro { left: 50%; bottom: 9vh; transform: translateX(-50%); text-align: center; max-width: 92vw; }
+.cap.c-intro h1 { font-size: clamp(64px, 15vw, 230px); letter-spacing: .02em; line-height: .85;
+  background: linear-gradient(180deg, #fff 30%, #9ed2ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 10px 40px rgba(60,120,255,.35)); }
+.cap.c-intro p { margin-inline: auto; }
+.cap.left { left: max(26px, env(safe-area-inset-left, 0px)); bottom: 12vh; }
+.cap.right { right: max(70px, env(safe-area-inset-right, 0px)); top: 26vh; text-align: right; }
+.cap.right p { margin-left: auto; }
+.cap.right .chips { justify-content: flex-end; }
+.cap.center { left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+.cap.center p { margin-inline: auto; }
+.cap.low { left: 50%; bottom: 10vh; transform: translateX(-50%); text-align: center; }
+.stats { display: flex; gap: clamp(20px, 5vw, 60px); justify-content: center; margin-top: 26px; }
+.stats div { display: grid; gap: 2px; }
+.stats b { font: italic 900 clamp(34px, 4.6vw, 64px) / 1 var(--display); color: #fff; font-variant-numeric: tabular-nums; text-shadow: 0 0 30px rgba(255,77,31,.6); }
+.stats span { font: 500 10.5px var(--mono); letter-spacing: .2em; color: #ffb08f; text-transform: uppercase; }
+.cap .btn { pointer-events: auto; }
+.btn { display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 24px; border-radius: 99px; border: 0; cursor: pointer; text-decoration: none;
+  font: 600 14px var(--body); letter-spacing: .04em; background: var(--fg); color: #050814; transition: box-shadow .3s, transform .3s; margin-top: 24px; }
+.btn:hover { box-shadow: 0 0 40px rgba(255,179,71,.5); transform: translateY(-2px); }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid rgba(158,210,255,.35); }
+.scrollhint { position: fixed; left: 50%; bottom: 2.5vh; transform: translateX(-50%); z-index: 10; font: 500 10px var(--mono); letter-spacing: .4em; color: var(--muted); display: grid; justify-items: center; gap: 8px; transition: opacity .5s; }
+.scrollhint i { width: 1px; height: 34px; background: linear-gradient(var(--ice), transparent); animation: drip 1.6s infinite; transform-origin: top; }
+@keyframes drip { 0% { transform: scaleY(0); } 60% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* after the story */
+.after { position: relative; z-index: 12; background: linear-gradient(180deg, transparent, #03060f 12vh); padding: 18vh max(22px, env(safe-area-inset-right, 0px)) 10vh max(22px, env(safe-area-inset-left, 0px)); }
+.after .in { max-width: 1180px; margin: 0 auto; }
+.after h2 { font: italic 900 clamp(40px, 6vw, 88px) / .95 var(--display); margin: 0; letter-spacing: -.02em; }
+.after h2 em { font-weight: 300; color: var(--gold); }
+.specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 50px; background: rgba(158,210,255,.14); border: 1px solid rgba(158,210,255,.14); border-radius: 22px; overflow: hidden; }
+.specs div { background: #050a1a; padding: 26px; display: grid; gap: 6px; min-width: 0; }
+.specs b { font: italic 900 clamp(30px, 3.6vw, 48px) / 1 var(--display); font-variant-numeric: tabular-nums; }
+.specs span { font: 500 10.5px var(--mono); letter-spacing: .18em; color: var(--muted); text-transform: uppercase; }
+.hunt { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; margin-top: 110px; align-items: center; }
+.hunt p { color: var(--muted); font-size: 18px; max-width: 46ch; }
+form.wa { display: grid; gap: 12px; padding: 28px; border-radius: 22px; background: linear-gradient(180deg, rgba(20,30,70,.55), rgba(6,10,26,.7)); border: 1px solid rgba(158,210,255,.18); min-width: 0; }
+form.wa label { display: grid; gap: 6px; font: 500 10.5px var(--mono); letter-spacing: .18em; color: var(--muted); text-transform: uppercase; }
+form.wa input, form.wa select { height: 50px; border-radius: 12px; border: 1px solid rgba(158,210,255,.2); background: #050a1a; color: var(--fg); padding: 0 14px; font: 500 16px var(--body); width: 100%; min-width: 0; }
+form.wa .btn { justify-content: center; margin-top: 8px; }
+.note { font: 400 12px var(--mono); color: var(--muted); min-height: 18px; margin: 0; }
+footer { margin-top: 120px; padding-top: 30px; border-top: 1px solid rgba(158,210,255,.12); display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font: 400 11.5px var(--mono); color: #5f6b86; }
+footer p { margin: 0; max-width: 80ch; }
+
+#cursor { position: fixed; left: 0; top: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 1px solid rgba(255,179,71,.7); pointer-events: none; z-index: 95;
+  transition: width .25s, height .25s, margin .25s, background .25s; mix-blend-mode: screen; }
+#cursor.big { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgba(255,179,71,.1); }
+@media (hover: none) { #cursor { display: none; } }
+
+.nogl #gl { display: none; }
+@media (max-width: 760px) {
+  .mid, .rail { display: none; }
+  .cap.right { right: 22px; left: 22px; top: auto; bottom: 12vh; text-align: left; }
+  .cap.right p { margin-left: 0; }
+  .cap.right .chips { justify-content: flex-start; }
+  .cap p { font-size: 16px; }
+  .specs { grid-template-columns: 1fr 1fr; }
+  .hunt { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grain, .scrollhint i, #loader .eyes i { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="loader" role="status"><div class="eyes" aria-hidden="true"><i></i><i></i></div><p id="loadTxt">Summoning the cheetah</p></div>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<canvas id="film" role="img" aria-label="A Jetour T2 under a cover in a dark garage. The cover is pulled off and the headlights switch on."></canvas>
+<div class="flash" id="flash" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div id="cursor" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 40 40"><path d="M6 30 L20 6 L34 30" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M12 30 h16" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Back to the start"><svg aria-hidden="true"><use href="#logo"/></svg>JETOUR</a>
+  <span class="mid"><b>T2</b> · untamed</span>
+  <a class="enq" href="#hunt">Book a test drive</a>
+</header>
+
+<ol class="rail" id="rail" aria-label="Chapters">
+  <li data-at=".0">Instinct<i></i></li>
+  <li data-at=".12">Pursuit<i></i></li>
+  <li data-at=".29">Terrain<i></i></li>
+  <li data-at=".46">Power<i></i></li>
+  <li data-at=".57">Mark<i></i></li>
+  <li data-at=".67">Portal<i></i></li>
+  <li data-at=".78">Unveil<i></i></li>
+</ol>
+
+<main id="top">
+  <div class="track" id="track" aria-label="Story"></div>
+
+  <!-- captions; each fades in over its slice of the scroll -->
+  <div class="cap c-intro" data-in="-.1" data-out=".07"><span class="k">Jetour · Muscat</span><h1>UNTAMED</h1><p>Lead every road. Meet the Jetour T2.</p></div>
+  <div class="cap left" data-in=".12" data-out=".26"><span class="k">02 · Pursuit</span><h2>The constant quest for the <em>next horizon.</em></h2></div>
+  <div class="cap right" data-in=".3" data-out=".44"><span class="k">03 · Terrain</span><h2>Built for ground that <em>fights back.</em></h2>
+    <p>We blend power, intelligence and design into a machine that goes where the map ends.</p>
+    <div class="chips"><span>2.0T GDI</span><span>Intelligent 4WD</span><span>Off-road modes</span></div></div>
+  <div class="cap center" data-in=".47" data-out=".56"><span class="k">04 · Power</span><h2>Unleash explosive <em>bursts of power.</em></h2>
+    <div class="stats"><div><b data-count="254">0</b><span>hp</span></div><div><b data-count="390">0</b><span>Nm torque</span></div><div><b data-count="7">0</b><span>speed DCT</span></div></div></div>
+  <div class="cap low" data-in=".58" data-out=".66"><span class="k">05 · Mark</span><h2>From instinct, <em>a machine.</em></h2></div>
+  <div class="cap low" data-in=".68" data-out=".75"><span class="k">06 · Portal</span><h2>Step <em>through.</em></h2></div>
+  <div class="cap left" data-in=".77" data-out=".83"><span class="k">07 · Unveil</span><h2>What's under <em>the cover?</em></h2></div>
+  <div class="cap left" data-in=".86" data-out=".935"><span class="k">Jetour T2</span><h2>Unveiled.</h2><p>Square-shouldered, 4WD, and ready for Oman's wadis, dunes and mountain roads.</p></div>
+  <div class="cap low" data-in=".95" data-out="1.2"><span class="k">The hunter's eyes</span><h2>Same eyes. <em>New hunter.</em></h2><a class="btn" href="#hunt">Take the T2 hunting →</a></div>
+  <div class="scrollhint" id="hint" aria-hidden="true">SCROLL<i></i></div>
+
+  <section class="after" id="hunt" aria-labelledby="h-specs">
+    <div class="in">
+      <h2 id="h-specs">Built for <em>the hunt.</em></h2>
+      <div class="specs">
+        <div><b data-count="254">0</b><span>horsepower</span></div>
+        <div><b data-count="390">0</b><span>Nm of torque</span></div>
+        <div><b>2.0T</b><span>GDI engine</span></div>
+        <div><b>4WD</b><span>with off-road modes</span></div>
+      </div>
+      <div class="hunt">
+        <div>
+          <h2>Take it <em>hunting.</em></h2>
+          <p>Pick a day and we'll have a T2 waiting at the Muscat showroom, keys in hand. Your request goes out as one WhatsApp message.</p>
+        </div>
+        <form class="wa" id="wa" novalidate>
+          <label for="nm">Your name<input id="nm" autocomplete="name" placeholder="Optional"></label>
+          <label for="day">Preferred day<select id="day"><option>This week</option><option>This weekend</option><option>Next week</option></select></label>
+          <label for="terrain">Where would you take it?<select id="terrain"><option>Wadi trail</option><option>Desert dunes</option><option>Mountain road</option><option>City streets</option></select></label>
+          <button class="btn" type="submit">Book on WhatsApp →</button>
+          <p class="note" id="waNote" aria-live="polite"></p>
+        </form>
+      </div>
+      <footer>
+        <p>Concept design. Not an official Jetour website. Specs are indicative; confirm trims, prices and availability with the showroom. The cheetah is a live particle simulation built for this page. 3D rendering by three.js (MIT licence).</p>
+        <a href="#top">Back to the stars ↑</a>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script>%%THREE%%</script>
+<script>window.FRAMES=%%FRAMES%%;</script>
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const smooth = (p, a, b) => { const k = clamp((p - a) / (b - a)); return k * k * (3 - 2 * k); };
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const TAU = Math.PI * 2;
+  const small = innerWidth < 760;
+
+  // ---------- scroll progress ----------
+  const track = $('#track');
+  let P = 0, Pt = 0;
+  const readScroll = () => { const r = track.getBoundingClientRect(); Pt = clamp(-r.top / (r.height - innerHeight)); };
+  addEventListener('scroll', readScroll, { passive: true }); readScroll(); P = Pt;
+
+  // ---------- WebGL world ----------
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), antialias: false, powerPreference: 'high-performance' }); }
+  catch (e) { document.body.classList.add('nogl'); }
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x020512);
+  scene.fog = new THREE.FogExp2(0x020512, 0.045);
+  const camera = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.05, 500);
+  const pixel = () => Math.min(devicePixelRatio || 1, 1.75);
+  const U = { time: { value: 0 }, travel: { value: 0 }, pixel: { value: pixel() * innerHeight / 900 } };
+
+  const NOISE = `
+    float hash(vec3 p){ p = fract(p * .3183099 + .1); p *= 17.; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+    float noise(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3. - 2. * f);
+      return mix(mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x), mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+                 mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x), mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y), f.z); }
+    float fbm(vec3 p){ float v = 0., a = .5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= .5; } return v; }`;
+  const SPRITE_FRAG = `
+    varying vec3 vColor; varying float vAlpha;
+    void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., d); a *= a; gl_FragColor = vec4(vColor * a * vAlpha, a * vAlpha); }`;
+  const pointsMat = (vert, uniforms) => new THREE.ShaderMaterial({ uniforms: Object.assign({}, U, uniforms), vertexShader: vert, fragmentShader: SPRITE_FRAG,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+
+  // nebula sky
+  const skyU = { heat: { value: 0 }, dim: { value: 0 } };
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(220, 48, 32), new THREE.ShaderMaterial({
+    uniforms: Object.assign({}, U, skyU), side: THREE.BackSide, depthWrite: false, fog: false,
+    vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+    fragmentShader: NOISE + `
+      uniform float time, heat, dim; varying vec3 vDir;
+      void main(){
+        vec3 d = vDir * 2.6 + vec3(time * .006, 0., 0.);
+        float n = fbm(d), m = fbm(d * 2.1 + 7.);
+        vec3 base = mix(vec3(.004, .01, .045), vec3(.05, .1, .38), smoothstep(.35, .9, n));
+        base += vec3(.16, .05, .3) * smoothstep(.55, .95, m) * .55;
+        vec3 lava = mix(vec3(.05, .01, .01), vec3(.55, .12, .03), smoothstep(.4, .9, n));
+        vec3 c = mix(base, lava, heat) * (1. - dim);
+        gl_FragColor = vec4(c, 1.);
+      }`
+  }));
+  scene.add(sky);
+
+  // stars that stream past when the cheetah runs
+  const STARS = small ? 3500 : 7000;
+  { const g = new THREE.BufferGeometry(), pos = new Float32Array(STARS * 3), rnd = new Float32Array(STARS), col = new Float32Array(STARS * 3);
+    for (let i = 0; i < STARS; i++) {
+      pos[i * 3] = (Math.random() - .5) * 120; pos[i * 3 + 1] = (Math.random() - .5) * 60; pos[i * 3 + 2] = -Math.random() * 70 + 6;
+      rnd[i] = Math.random(); const b = Math.random() < .12; col.set(b ? [.5, .75, 1] : [.75, .85, 1], i * 3);
+    }
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('rnd', new THREE.BufferAttribute(rnd, 1)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    scene.add(new THREE.Points(g, pointsMat(`
+      attribute float rnd; attribute vec3 color; uniform float time, travel, pixel, fade; varying vec3 vColor; varying float vAlpha;
+      void main(){ vec3 p = position; p.x = mod(p.x - travel * (.6 + rnd * .8) + 60., 120.) - 60.;
+        vec4 mv = modelViewMatrix * vec4(p, 1.); gl_Position = projectionMatrix * mv;
+        gl_PointSize = (1.2 + rnd * 2.6) * pixel * 9. / -mv.z;
+        vColor = color; vAlpha = (.45 + .55 * sin(time * (1. + rnd * 3.) + rnd * 40.)) * (1. - fade); }`, { fade: { value: 0 } })));
+  }
+  const starsMat = scene.children[scene.children.length - 1].material;
+
+  // big soft blue orbs, like out-of-focus planets
+  { const n = 26, g = new THREE.BufferGeometry(), pos = new Float32Array(n * 3), rnd = new Float32Array(n);
+    for (let i = 0; i < n; i++) { pos.set([(Math.random() - .5) * 40, (Math.random() - .5) * 18, -Math.random() * 30 - 2], i * 3); rnd[i] = Math.random(); }
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('rnd', new THREE.BufferAttribute(rnd, 1));
+    scene.add(new THREE.Points(g, pointsMat(`
+      attribute float rnd; uniform float time, travel, pixel, fade; varying vec3 vColor; varying float vAlpha;
+      void main(){ vec3 p = position; p.x = mod(p.x - travel * .25 + 20., 40.) - 20.; p.y += sin(time * .3 + rnd * 9.) * .3;
+        vec4 mv = modelViewMatrix * vec4(p, 1.); gl_Position = projectionMatrix * mv;
+        gl_PointSize = (30. + rnd * 90.) * pixel * 4. / -mv.z; vColor = vec3(.25, .55, 1.); vAlpha = .35 * (1. - fade); }`, { fade: { value: 0 } })));
+  }
+  const orbMat = scene.children[scene.children.length - 1].material;
+
+  // molten terrain: glowing cracks in a dark rock field
+  const terrU = { opacity: { value: 0 } };
+  { const gx = small ? 120 : 190, gz = small ? 80 : 120, g = new THREE.BufferGeometry(), pos = new Float32Array(gx * gz * 3);
+    let k = 0; for (let i = 0; i < gx; i++) for (let j = 0; j < gz; j++) { pos[k++] = lerp(-26, 26, i / (gx - 1)); pos[k++] = 0; pos[k++] = lerp(-24, 5, j / (gz - 1)); }
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const terr = new THREE.Points(g, pointsMat(NOISE + `
+      uniform float time, travel, pixel, opacity; varying vec3 vColor; varying float vAlpha;
+      void main(){ vec3 p = position; vec3 q = vec3((p.x + travel) * .22, p.z * .22, 0.);
+        float h = fbm(q); p.y = (h - .5) * 2.6 - 1.05;
+        float crack = 1. - smoothstep(.0, .08, abs(noise(q * 2.3 + 3.) - .5));
+        float hot = crack * (.6 + .4 * sin(time * 2. + p.x));
+        vec4 mv = modelViewMatrix * vec4(p, 1.); gl_Position = projectionMatrix * mv;
+        gl_PointSize = (2.2 + hot * 4.) * pixel * 13. / -mv.z;
+        vColor = mix(vec3(.12, .1, .16), vec3(1., .36, .08) * 1.6, hot);
+        vAlpha = opacity * (.45 + hot * 1.4); }`, terrU));
+    scene.add(terr);
+  }
+
+  // drifting fog banks over the lava
+  const fogU = { opacity: { value: 0 } };
+  { const n = 60, g = new THREE.BufferGeometry(), pos = new Float32Array(n * 3), rnd = new Float32Array(n);
+    for (let i = 0; i < n; i++) { pos.set([(Math.random() - .5) * 30, -.9 + Math.random() * .7, -Math.random() * 14 + 3], i * 3); rnd[i] = Math.random(); }
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('rnd', new THREE.BufferAttribute(rnd, 1));
+    scene.add(new THREE.Points(g, pointsMat(`
+      attribute float rnd; uniform float time, travel, pixel, opacity; varying vec3 vColor; varying float vAlpha;
+      void main(){ vec3 p = position; p.x = mod(p.x - travel * .7 + 15., 30.) - 15.;
+        vec4 mv = modelViewMatrix * vec4(p, 1.); gl_Position = projectionMatrix * mv;
+        gl_PointSize = (160. + rnd * 220.) * pixel * 3. / -mv.z;
+        vColor = mix(vec3(1., .75, .85), vec3(.75, .8, 1.), rnd); vAlpha = opacity * .07; }`, fogU)));
+  }
+
+  // floating rocks with ember edges
+  const rocks = new THREE.Group(); scene.add(rocks);
+  scene.add(new THREE.AmbientLight(0x223366, .6));
+  const ember = new THREE.PointLight(0xff5522, 0, 30); ember.position.set(0, -1.5, 1); scene.add(ember);
+  const rim = new THREE.DirectionalLight(0x88aaff, .8); rim.position.set(-3, 5, 4); scene.add(rim);
+  { const mat = new THREE.MeshStandardMaterial({ color: 0x1b1412, roughness: .9, flatShading: true, emissive: 0xff3a10, emissiveIntensity: .4 });
+    for (let i = 0; i < 20; i++) {
+      const m = new THREE.Mesh(new THREE.IcosahedronGeometry(.08 + Math.random() * .28, 0), mat);
+      m.userData = { x: (Math.random() - .5) * 24, y: Math.random() * 3.2 + .2, z: -Math.random() * 9 - 2, s: Math.random() * .8 + .2, r: Math.random() * TAU };
+      rocks.add(m);
+    }
+  }
+
+  // portal: gold ring, ice ring, swirling disc, icy shards
+  const portal = new THREE.Group(); portal.position.set(0, .45, -1.2); scene.add(portal);
+  const discU = { open: { value: 0 } };
+  portal.add(new THREE.Mesh(new THREE.TorusGeometry(3.3, .045, 16, 160), new THREE.MeshBasicMaterial({ color: 0xffd36b, fog: false })));
+  portal.add(new THREE.Mesh(new THREE.TorusGeometry(3.55, .02, 12, 160), new THREE.MeshBasicMaterial({ color: 0x9ed2ff, fog: false })));
+  portal.add(new THREE.Mesh(new THREE.CircleGeometry(3.28, 96), new THREE.ShaderMaterial({ uniforms: Object.assign({}, U, discU), transparent: true, depthWrite: false, fog: false,
+    vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+    fragmentShader: NOISE + `uniform float time, open; varying vec2 vUv;
+      void main(){ vec2 c = vUv - .5; float r = length(c) * 2., a = atan(c.y, c.x);
+        float sw = fbm(vec3(cos(a + r * 3. - time * .8) * r * 2., sin(a + r * 3. - time * .8) * r * 2., time * .1));
+        vec3 col = mix(vec3(.02, .05, .2), vec3(.4, .8, 1.), smoothstep(.45, .85, sw)) + vec3(1., .85, .5) * pow(1. - r, 6.) * 1.5;
+        gl_FragColor = vec4(col, open * smoothstep(1., .9, r) * (.55 + .45 * sw)); }` })));
+  { const mat = new THREE.MeshStandardMaterial({ color: 0x6fa8ff, roughness: .35, metalness: .2, flatShading: true, emissive: 0x0a2a6a, emissiveIntensity: .6 });
+    for (let i = 0; i < 46; i++) {
+      const a = Math.PI * (.85 + Math.random() * 1.3), r = 3.7 + Math.random() * 1.1;
+      const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.12 + Math.random() * .35, 0), mat);
+      m.position.set(Math.cos(a) * r, Math.sin(a) * r * .9, (Math.random() - .5) * 1.2); m.rotation.set(Math.random() * 3, Math.random() * 3, 0); portal.add(m);
+    }
+  }
+  portal.add(new THREE.PointLight(0x9ed2ff, 2, 12));
+  portal.scale.setScalar(.001);
+
+  // ---------- the particle cheetah ----------
+  // Parts are ellipsoids or bones in a side-on frame (nose toward +x); a gallop cycle poses them every frame.
+  const N = small ? 5200 : 9000;
+  const ELL = [ // name, radii, weight
+    ['chest', [.5, .3, .25], 16], ['waist', [.42, .21, .19], 10], ['hips', [.32, .26, .22], 9], ['neck', [.26, .14, .13], 5],
+    ['head', [.19, .155, .145], 7], ['muzzle', [.11, .075, .075], 2.5], ['earL', [.035, .075, .03], .6], ['earR', [.035, .075, .03], .6],
+    ['pawFL', [.07, .035, .05], .6], ['pawFR', [.07, .035, .05], .6], ['pawHL', [.07, .035, .05], .6], ['pawHR', [.07, .035, .05], .6]];
+  const BONES = [ // name, length, r0, r1, weight
+    ['upFL', .42, .085, .055, 3.6], ['upFR', .42, .085, .055, 3.6], ['upHL', .46, .11, .06, 4.4], ['upHR', .46, .11, .06, 4.4],
+    ['loFL', .42, .05, .038, 2.4], ['loFR', .42, .05, .038, 2.4], ['loHL', .5, .055, .038, 2.6], ['loHR', .5, .055, .038, 2.6]];
+  const TAIL = 14;
+  for (let i = 0; i < TAIL; i++) BONES.push(['tail' + i, .085, lerp(.05, .026, i / TAIL), lerp(.048, .024, (i + 1) / TAIL), .45]);
+  const PARTS = [...ELL.map(e => ({ kind: 0, name: e[0], r: e[1], w: e[2] })), ...BONES.map(b => ({ kind: 1, name: b[0], len: b[1], r0: b[2], r1: b[3], w: b[4] }))];
+  const PI = Object.fromEntries(PARTS.map((p, i) => [p.name, i]));
+  const wsum = PARTS.reduce((a, p) => a + p.w, 0);
+  const part = new Uint8Array(N), loc = new Float32Array(N * 3), colr = new Float32Array(N * 3), rnd = new Float32Array(N), vel = new Float32Array(N * 3);
+  { let i = 0;
+    PARTS.forEach((pt, pi) => {
+      const n = pi === PARTS.length - 1 ? N - i : Math.round(N * pt.w / wsum);
+      for (let k = 0; k < n && i < N; k++, i++) {
+        part[i] = pi; rnd[i] = Math.random();
+        let lx, ly, lz;
+        if (pt.kind === 0) { // biased toward the surface so the silhouette reads
+          let x, y, z, d; do { x = Math.random() * 2 - 1; y = Math.random() * 2 - 1; z = Math.random() * 2 - 1; d = x * x + y * y + z * z; } while (d > 1 || d < .001);
+          const s = Math.pow(Math.random(), .18) / Math.sqrt(d); lx = x * s * pt.r[0]; ly = y * s * pt.r[1]; lz = z * s * pt.r[2];
+        } else { const s = Math.random(), th = Math.random() * TAU, rr = lerp(pt.r0, pt.r1, s) * Math.pow(Math.random(), .2); lx = s; ly = Math.cos(th) * rr; lz = Math.sin(th) * rr; }
+        loc[i * 3] = lx; loc[i * 3 + 1] = ly; loc[i * 3 + 2] = lz;
+        // coat: gold with rosette spots, cream belly and muzzle, blue-tipped ears, tear marks, ringed tail tip
+        const gx = pt.kind ? lx * pt.len * 3 + pi : lx, gy = ly, gz = lz;
+        const spot = Math.sin(gx * 27 + Math.sin(gz * 13) * 2) * Math.sin(gy * 31 + gx * 7) * Math.sin(gz * 29 + gy * 6) > .3;
+        let c = [1, .62, .24];
+        if (pt.name === 'head' && lx > .02 && ly < .02 && Math.abs(Math.abs(lz) - .085) < .022) c = [.08, .04, .02];
+        else if (pt.name === 'muzzle' || ((pt.name === 'chest' || pt.name === 'waist') && ly < -pt.r[1] * .55)) c = [1, .9, .75];
+        else if (pt.name.startsWith('ear')) c = ly > .02 ? [.35, .65, 1] : [1, .7, .4];
+        else if (pt.name.startsWith('tail') && +pt.name.slice(4) > 9) c = (+pt.name.slice(4)) % 2 ? [.06, .04, .03] : [1, .95, .85];
+        else if (spot && pt.name !== 'muzzle') c = [.1, .06, .03];
+        colr.set(c, i * 3);
+        const a = Math.random() * TAU, b = Math.acos(Math.random() * 2 - 1), sp = .8 + Math.random() * 2.4;
+        vel.set([Math.sin(b) * Math.cos(a) * sp - .6, Math.sin(b) * Math.sin(a) * sp, Math.cos(b) * sp], i * 3);
+      }
+    });
+  }
+  const cg = new THREE.BufferGeometry(), cpos = new Float32Array(N * 3);
+  cg.setAttribute('position', new THREE.BufferAttribute(cpos, 3).setUsage(THREE.DynamicDrawUsage));
+  cg.setAttribute('color', new THREE.BufferAttribute(colr, 3)); cg.setAttribute('rnd', new THREE.BufferAttribute(rnd, 1));
+  const catU = { hot: { value: 0 }, ice: { value: 0 }, bright: { value: 1 }, size: { value: 1 } };
+  const cat = new THREE.Points(cg, pointsMat(`
+    attribute float rnd; attribute vec3 color; uniform float time, pixel, hot, ice, bright, size; varying vec3 vColor; varying float vAlpha;
+    void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.); gl_Position = projectionMatrix * mv;
+      gl_PointSize = (1.7 + rnd * 1.9) * size * pixel * 9. / -mv.z;
+      vec3 c = mix(color, vec3(1., .28, .07) * (1.2 + rnd), hot); c = mix(c, vec3(.55, .82, 1.) * (.8 + rnd * .6), ice);
+      vColor = c * 1.25; vAlpha = bright * (.65 + .35 * sin(time * 3. + rnd * 60.)); }`, catU));
+  cat.frustumCulled = false; scene.add(cat);
+  // the eyes
+  const eg = new THREE.BufferGeometry(), epos = new Float32Array(6);
+  eg.setAttribute('position', new THREE.BufferAttribute(epos, 3)); eg.setAttribute('rnd', new THREE.BufferAttribute(new Float32Array([.5, .5]), 1));
+  const eyeU = { glow: { value: 1 } };
+  const eyes = new THREE.Points(eg, pointsMat(`
+    uniform float pixel, glow; varying vec3 vColor; varying float vAlpha;
+    void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.); gl_Position = projectionMatrix * mv; gl_PointSize = 26. * pixel * 3. / -mv.z; vColor = vec3(1., .78, .3) * 2.; vAlpha = glow; }`, eyeU));
+  eyes.frustumCulled = false; scene.add(eyes);
+
+  // pose solver
+  const T = PARTS.map(() => ({ x: 0, y: 0, z: 0, a: 0 }));
+  const dirAt = th => [Math.sin(th), -Math.cos(th)];
+  const pose = (ph, A, breathe) => {
+    const s = Math.sin(TAU * ph), c = Math.cos(TAU * ph), bob = .07 * c * A + breathe * .01;
+    const set = (n, x, y, z, a) => { const t = T[PI[n]]; t.x = x; t.y = y + bob; t.z = z; t.a = a; };
+    const ch = { x: .34 + .1 * s * A, y: .02 + .04 * c * A, a: -.08 * s * A }, hp = { x: -.62 - .1 * s * A, y: .06 - .05 * c * A, a: .14 * s * A };
+    set('chest', ch.x, ch.y, 0, ch.a); set('hips', hp.x, hp.y, 0, hp.a);
+    set('waist', (ch.x + hp.x) / 2, (ch.y + hp.y) / 2 - .02 + .05 * s * A, 0, (ch.a + hp.a) / 2);
+    const hx = ch.x + .86, hy = .27 + .03 * Math.sin(2 * TAU * ph) * A + breathe * .015;
+    const nb = [ch.x + .38, ch.y + .12], ne = [hx - .12, hy - .04];
+    set('neck', (nb[0] + ne[0]) / 2, (nb[1] + ne[1]) / 2, 0, Math.atan2(ne[1] - nb[1], ne[0] - nb[0]));
+    set('head', hx, hy, 0, -.06); set('muzzle', hx + .17, hy - .065, 0, -.1);
+    set('earL', hx - .05, hy + .15, .085, .25); set('earR', hx - .05, hy + .15, -.085, .25);
+    const legs = [['FL', ch, .12, -.16, .12, .5, 1], ['FR', ch, .12, -.16, -.12, .57, 1], ['HL', hp, .02, -.1, .13, 0, 0], ['HR', hp, .02, -.1, -.13, .07, 0]];
+    for (const [n, base, ox, oy, oz, off, front] of legs) {
+      const t = TAU * (ph + off), sw = Math.sin(t), fold = Math.max(0, Math.cos(t));
+      const up = front ? A * .95 * sw : -A * .9 * sw + .08 * A;
+      const lo = front ? up - A * 1.15 * fold : up - .35 - A * .6 * fold;
+      const ax = base.x + ox, ay = base.y + oy + bob;
+      const u = dirAt(up), l = dirAt(lo), L1 = BONES.find(b => b[0] === 'up' + n)[1], L2 = BONES.find(b => b[0] === 'lo' + n)[1];
+      const k = T[PI['up' + n]]; k.x = ax; k.y = ay; k.z = oz; k.dx = u[0]; k.dy = u[1];
+      const kx = ax + u[0] * L1, ky = ay + u[1] * L1, m = T[PI['lo' + n]]; m.x = kx; m.y = ky; m.z = oz; m.dx = l[0]; m.dy = l[1];
+      const pw = T[PI['paw' + n]]; pw.x = kx + l[0] * L2 + .04; pw.y = ky + l[1] * L2 - .01; pw.z = oz; pw.a = 0;
+    }
+    let tx = hp.x - .3, ty = hp.y + .06 + bob, ta = Math.PI + .3;
+    for (let i = 0; i < TAIL; i++) {
+      ta += -.05 + A * .13 * Math.sin(TAU * ph - i * .5) + (i > 8 ? -.11 : 0) + breathe * .01 * Math.sin(i);
+      const t = T[PI['tail' + i]]; t.x = tx; t.y = ty; t.z = 0; t.dx = Math.cos(ta); t.dy = Math.sin(ta); tx += t.dx * .085; ty += t.dy * .085;
+    }
+    return [hx, hy + bob];
+  };
+  // logo targets: JETOUR as a 3D dot matrix
+  let logoT = null;
+  const buildLogo = () => {
+    const cv = document.createElement('canvas'); cv.width = 1200; cv.height = 300; const x = cv.getContext('2d');
+    x.fillStyle = '#fff'; x.font = 'italic 900 230px "Exo 2", "Arial Black", sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('JETOUR', 600, 155);
+    const d = x.getImageData(0, 0, 1200, 300).data, pts = [];
+    for (let y = 0; y < 300; y += 7) for (let xx = 0; xx < 1200; xx += 7) if (d[(y * 1200 + xx) * 4 + 3] > 128) pts.push([(xx - 600) / 1200 * 7.2, -(y - 150) / 1200 * 7.2 + .45]);
+    logoT = new Float32Array(N * 3);
+    for (let i = 0; i < N; i++) { const p = pts[i % pts.length], layer = Math.floor(i / pts.length); logoT.set([p[0], p[1], -layer * .09 + (Math.random() - .5) * .02], i * 3); }
+  };
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(buildLogo);
+
+  // place every particle: pose -> world, then burst and morph
+  const yawPos = (x, y, z, yaw, ox, oy, oz) => { const c = Math.cos(yaw), s = Math.sin(yaw); return [x * c + z * s + ox, y + oy, -x * s + z * c + oz]; };
+  const updateCat = (ph, A, breathe, yaw, off, burst, morph) => {
+    const [hx, hy] = pose(ph, A, breathe);
+    for (let i = 0; i < N; i++) {
+      const pt = PARTS[part[i]], t = T[part[i]], i3 = i * 3, lx = loc[i3], ly = loc[i3 + 1], lz = loc[i3 + 2];
+      let x, y, z;
+      if (pt.kind === 0) { const c = Math.cos(t.a), s = Math.sin(t.a); x = t.x + lx * c - ly * s; y = t.y + lx * s + ly * c; z = t.z + lz; }
+      else { const L = pt.len * lx; x = t.x + t.dx * L - t.dy * ly; y = t.y + t.dy * L + t.dx * ly; z = t.z + lz; }
+      let [wx, wy, wz] = yawPos(x, y, z, yaw, off[0], off[1], off[2]);
+      if (burst > 0) { const e = burst * burst * 2.2; wx += vel[i3] * e; wy += vel[i3 + 1] * e - burst * burst * .4; wz += vel[i3 + 2] * e; }
+      if (morph > 0 && logoT) { const k = smooth(morph, rnd[i] * .35, .65 + rnd[i] * .35); wx = lerp(wx, logoT[i3], k); wy = lerp(wy, logoT[i3 + 1], k); wz = lerp(wz, logoT[i3 + 2], k); }
+      cpos[i3] = wx; cpos[i3 + 1] = wy; cpos[i3 + 2] = wz;
+    }
+    cg.attributes.position.needsUpdate = true;
+    for (const [j, side] of [[0, 1], [1, -1]]) { const h = T[PI.head], c = Math.cos(h.a), s = Math.sin(h.a), ex = h.x + .12 * c - .045 * s, ey = h.y + .12 * s + .045 * c;
+      epos.set(yawPos(ex, ey, side * .072, yaw, off[0], off[1], off[2]), j * 3); }
+    eg.attributes.position.needsUpdate = true;
+  };
+
+  // ---------- director: what happens at each point of the scroll ----------
+  const CAM = [ // progress, camera position, look-at
+    [0, [0, .22, 2.25], [0, .08, .9]],
+    [.08, [0, .25, 2.9], [0, .08, .5]],
+    [.16, [1.2, .5, 4.6], [0, .15, 0]],
+    [.27, [.2, .4, 4.2], [0, .1, 0]],
+    [.33, [3.2, .05, 3.0], [-.2, .05, 0]],
+    [.44, [-2.6, .25, 3.3], [.2, .1, 0]],
+    [.5, [0, .8, 6.5], [0, .3, 0]],
+    [.58, [0, .5, 8.2], [0, .45, 0]],
+    [.66, [0, .45, 9.2], [0, .45, -1.2]],
+    [.76, [0, .45, -1.6], [0, .45, -6]]];
+  const camAt = p => {
+    let i = 1; while (i < CAM.length - 1 && p > CAM[i][0]) i++;
+    const [p0, a0, l0] = CAM[i - 1], [p1, a1, l1] = CAM[i], k = smooth(p, p0, p1);
+    return [a0.map((v, j) => lerp(v, a1[j], k)), l0.map((v, j) => lerp(v, l1[j], k))];
+  };
+  const look = new THREE.Vector3();
+  let phase = 0, last = performance.now(), travel = 0, mx = 0, my = 0;
+  addEventListener('pointermove', e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; });
+
+  const caps = $$('.cap').map(el => ({ el, a: +el.dataset.in, b: +el.dataset.out, counted: false }));
+  const railItems = $$('#rail li');
+  railItems.forEach(li => li.onclick = () => scrollTo({ top: track.offsetTop + (+li.dataset.at + .015) * (track.offsetHeight - innerHeight), behavior: reduce ? 'auto' : 'smooth' }));
+  const countUp = el => { const end = +el.dataset.count, t0 = performance.now();
+    (function f(t) { const k = clamp((t - t0) / 1300); el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(t0); };
+
+  const story = (p, dt, now) => {
+    // gait: idle head shot, then a sprint that speeds up through the terrain
+    const run = smooth(p, .1, .2) * (1 - smooth(p, .5, .56));
+    const speed = lerp(.35, 1.45, run) * (reduce ? 0 : 1);
+    phase = (phase + dt * speed * (run > .02 ? 1 : .25)) % 1;
+    travel += dt * 9 * run * (reduce ? 0 : 1); U.travel.value = travel;
+    const yaw = lerp(-Math.PI / 2, 0, smooth(p, .08, .17));
+    const burst = smooth(p, .48, .56), morph = smooth(p, .54, .62);
+    const off = [0, -smooth(p, .3, .36) * .05, 0];
+    updateCat(phase, run, Math.sin(now * .0015), yaw, off, burst, morph);
+    catU.hot.value = smooth(p, .44, .5) * (1 - smooth(p, .57, .63));
+    catU.ice.value = smooth(p, .56, .61);
+    catU.size.value = 1 + burst * 1.4 - morph * .9;
+    catU.bright.value = 1 - smooth(p, .71, .76);
+    eyeU.glow.value = (1 - smooth(p, .46, .5)) * (1 + .4 * Math.sin(now * .004));
+    // worlds
+    const lava = smooth(p, .27, .32) * (1 - smooth(p, .5, .57));
+    terrU.opacity.value = lava; fogU.opacity.value = lava; skyU.heat.value = lava * .85; skyU.dim.value = smooth(p, .52, .58) * (1 - smooth(p, .64, .7)) * .85;
+    starsMat.uniforms.fade.value = lava * .6 + skyU.dim.value; orbMat.uniforms.fade.value = starsMat.uniforms.fade.value;
+    ember.intensity = lava * 3 + catU.hot.value * 4;
+    rocks.visible = lava > .01;
+    rocks.children.forEach((m, i) => { const d = m.userData; m.position.set(((d.x - travel * .8) % 24 + 36) % 24 - 12, d.y + Math.sin(now * .001 + i) * .15 + (1 - lava) * -3, d.z); m.rotation.set(d.r + now * .0004 * d.s, d.r + now * .0003, 0); });
+    const open = smooth(p, .64, .7); portal.scale.setScalar(Math.max(.001, open)); portal.rotation.z = now * .00005; discU.open.value = open;
+    portal.visible = open > .002;
+    // camera, with a little hand-held drift and pointer parallax
+    const [cp, cl] = camAt(p), w = reduce ? 0 : 1;
+    const m = small ? lerp(1.55, 1, smooth(p, .64, .74)) : 1; // tall screens need the camera further back
+    camera.position.set(cp[0] * m + mx * .35 * w + Math.sin(now * .0007) * .03 * w, cp[1] - my * .2 * w + Math.sin(now * .0011) * .02 * w, cp[2] * (cp[2] > 0 ? m : 1));
+    look.set(cl[0], cl[1], cl[2]); camera.lookAt(look);
+    camera.fov = 48 + smooth(p, .7, .76) * 40; camera.updateProjectionMatrix();
+  };
+
+  // ---------- the T2 film ----------
+  const film = $('#film'), fx = film.getContext('2d'), FW = 1280, FH = 720;
+  const imgs = (window.FRAMES || []).map(src => { const i = new Image(); i.src = src; return i; });
+  const KNOTS = [[0, 0], [.07, 21], [.45, 48], [.56, 58], [.66, 70], [1, 119]];
+  const frameAt = q => { for (let k = 1; k < KNOTS.length; k++) { const [p0, f0] = KNOTS[k - 1], [p1, f1] = KNOTS[k]; if (q <= p1) return f0 + (f1 - f0) * (q - p0) / (p1 - p0); } return 119; };
+  let W, H, s, ox, oy, lastF = -1;
+  const layoutFilm = () => {
+    const d = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; film.width = W * d; film.height = H * d; fx.setTransform(d, 0, 0, d, 0, 0);
+    if (W / H < 1) { s = W * 1.85 / FW; ox = W / 2 - .51 * FW * s; oy = H * .42 - 400 * s; }
+    else { s = Math.max(W / FW, H / FH) * 1.06; ox = Math.min(0, Math.max(W - FW * s, W / 2 - .5 * FW * s)); oy = (H - FH * s) / 2; }
+    lastF = -1;
+  };
+  const paintFilm = (f, eyesK) => {
+    const i = Math.min(118, Math.floor(f)), a = f - i;
+    fx.globalAlpha = 1; fx.fillStyle = '#05080d'; fx.fillRect(0, 0, W, H);
+    const draw = (img, al) => { if (img && img.complete && img.naturalWidth) { fx.globalAlpha = al; fx.drawImage(img, ox, oy, FW * s, FH * s); } };
+    draw(imgs[i], 1); if (a > .01) draw(imgs[i + 1], a); fx.globalAlpha = 1;
+    if (W / H < 1) for (const [y0, y1] of [[oy, oy + 140 * s], [oy + FH * s, oy + FH * s - 140 * s]]) { const g = fx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, '#05080d'); g.addColorStop(1, 'rgba(5,8,13,0)'); fx.fillStyle = g; fx.fillRect(0, Math.min(y0, y1), W, Math.abs(y1 - y0)); }
+    if (eyesK > 0) { // darkness swallows the garage until only the headlights remain, and they burn amber like eyes
+      fx.fillStyle = `rgba(2,3,6,${.94 * eyesK})`; fx.fillRect(0, 0, W, H);
+      for (const [hx, hy] of [[345, 400], [555, 402]]) {
+        const X = ox + hx * s, Y = oy + hy * s, R = 70 * s * (1 + eyesK);
+        const g = fx.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, `rgba(255,246,214,${eyesK})`); g.addColorStop(.25, `rgba(255,190,80,${.9 * eyesK})`); g.addColorStop(1, 'rgba(255,140,40,0)');
+        fx.save(); fx.translate(X, Y); fx.scale(1.6, .55); fx.translate(-X, -Y); fx.fillStyle = g; fx.beginPath(); fx.arc(X, Y, R, 0, TAU); fx.fill(); fx.restore();
+      }
+    }
+  };
+
+  // ---------- frame loop ----------
+  const resize = () => {
+    if (renderer) { renderer.setPixelRatio(pixel()); renderer.setSize(innerWidth, innerHeight, false); }
+    camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); U.pixel.value = pixel() * innerHeight / 900; layoutFilm();
+  };
+  addEventListener('resize', resize); resize();
+  const hint = $('#hint');
+  const frame = now => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now; U.time.value = now / 1000;
+    P = reduce ? Pt : lerp(P, Pt, .085); if (Math.abs(P - Pt) < .00005) P = Pt;
+    // captions
+    for (const c of caps) {
+      const k = smooth(P, c.a, c.a + .02) * (1 - smooth(P, c.b - .02, c.b));
+      c.el.style.opacity = k; c.el.style.filter = k < 1 ? `blur(${(1 - k) * 10}px)` : 'none';
+      const base = c.el.classList.contains('center') ? 'translate(-50%, -50%)' : (c.el.classList.contains('c-intro') || c.el.classList.contains('low')) ? 'translateX(-50%)' : '';
+      c.el.style.transform = `${base} translateY(${(1 - k) * 24}px)`;
+      c.el.style.pointerEvents = k > .5 ? 'auto' : 'none';
+      if (k > .6 && !c.counted) { c.counted = true; c.el.querySelectorAll('[data-count]').forEach(countUp); }
+    }
+    hint.style.opacity = 1 - smooth(P, .01, .04);
+    railItems.forEach((li, i) => li.classList.toggle('on', P >= +li.dataset.at && (i === railItems.length - 1 || P < +railItems[i + 1].dataset.at)));
+    // the hand-off from the WebGL world to the film
+    const filmK = smooth(P, .745, .775);
+    $('#flash').style.opacity = smooth(P, .72, .755) * (1 - smooth(P, .755, .79));
+    film.style.opacity = filmK;
+    if (filmK > 0) { const q = clamp((P - .76) / .2), f = Math.round(frameAt(q) * 8) / 8, ek = Math.round(smooth(P, .955, .99) * 50) / 50;
+      const key = f * 100 + ek; if (key !== lastF) { lastF = key; paintFilm(f, ek); } }
+    if (renderer && filmK < 1) { story(P, dt, now); renderer.render(scene, camera); }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(t => { last = t; frame(t); });
+
+  // loader: wait for the film frames, then open the eyes
+  let ready = 0; const total = imgs.length;
+  const done = () => { $('#loader').classList.add('done'); };
+  if (!total) done(); else imgs.forEach(i => i.decode().catch(() => {}).finally(() => { ready++; $('#loadTxt').textContent = `Summoning the cheetah · ${Math.round(ready / total * 100)}%`; if (ready === total) setTimeout(done, 300); }));
+  setTimeout(done, 6000);
+
+  // specs count-ups after the story
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.querySelectorAll('[data-count]').forEach(countUp); io.unobserve(e.target); } }), { threshold: .4 });
+  io.observe($('.specs'));
+
+  // WhatsApp booking
+  $('#wa').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('#nm').value.trim();
+    const msg = `Hello Jetour Muscat${name ? ', this is ' + name : ''}. I'd like to test drive the Jetour T2 ${$('#day').value.toLowerCase()}. I'm thinking ${$('#terrain').value.toLowerCase()}. When is it free?`;
+    $('#waNote').innerHTML = `<a href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Open WhatsApp with your message →</a>`;
+  });
+
+  // cursor
+  const cur = $('#cursor');
+  addEventListener('pointermove', e => cur.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`);
+  document.addEventListener('pointerover', e => cur.classList.toggle('big', !!e.target.closest('a, button, input, select, #rail li')));
+})();
+</script>
+</body>
+</html>
