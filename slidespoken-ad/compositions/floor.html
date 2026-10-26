@@ -1,0 +1,100 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--canvas); font-family: var(--sans); }
+    /* A: the boardroom */
+    #f-room { position: absolute; inset: 0; background: radial-gradient(70% 60% at 50% 34%, #1d2a22 0%, #0d110d 62%, #070907 100%); }
+    #f-cam { position: absolute; inset: 0; transform-origin: 50% 36%; }
+    #f-wall { position: absolute; left: 0; right: 0; top: 0; height: 690px; background: linear-gradient(180deg, #121812, #0c100c); }
+    #f-wall i { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,.035); }
+    #f-display { position: absolute; left: 450px; top: 96px; width: 1020px; height: 574px; border-radius: 18px; background: #050605; padding: 12px; box-shadow: 0 0 0 2px #1e241e, 0 40px 120px rgba(216,255,115,.07), 0 50px 90px rgba(0,0,0,.6); }
+    #f-display .scale { width: 1600px; height: 900px; transform: scale(.6225); transform-origin: 0 0; }
+    #f-table { position: absolute; left: -200px; right: -200px; top: 700px; height: 420px; background: linear-gradient(180deg, #2a2f28 0%, #171b16 40%, #0b0e0b 100%); clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%); }
+    #f-table::after { content: ""; position: absolute; left: 30%; right: 30%; top: 0; height: 3px; background: rgba(216,255,115,.18); }
+    #f-people { position: absolute; inset: 0; }
+    .p { position: absolute; }
+    .p .h { position: absolute; border-radius: 50%; background: #050605; box-shadow: inset 0 6px 0 rgba(220,235,200,.10); }
+    .p .s { position: absolute; border-radius: 120px 120px 30px 30px; background: #050605; box-shadow: inset 0 8px 0 rgba(220,235,200,.08); }
+    #f-label { position: absolute; left: 150px; top: 760px; color: #fff; }
+    .eb { font: 500 24px var(--mono); letter-spacing: .16em; color: var(--accent); }
+    #f-label h2 { margin-top: 12px; font-size: 92px; font-weight: 700; letter-spacing: -.065em; line-height: .95; }
+    #f-label h2 em, #f-label2 h2 em { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.03em; }
+    /* B: online, the real Agent Mode screenshot */
+    #f-online { position: absolute; inset: 0; background: var(--canvas); }
+    #f-online .dots { position: absolute; inset: 0; background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 20px 20px; }
+    #f-shotwrap { position: absolute; left: 600px; top: 120px; width: 1200px; height: 761px; border-radius: 26px; overflow: hidden; box-shadow: 0 0 0 1px var(--border), 0 30px 80px rgba(17,19,17,.16); }
+    #f-shot { position: absolute; inset: 0; transform-origin: 100% 0%; }
+    #f-shot img { width: 100%; height: 100%; display: block; }
+    #f-label2 { position: absolute; left: 150px; top: 250px; width: 400px; color: var(--ink); }
+    #f-label2 .eb { color: var(--olive); }
+    #f-label2 h2 { margin-top: 12px; font-size: 92px; font-weight: 700; letter-spacing: -.065em; line-height: .95; }
+    #f-label2 p { margin-top: 22px; font-size: 32px; line-height: 1.35; color: var(--muted); letter-spacing: -.02em; }
+    #f-plats { position: absolute; left: 150px; top: 640px; }
+    #f-plats div { display: flex; gap: 18px; margin-top: 16px; }
+    #f-plats img { width: 72px; height: 72px; padding: 12px; border: 1px solid var(--border); border-radius: 18px; background: #fff; }
+    #f-plats small { font: 500 19px var(--mono); letter-spacing: .14em; color: var(--muted); }
+  </style>
+  <div id="root" data-composition-id="floor" data-width="1920" data-height="1080">
+    <div id="f-room">
+      <div id="f-cam">
+        <div id="f-wall"><i style="left:300px"></i><i style="left:1620px"></i></div>
+        <div id="f-display">
+          <div class="scale">
+            <div class="live">
+              <div class="live-head"><span class="live-tag">● LIVE</span><strong>AI Presenter is presenting</strong><small>Slide 2 of 8</small></div>
+              <div class="live-body">
+                <div class="outline"><i>01</i><i class="on">02</i><i>03</i><i>04</i><i>05</i></div>
+                <div class="slide"><small>BOARD UPDATE</small><h3>Where approvals<br>move forward.</h3><p>Shorter review cycles, fewer bottlenecks.</p>
+                  <div class="bars"><i id="f-b1" style="height:70%"></i><i id="f-b2" style="height:54%"></i><i id="f-b3" style="height:38%"></i><i id="f-b4" style="height:24%"></i></div></div>
+                <div class="transcript"><div class="ai-mark"><span>AI</span><i id="f-w1" style="left:28px"></i><i id="f-w2" style="left:39px"></i><i id="f-w3" style="left:50px"></i></div><small>AI PRESENTER</small><p id="f-words"><span>Review</span> <span>time</span> <span>fell</span> <span>every</span> <span>quarter,</span> <span>so</span> <span>decisions</span> <span>now</span> <span>land</span> <span>faster…</span></p></div>
+              </div>
+              <div class="live-ctrl"><span>AI voice ready</span><b>Pause</b><b class="next">Next Slide →</b></div>
+            </div>
+          </div>
+        </div>
+        <div id="f-table"></div>
+        <div id="f-people">
+          <div class="p" style="left:300px; top:760px"><div class="h" style="left:46px;top:0;width:110px;height:120px"></div><div class="s" style="left:0;top:104px;width:204px;height:260px"></div></div>
+          <div class="p" style="left:580px; top:820px"><div class="h" style="left:48px;top:0;width:116px;height:126px"></div><div class="s" style="left:0;top:110px;width:212px;height:260px"></div></div>
+          <div class="p" style="left:1130px; top:820px"><div class="h" style="left:48px;top:0;width:116px;height:126px"></div><div class="s" style="left:0;top:110px;width:212px;height:260px"></div></div>
+          <div class="p" style="left:1420px; top:760px"><div class="h" style="left:46px;top:0;width:110px;height:120px"></div><div class="s" style="left:0;top:104px;width:204px;height:260px"></div></div>
+          <div class="p" style="left:-60px; top:860px"><div class="h" style="left:60px;top:0;width:150px;height:164px"></div><div class="s" style="left:0;top:140px;width:280px;height:300px"></div></div>
+          <div class="p" style="left:1700px; top:860px"><div class="h" style="left:60px;top:0;width:150px;height:164px"></div><div class="s" style="left:0;top:140px;width:280px;height:300px"></div></div>
+        </div>
+      </div>
+      <div id="f-label"><p class="eb">IN THE ROOM</p><h2>In-Person <em>Mode</em></h2></div>
+    </div>
+
+    <div id="f-online">
+      <div class="dots"></div>
+      <div id="f-shotwrap"><div id="f-shot"><img src="assets/img/agent-mode-presenting-live.jpg" alt="AI Presenter presenting live in an online meeting, Agent Mode"></div></div>
+      <div id="f-label2"><p class="eb">ONLINE</p><h2>Agent <em>Mode</em></h2><p>AI Presenter joins the call and presents for you.</p></div>
+      <div id="f-plats"><small>SUPPORTED IN AGENT MODE</small>
+        <div><img src="assets/img/google-meet-icon.png" alt="Google Meet"><img src="assets/img/zoom-icon.png" alt="Zoom"><img src="assets/img/microsoft-teams-icon.png" alt="Microsoft Teams"></div></div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      // arrive from the zoom-through: the room comes in slightly large and settles
+      tl.fromTo("#f-cam", { scale: 1.12 }, { scale: 1.0, duration: 0.7, ease: "expo.out" }, 0);
+      tl.to("#f-cam", { scale: 1.07, duration: 2.35, ease: "power2.inOut" }, 0.7);
+      [["#f-w1", 0.13, 2.2], ["#f-w2", 0.1, 2.9], ["#f-w3", 0.16, 1.8]].forEach(([s, d, k], i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: k, duration: d, ease: "sine.inOut", yoyo: true, repeat: 19 }, 0.1 + i * 0.04));
+      ["#f-b1", "#f-b2", "#f-b3", "#f-b4"].forEach((s, i) => tl.fromTo(s, { scaleY: 0.08 }, { scaleY: 1, duration: 0.5, ease: "expo.out" }, 0.4 + i * 0.15));
+      gsap.utils.toArray("#f-words span").forEach((w, i) => tl.fromTo(w, { opacity: 0.15 }, { opacity: 1, duration: 0.12 }, 0.4 + i * 0.16));
+      tl.fromTo("#f-label", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 0.35);
+      // the wall display becomes the world: it grows past the frame
+      tl.to("#f-label, #f-table, #f-people", { opacity: 0, duration: 0.25, ease: "power3.in" }, 3.05);
+      tl.to("#f-cam", { scale: 2.6, y: 280, duration: 0.6, ease: "power3.in" }, 3.1);
+      tl.fromTo("#f-online", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.inOut" }, 3.45);
+      tl.to("#f-room", { opacity: 0, duration: 0.01 }, 3.8);
+      tl.fromTo("#f-shotwrap", { scale: 1.25, opacity: 0.6 }, { scale: 1, opacity: 1, duration: 0.7, ease: "expo.out" }, 3.45);
+      tl.fromTo("#f-label2", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 3.75);
+      // punch in on the AI Presenter tile, then the supported platforms
+      tl.to("#f-shot", { scale: 1.75, duration: 0.6, ease: "power2.inOut" }, 4.7);
+      tl.fromTo("#f-plats", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 5.0);
+      tl.to("#f-shot", { scale: 1.0, duration: 0.5, ease: "power2.inOut" }, 6.25);
+      window.__timelines["floor"] = tl;
+    })();
+  </script>
+</template>

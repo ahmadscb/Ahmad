@@ -1,0 +1,116 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--canvas); font-family: var(--sans); color: var(--ink); }
+    #c-dots { position: absolute; inset: 0; background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 20px 20px; }
+    .pill { position: absolute; left: 150px; top: 112px; display: inline-flex; align-items: center; gap: 14px; padding: 16px 26px; border-radius: 999px; background: var(--ink); color: #fff; font: 500 26px var(--mono); letter-spacing: .14em; }
+    .pill i { width: 13px; height: 13px; border-radius: 50%; background: var(--accent); }
+    /* the session: a slide on the left, the room's tiles on the right */
+    #c-stage { position: absolute; left: 150px; top: 196px; width: 1620px; height: 660px; display: grid; grid-template-columns: 1080px 1fr; gap: 28px; }
+    .slidebox { position: relative; border-radius: 30px; background: #fff; border: 1px solid var(--border); box-shadow: 0 22px 70px rgba(17,19,17,.08); overflow: hidden; }
+    .sl { position: absolute; inset: 0; padding: 60px 64px; }
+    .sl small { font: 500 22px var(--mono); letter-spacing: .14em; color: var(--olive); }
+    .sl h3 { margin-top: 22px; font-size: 76px; line-height: .96; font-weight: 700; letter-spacing: -.065em; }
+    .sl h3 em { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.03em; }
+    .agenda { margin-top: 44px; display: grid; gap: 20px; }
+    .agenda div { display: flex; align-items: center; gap: 20px; font-size: 34px; font-weight: 500; letter-spacing: -.03em; }
+    .agenda span { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; border: 2px solid var(--border); font-size: 28px; color: var(--ink); }
+    .agenda span.done { background: var(--accent); border-color: var(--accent); }
+    .agenda b { font: 500 22px var(--mono); color: var(--muted); width: 90px; letter-spacing: .08em; }
+    .facts { position: absolute; left: 64px; bottom: 56px; display: flex; gap: 40px; }
+    .facts div { display: grid; gap: 6px; }
+    .facts b { font-size: 40px; font-weight: 700; letter-spacing: -.04em; }
+    .facts small { font: 500 18px var(--mono); color: var(--muted); letter-spacing: .12em; }
+    #c-building { position: absolute; right: 50px; top: 110px; width: 430px; height: 420px; }
+    #c-building path, #c-building line, #c-building rect { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+    .room { display: grid; grid-template-rows: auto 1fr; gap: 18px; }
+    .aitile { display: grid; grid-template-columns: 84px 1fr; gap: 20px; align-items: center; padding: 22px; border-radius: 24px; background: var(--live-bg); color: #fff; border: 2px solid var(--accent); }
+    .aitile small { font: 500 18px var(--mono); letter-spacing: .13em; color: var(--accent); }
+    .aitile p { margin-top: 8px; font-size: 25px; line-height: 1.35; color: #d7dcd7; }
+    .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tile { position: relative; border-radius: 20px; background: #1c221d; border: 1px solid #2b322c; display: grid; place-items: center; align-content: center; gap: 12px; }
+    .tile b { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 50%; background: #343b35; color: #fff; font-size: 30px; font-weight: 600; }
+    .tile span { color: #cdd2cd; font-size: 24px; }
+    .swap { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 14px; }
+    .tiles-wrap { position: relative; }
+  </style>
+  <div id="root" data-composition-id="cases" data-width="1920" data-height="1080">
+    <div id="c-dots"></div>
+    <div class="pill" id="c-pill1"><i></i>HR TRAINING &amp; ONBOARDING</div>
+    <div class="pill" id="c-pill2"><i></i>REAL ESTATE &amp; INVESTOR PITCHES</div>
+    <div id="c-stage">
+      <div class="slidebox">
+        <div class="sl" id="c-hr">
+          <small>WELCOME TO NORTHWIND</small>
+          <h3>Your first week, <em>explained.</em></h3>
+          <div class="agenda">
+            <div><span id="c-k1">✓</span><b>DAY 1</b>Accounts and equipment</div>
+            <div><span id="c-k2">✓</span><b>DAY 2</b>Meet your team</div>
+            <div><span id="c-k3">✓</span><b>DAY 3</b>Policies and benefits</div>
+          </div>
+        </div>
+        <div class="sl" id="c-re">
+          <small>INVESTOR PRESENTATION</small>
+          <h3>Harbour View<br><em>Residences</em></h3>
+          <svg id="c-building" viewBox="0 0 430 420" aria-hidden="true">
+            <line x1="10" y1="410" x2="420" y2="410"/>
+            <path d="M60 410 V70 H250 V410"/><path d="M250 410 V170 H380 V410"/>
+            <path d="M60 70 L155 20 L250 70"/>
+            <rect x="92" y="110" width="50" height="60"/><rect x="168" y="110" width="50" height="60"/>
+            <rect x="92" y="200" width="50" height="60"/><rect x="168" y="200" width="50" height="60"/>
+            <rect x="92" y="290" width="50" height="60"/><rect x="168" y="290" width="50" height="60"/>
+            <rect x="280" y="200" width="70" height="50"/><rect x="280" y="280" width="70" height="50"/>
+            <path d="M130 410 V370 H180 V410"/>
+          </svg>
+          <div class="facts"><div><b>42</b><small>RESIDENCES</small></div><div><b>Marina</b><small>DISTRICT</small></div><div><b>Q4 2027</b><small>COMPLETION</small></div></div>
+        </div>
+      </div>
+      <div class="room">
+        <div class="aitile">
+          <div class="ai-mark"><span>AI</span><i id="c-w1" style="left:28px"></i><i id="c-w2" style="left:39px"></i><i id="c-w3" style="left:50px"></i></div>
+          <div><small>AI PRESENTER · LIVE</small><p id="c-t1">Day two is all about meeting your team.</p><p id="c-t2" style="margin-top:-34px">Every residence opens onto the marina.</p></div>
+        </div>
+        <div class="tiles-wrap">
+          <div class="swap" id="c-aud1">
+            <div class="tile"><b>AK</b><span>Aisha · new hire</span></div><div class="tile"><b>OS</b><span>Omar · new hire</span></div>
+            <div class="tile"><b>LM</b><span>Lena · new hire</span></div><div class="tile"><b>RP</b><span>Raj · new hire</span></div>
+          </div>
+          <div class="swap" id="c-aud2">
+            <div class="tile"><b>DH</b><span>Daniel · investor</span></div><div class="tile"><b>MC</b><span>Mei · investor</span></div>
+            <div class="tile"><b>KA</b><span>Karim · investor</span></div><div class="tile"><b>SR</b><span>Sofia · investor</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#c-stage", { opacity: 0, y: 60, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 0);
+      tl.fromTo("#c-pill1", { opacity: 0, clipPath: "inset(0 100% 0 0 round 999px)" }, { opacity: 1, clipPath: "inset(0 0% 0 0 round 999px)", duration: 0.5, ease: "power3.out" }, 0.15);
+      [["#c-w1", 0.13, 2.2], ["#c-w2", 0.1, 2.9], ["#c-w3", 0.16, 1.8]].forEach(([s, d, k], i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: k, duration: d, ease: "sine.inOut", yoyo: true, repeat: 17 }, 0.2 + i * 0.04));
+      tl.set("#c-re, #c-aud2, #c-pill2, #c-t2", { opacity: 0 }, 0);
+      // the agenda checks off as the AI presents it
+      ["#c-k1", "#c-k2", "#c-k3"].forEach((s, i) => tl.fromTo(s, { backgroundColor: "rgba(216,255,115,0)", borderColor: "#dedfdb", color: "rgba(17,19,17,0)" },
+        { backgroundColor: "#d8ff73", borderColor: "#d8ff73", color: "#111311", duration: 0.2, ease: "power2.out" }, 0.8 + i * 0.55));
+      // whip to real estate: the slide swaps on the same stage
+      tl.to("#c-hr", { x: -220, opacity: 0, filter: "blur(14px)", duration: 0.22, ease: "power3.in" }, 2.85);
+      tl.fromTo("#c-re", { x: 260, opacity: 0, filter: "blur(14px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.35, ease: "expo.out" }, 3.05);
+      tl.to("#c-pill1", { opacity: 0, duration: 0.15 }, 2.85);
+      tl.fromTo("#c-pill2", { opacity: 0, clipPath: "inset(0 100% 0 0 round 999px)" }, { opacity: 1, clipPath: "inset(0 0% 0 0 round 999px)", duration: 0.5, ease: "power3.out" }, 3.05);
+      tl.to("#c-aud1", { opacity: 0, duration: 0.2 }, 2.9);
+      tl.fromTo("#c-aud2", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.4, ease: "expo.out" }, 3.1);
+      tl.to("#c-t1", { opacity: 0, duration: 0.15 }, 2.9);
+      tl.fromTo("#c-t2", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 3.3);
+      // the building elevation draws in as it is described
+      gsap.utils.toArray("#c-building > *").forEach((el, i) => {
+        const len = el.getTotalLength ? el.getTotalLength() : 400;
+        tl.fromTo(el, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 3.3 + i * 0.07);
+      });
+      tl.fromTo("#c-re .facts > div", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.25, stagger: 0.1, ease: "power4.out" }, 4.1);
+      tl.to("#c-stage", { x: -120, opacity: 0, filter: "blur(12px)", duration: 0.25, ease: "power3.in" }, 5.75);
+      tl.to("#c-pill2", { opacity: 0, duration: 0.2 }, 5.75);
+      window.__timelines["cases"] = tl;
+    })();
+  </script>
+</template>

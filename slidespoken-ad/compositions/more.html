@@ -1,0 +1,99 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--surface-sage); font-family: var(--sans); color: var(--ink); }
+    .half { position: absolute; top: 120px; width: 800px; height: 730px; }
+    #m-left { left: 150px; } #m-right { left: 970px; }
+    .pill { display: inline-flex; align-items: center; gap: 14px; padding: 14px 24px; border-radius: 999px; background: var(--ink); color: #fff; font: 500 26px var(--mono); letter-spacing: .14em; }
+    .pill i { width: 13px; height: 13px; border-radius: 50%; background: var(--accent); }
+    .panel { position: absolute; top: 86px; left: 0; right: 0; bottom: 0; border-radius: 30px; background: #fff; border: 1px solid var(--border); box-shadow: 0 22px 70px rgba(17,19,17,.08); overflow: hidden; padding: 48px 50px; }
+    .panel small { font: 500 21px var(--mono); letter-spacing: .14em; color: var(--olive); }
+    .panel h3 { margin-top: 18px; font-size: 64px; line-height: .96; font-weight: 700; letter-spacing: -.065em; }
+    .panel h3 em { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.03em; }
+    .presenter { position: absolute; left: 36px; bottom: 32px; display: flex; align-items: center; gap: 16px; padding: 12px 22px 12px 12px; border-radius: 22px; background: var(--live-bg); color: #fff; font-size: 24px; font-weight: 600; }
+    .presenter .ai-mark { width: 64px; height: 64px; border-radius: 18px; font-size: 16px; }
+    .presenter .ai-mark span { top: 12px; }
+    .presenter .ai-mark i { bottom: 13px; width: 4px; height: 12px; }
+    /* sales: a product window with two callouts */
+    #m-app { position: absolute; left: 50px; top: 270px; width: 470px; height: 300px; border-radius: 18px; border: 1px solid var(--border); background: var(--canvas); overflow: hidden; }
+    #m-app .side { position: absolute; left: 0; top: 0; bottom: 0; width: 86px; background: var(--ink); }
+    #m-app .side i { display: block; margin: 22px auto 0; width: 36px; height: 8px; border-radius: 4px; background: #3c433c; }
+    #m-app .side i:first-child { background: var(--accent); }
+    #m-app svg { position: absolute; left: 116px; top: 40px; width: 330px; height: 220px; }
+    .callout { position: absolute; display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 16px; background: #fff; border: 1px solid var(--border); box-shadow: 0 14px 40px rgba(17,19,17,.1); font-size: 26px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; }
+    .callout span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--accent); font-size: 20px; }
+    /* education: a lesson diagram */
+    #m-dia { position: absolute; left: 50px; top: 236px; width: 620px; height: 258px; }
+    #m-dia .lb { font: 600 26px var(--sans); fill: var(--ink); letter-spacing: -.02em; }
+    #m-dia .st { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    #m-ask { position: absolute; right: 30px; bottom: 30px; width: 360px; padding: 16px 20px; border-radius: 20px; background: #fff; border: 1px solid var(--border); box-shadow: 0 20px 50px rgba(17,19,17,.14); }
+    #m-ask small { font: 500 17px var(--mono); letter-spacing: .13em; color: var(--olive); }
+    #m-ask p { margin-top: 6px; font-size: 28px; font-weight: 600; letter-spacing: -.03em; }
+    #m-divider { position: absolute; left: 959px; top: 140px; width: 2px; height: 700px; background: var(--ink); transform-origin: 50% 0; }
+  </style>
+  <div id="root" data-composition-id="more" data-width="1920" data-height="1080">
+    <div class="half" id="m-left">
+      <div class="pill" id="m-p1"><i></i>SALES DEMOS</div>
+      <div class="panel" id="m-s">
+        <small>PRODUCT DEMO</small>
+        <h3>Meet Flow, <em>live.</em></h3>
+        <div id="m-app">
+          <div class="side"><i></i><i></i><i></i><i></i></div>
+          <svg viewBox="0 0 330 220" aria-hidden="true">
+            <line x1="0" y1="210" x2="330" y2="210" stroke="#dedfdb" stroke-width="2"/>
+            <path id="m-line" d="M0 190 C60 170 90 150 130 120 S220 70 330 30" fill="none" stroke="#111311" stroke-width="5" stroke-linecap="round"/>
+            <circle id="m-dot" cx="330" cy="30" r="10" fill="#d8ff73" stroke="#111311" stroke-width="3"/>
+          </svg>
+        </div>
+        <div class="callout" id="m-c1" style="left:450px; top:290px"><span>✓</span>Approvals in one click</div>
+        <div class="callout" id="m-c2" style="left:430px; top:420px"><span>↗</span>Live team dashboard</div>
+        <div class="presenter"><div class="ai-mark"><span>AI</span><i id="m-w1" style="left:21px"></i><i id="m-w2" style="left:30px"></i><i id="m-w3" style="left:39px"></i></div>AI Presenter · presenting</div>
+      </div>
+    </div>
+    <div id="m-divider"></div>
+    <div class="half" id="m-right">
+      <div class="pill" id="m-p2"><i></i>EDUCATION</div>
+      <div class="panel" id="m-e">
+        <small>BIOLOGY · LESSON 4</small>
+        <h3>Photosynthesis, in <em>three steps.</em></h3>
+        <svg id="m-dia" viewBox="0 0 720 300" aria-hidden="true">
+          <circle class="st" cx="70" cy="110" r="44" style="fill:#d8ff73"/>
+          <path class="st" d="M70 40 V20 M70 200 V180 M0 110 H-14 M140 110 H154 M20 60 L8 48 M120 160 L132 172 M120 60 L132 48 M20 160 L8 172"/>
+          <path class="st m-arrow" d="M170 110 H250 M236 96 L252 110 L236 124"/>
+          <path class="st" d="M290 160 C300 70 380 40 450 50 C440 130 380 175 290 160 Z M300 152 C340 120 380 90 432 62"/>
+          <path class="st m-arrow" d="M480 110 H560 M546 96 L562 110 L546 124"/>
+          <rect class="st" x="590" y="70" width="120" height="80" rx="16"/>
+          <text class="lb" x="70" y="250" text-anchor="middle">Light</text>
+          <text class="lb" x="370" y="250" text-anchor="middle">Leaf</text>
+          <text class="lb" x="650" y="250" text-anchor="middle">Sugar</text>
+        </svg>
+        <div id="m-ask"><small>STUDENT</small><p>Why does the leaf need light?</p></div>
+        <div class="presenter"><div class="ai-mark"><span>AI</span><i id="m-w4" style="left:21px"></i><i id="m-w5" style="left:30px"></i><i id="m-w6" style="left:39px"></i></div>AI Presenter</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#m-divider", { scaleY: 0 }, { scaleY: 1, duration: 0.5, ease: "power3.out" }, 0);
+      tl.fromTo("#m-left", { x: -140, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 0.05);
+      tl.fromTo("#m-right", { x: 140, opacity: 0, filter: "blur(10px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 0.2);
+      tl.to("#m-divider", { opacity: 0, duration: 0.3 }, 0.7);
+      ["#m-w1", "#m-w2", "#m-w3", "#m-w4", "#m-w5", "#m-w6"].forEach((s, i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: [2.2, 2.9, 1.8][i % 3], duration: [0.13, 0.1, 0.16][i % 3], ease: "sine.inOut", yoyo: true, repeat: 15 }, 0.3 + i * 0.03));
+      // sales: the metric line draws, then two features are called out
+      const len = 420;
+      tl.fromTo("#m-line", { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, 0.6);
+      tl.fromTo("#m-dot", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.3, ease: "back.out(1.6)" }, 1.4);
+      tl.fromTo("#m-c1", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: "expo.out" }, 1.2);
+      tl.fromTo("#m-c2", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.4, ease: "expo.out" }, 1.55);
+      // focus moves to the lesson
+      tl.to("#m-left", { scale: 0.95, opacity: 0.55, duration: 0.6, ease: "power2.inOut" }, 2.7);
+      tl.fromTo("#m-right", { scale: 1 }, { scale: 1.04, duration: 0.6, ease: "power2.inOut" }, 2.7);
+      gsap.utils.toArray("#m-dia .st, #m-dia .lb").forEach((el, i) =>
+        tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0.8 + i * 0.12));
+      tl.fromTo("#m-ask", { opacity: 0, scale: 0.86, transformOrigin: "100% 100%" }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.4)" }, 3.6);
+      tl.to("#m-left, #m-right", { opacity: 0, filter: "blur(12px)", duration: 0.25, ease: "power3.in" }, 5.75);
+      window.__timelines["more"] = tl;
+    })();
+  </script>
+</template>

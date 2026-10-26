@@ -1,0 +1,53 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--live-bg); font-family: var(--sans); }
+    #b-ui { position: absolute; left: 160px; top: 90px; width: 1600px; height: 900px; }
+    #b-q { position: absolute; left: 260px; top: 330px; width: 1400px; }
+    #b-q small { font: 500 30px var(--mono); letter-spacing: .14em; color: var(--accent); }
+    #b-q p { margin-top: 18px; color: #fff; font-size: 150px; line-height: .92; font-weight: 700; letter-spacing: -.07em; }
+    #b-q p span { display: inline-block; }
+    #b-a { position: absolute; left: 260px; top: 640px; display: grid; grid-template-columns: 84px 1fr; gap: 24px; align-items: center; width: 1300px; }
+    #b-a p { color: #d7dcd7; font-size: 44px; font-weight: 500; letter-spacing: -.03em; }
+    #b-shade { position: absolute; inset: 0; background: rgba(16,21,16,.82); }
+    #b-end { position: absolute; left: 0; right: 0; top: 330px; display: flex; flex-direction: column; align-items: center; gap: 44px; }
+    #b-end h2 { color: #fff; font-size: 120px; font-weight: 700; letter-spacing: -.07em; line-height: 1; }
+    #b-end h2 em { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.03em; }
+    #b-end img { width: 560px; }
+  </style>
+  <div id="root" data-composition-id="hookb" data-width="1920" data-height="1080">
+    <div id="b-ui">
+      <div class="live">
+        <div class="live-head"><span class="live-tag">● LIVE</span><strong>AI Presenter is presenting</strong><small>Slide 3 of 8</small></div>
+        <div class="live-body"><div class="outline"><i>01</i><i>02</i><i class="on">03</i><i>04</i><i>05</i></div>
+          <div class="slide"><small>EXECUTIVE REVIEW</small><h3>Growth accelerated<br>across key markets.</h3><p>Revenue +25% YoY</p>
+            <div class="bars"><i style="height:30%"></i><i style="height:48%"></i><i style="height:62%"></i><i style="height:82%"></i></div></div>
+          <div class="transcript"><small>AI PRESENTER</small></div></div>
+        <div class="live-ctrl"><span>AI voice ready</span><b>Pause</b><b class="next">Next Slide →</b></div>
+      </div>
+    </div>
+    <div id="b-shade"></div>
+    <div id="b-q"><small>AUDIENCE ASKS</small><p><span>“Can</span> <span>you</span> <span>explain</span> <span>this</span> <span>chart?”</span></p></div>
+    <div id="b-a"><div class="ai-mark"><span>AI</span><i id="b-w1" style="left:28px"></i><i id="b-w2" style="left:39px"></i><i id="b-w3" style="left:50px"></i></div>
+      <p id="b-ans"><span>Each</span> <span>bar</span> <span>is</span> <span>a</span> <span>quarter.</span> <span>Q4</span> <span>is</span> <span>the</span> <span>highest…</span></p></div>
+    <div id="b-end"><h2>Your slides can <em>answer back.</em></h2><img src="assets/img/logo-dark.png" alt="SlideSpoken"></div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      // f0 already holds the question so the first frame works as a thumbnail
+      gsap.utils.toArray("#b-q p span").forEach((w, i) => tl.fromTo(w, { opacity: 0.35 }, { opacity: 1, duration: 0.12 }, 0.05 + i * 0.08));
+      tl.fromTo("#b-a", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.75);
+      [["#b-w1", 0.13, 2.2], ["#b-w2", 0.1, 2.9], ["#b-w3", 0.16, 1.8]].forEach(([s, d, k], i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: k, duration: d, ease: "sine.inOut", yoyo: true, repeat: 13 }, 0.8 + i * 0.04));
+      gsap.utils.toArray("#b-ans span").forEach((w, i) => tl.fromTo(w, { opacity: 0.12 }, { opacity: 1, duration: 0.1 }, 0.95 + i * 0.12));
+      // reveal: the shade lifts on the live slide, the question gives way to the claim
+      tl.to("#b-q, #b-a", { opacity: 0, filter: "blur(10px)", duration: 0.25, ease: "power3.in" }, 2.75);
+      tl.to("#b-shade", { backgroundColor: "rgba(16,21,16,0.97)", duration: 0.3 }, 2.75);
+      tl.to("#b-ui", { filter: "blur(12px)", duration: 0.3 }, 2.75);
+      tl.fromTo("#b-end h2", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 3.0);
+      tl.fromTo("#b-end img", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "power3.out" }, 3.3);
+      tl.set("#b-end", { opacity: 0 }, 0); tl.set("#b-end", { opacity: 1 }, 2.95);
+      window.__timelines["hookb"] = tl;
+    })();
+  </script>
+</template>

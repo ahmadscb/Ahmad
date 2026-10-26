@@ -1,0 +1,101 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--canvas); font-family: var(--sans); color: var(--ink); }
+    #q-dots { position: absolute; inset: 0; background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 20px 20px; }
+    #q-label { position: absolute; left: 150px; top: 112px; display: inline-flex; align-items: center; gap: 14px; padding: 16px 26px; border-radius: 999px; background: var(--ink); color: #fff; font: 500 26px var(--mono); letter-spacing: .14em; }
+    #q-label i { width: 13px; height: 13px; border-radius: 50%; background: var(--accent); }
+    #q-ui { position: absolute; left: 150px; top: 196px; width: 1600px; height: 900px; transform-origin: 0 0; }
+    #q-ui .live { box-shadow: 0 30px 90px rgba(17,19,17,.18); }
+    .st2 { position: absolute; }
+    #q-paused { color: var(--accent); }
+    #q-col { position: absolute; left: 1150px; top: 196px; width: 620px; }
+    #q-status { display: inline-flex; align-items: center; gap: 12px; padding: 14px 20px; border-radius: 999px; background: var(--ink); color: #fff; font: 500 19px var(--mono); letter-spacing: .1em; }
+    #q-status i { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+    .bub { margin-top: 18px; padding: 24px 28px; border: 1px solid var(--border); border-radius: 24px; background: #fff; box-shadow: 0 22px 60px rgba(17,19,17,.14); }
+    .bub small { font: 500 18px var(--mono); letter-spacing: .13em; color: var(--olive); }
+    .bub p { margin-top: 10px; font-size: 34px; line-height: 1.3; font-weight: 600; letter-spacing: -.03em; }
+    #q-ai { display: grid; grid-template-columns: 70px 1fr; gap: 18px; background: linear-gradient(145deg, #fff, var(--accent-soft)); border-color: #d6e2bb; }
+    #q-ai p { font-size: 30px; font-weight: 500; }
+    #q-ai .ai-mark { width: 70px; height: 70px; border-radius: 20px; font-size: 17px; }
+    #q-ai .ai-mark span { top: 13px; }
+    #q-ai .ai-mark i { bottom: 14px; width: 4px; height: 12px; }
+    #q-listen { display: flex; align-items: center; gap: 16px; margin-top: 20px; font: 500 19px var(--mono); letter-spacing: .13em; color: var(--olive); }
+    #q-listen div { display: flex; align-items: center; gap: 5px; height: 30px; }
+    #q-listen i { width: 5px; height: 10px; border-radius: 3px; background: var(--olive); }
+    #q-flow { position: absolute; left: 150px; top: 820px; display: flex; align-items: center; gap: 12px; font: 500 21px var(--mono); letter-spacing: .06em; }
+    #q-flow span { padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--muted); }
+    #q-flow span.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+    #q-flow em { font-style: normal; color: var(--muted); }
+  </style>
+  <div id="root" data-composition-id="qa" data-width="1920" data-height="1080">
+    <div id="q-dots"></div>
+    <div id="q-label"><i></i>LIVE Q&amp;A — BUILT IN</div>
+    <div id="q-ui">
+      <div class="live">
+        <div class="live-head"><span class="live-tag">● LIVE</span><strong style="position:relative; width: 520px; height: 34px"><span class="st2" id="q-s1">AI Presenter is presenting</span><span class="st2" id="q-paused">Paused for Q&amp;A</span></strong><small id="q-slide">Slide 3 of 8</small></div>
+        <div class="live-body">
+          <div class="outline"><i>01</i><i>02</i><i id="q-o3" class="on">03</i><i id="q-o4">04</i><i>05</i></div>
+          <div class="slide" style="position:relative">
+            <div id="q-sA"><small>EXECUTIVE REVIEW</small><h3>Growth accelerated<br>across key markets.</h3><p>Revenue +25% YoY</p>
+              <div class="bars"><i id="q-b1" style="height:30%"></i><i id="q-b2" style="height:48%"></i><i id="q-b3" style="height:62%"></i><i id="q-b4" style="height:82%"></i>
+                <b style="left:8px">Q1</b><b style="left:70px">Q2</b><b style="left:132px">Q3</b><b style="left:194px">Q4</b></div></div>
+            <div id="q-sB" style="position:absolute; inset:64px 60px"><small>NEXT · SLIDE 4</small><h3>2028 priorities,<br>in focus.</h3><p>Three bets for the year ahead</p></div>
+          </div>
+          <div class="transcript"><div class="ai-mark"><span>AI</span><i id="q-w1" style="left:28px"></i><i id="q-w2" style="left:39px"></i><i id="q-w3" style="left:50px"></i></div><small>AI PRESENTER</small><p>Revenue increased 25% year over year, driven primarily by expansion…</p></div>
+        </div>
+        <div class="live-ctrl"><span>AI voice ready</span><b>Pause</b><b class="next" id="q-next">Next Slide →</b></div>
+      </div>
+    </div>
+    <div id="q-col">
+      <div id="q-status"><i></i><span id="q-st-a">QUESTION DETECTED · PRESENTATION PAUSED</span></div>
+      <div class="bub" id="q-human"><small>AUDIENCE · PRIYA</small><p>Can you explain this chart?</p></div>
+      <div id="q-listen"><span>AI LISTENING</span><div><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="bub" id="q-ai"><div class="ai-mark"><span>AI</span><i id="q-w4" style="left:22px"></i><i id="q-w5" style="left:31px"></i><i id="q-w6" style="left:40px"></i></div>
+        <div><small>AI PRESENTER</small><p id="q-ans"><span>Each</span> <span>bar</span> <span>is</span> <span>a</span> <span>quarter.</span> <span>Q4</span> <span>is</span> <span>highest,</span> <span>led</span> <span>by</span> <span>new</span> <span>enterprise</span> <span>customers.</span></p></div></div>
+    </div>
+    <div id="q-flow"><span id="q-f1">Question detected</span><em>→</em><span id="q-f2">AI listening</span><em>→</em><span id="q-f3">Answering</span><em>→</em><span id="q-f4">Resuming presentation ✓</span></div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      // arrive: the live UI comes in from the previous scene's direction, at 0.6x so the Q&A column has room
+      tl.fromTo("#q-ui", { scale: 0.66, opacity: 0, x: 80 }, { scale: 0.6, opacity: 1, x: 0, duration: 0.6, ease: "expo.out" }, 0);
+      tl.fromTo("#q-label", { opacity: 0, clipPath: "inset(0 100% 0 0 round 999px)" }, { opacity: 1, clipPath: "inset(0 0% 0 0 round 999px)", duration: 0.5, ease: "power3.out" }, 0.1);
+      tl.set("#q-paused, #q-sB", { opacity: 0 }, 0);
+      [["#q-w1", 0.13, 2.2], ["#q-w2", 0.1, 2.9], ["#q-w3", 0.16, 1.8]].forEach(([s, d, k], i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: k, duration: d, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0.05 + i * 0.03));
+      // question detected: the presentation pauses
+      tl.fromTo("#q-status", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.4);
+      tl.to("#q-s1", { opacity: 0, duration: 0.15 }, 0.45); tl.to("#q-paused", { opacity: 1, duration: 0.2 }, 0.55);
+      tl.to("#q-next", { opacity: 0.35, duration: 0.2 }, 0.7);
+      tl.fromTo("#q-f1", { backgroundColor: "#ffffff", color: "#666a66" }, { backgroundColor: "#111311", color: "#ffffff", duration: 0.2 }, 0.6);
+      tl.fromTo("#q-flow", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "expo.out" }, 0.5);
+      tl.fromTo("#q-human", { opacity: 0, scale: 0.86, transformOrigin: "0% 0%" }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.4)" }, 0.65);
+      // AI listening
+      tl.fromTo("#q-listen", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 1.15);
+      gsap.utils.toArray("#q-listen i").forEach((b, i) => tl.fromTo(b, { scaleY: 0.5 }, { scaleY: 1.6 + (i % 3) * 0.7, duration: 0.12 + (i % 4) * 0.03, yoyo: true, repeat: 3, ease: "sine.inOut" }, 1.15 + i * 0.02));
+      tl.fromTo("#q-f2", { backgroundColor: "#ffffff", color: "#666a66" }, { backgroundColor: "#111311", color: "#ffffff", duration: 0.2 }, 1.15);
+      // answering: words arrive and the Q4 bar is singled out
+      tl.fromTo("#q-ai", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: "expo.out" }, 1.6);
+      tl.to("#q-listen", { opacity: 0.35, duration: 0.2 }, 1.6);
+      tl.fromTo("#q-f3", { backgroundColor: "#ffffff", color: "#666a66" }, { backgroundColor: "#111311", color: "#ffffff", duration: 0.2 }, 1.6);
+      gsap.utils.toArray("#q-ans span").forEach((w, i) => tl.fromTo(w, { opacity: 0.12 }, { opacity: 1, duration: 0.1 }, 1.75 + i * 0.075));
+      [["#q-w4", 0.13, 2.2], ["#q-w5", 0.1, 2.9], ["#q-w6", 0.16, 1.8]].forEach(([s, d, k], i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: k, duration: d, ease: "sine.inOut", yoyo: true, repeat: 11 }, 1.7 + i * 0.03));
+      tl.to("#q-b1, #q-b2, #q-b3", { opacity: 0.28, duration: 0.3 }, 2.15);
+      tl.fromTo("#q-b4", { scaleX: 1 }, { scaleX: 1.18, duration: 0.3, ease: "power2.out", transformOrigin: "50% 100%" }, 2.15);
+      // resuming: the flow completes and the deck moves on to slide 4
+      tl.fromTo("#q-f4", { backgroundColor: "#ffffff", color: "#666a66" }, { backgroundColor: "#d8ff73", color: "#111311", borderColor: "#d8ff73", duration: 0.2 }, 4.6);
+      tl.to("#q-col", { opacity: 0, x: 40, filter: "blur(8px)", duration: 0.3, ease: "power3.in" }, 4.85);
+      tl.to("#q-paused", { opacity: 0, duration: 0.15 }, 4.85); tl.to("#q-s1", { opacity: 1, duration: 0.2 }, 4.95);
+      tl.to("#q-next", { opacity: 1, duration: 0.2 }, 4.85);
+      tl.to("#q-ui", { scale: 0.74, x: 30, y: 0, duration: 0.6, ease: "power2.inOut" }, 4.9);
+      tl.to("#q-flow", { opacity: 0, y: 16, duration: 0.3, ease: "power3.in" }, 4.9);
+      tl.to("#q-sA", { opacity: 0, x: -60, filter: "blur(10px)", duration: 0.22, ease: "power3.in" }, 5.05);
+      tl.fromTo("#q-sB", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.35, ease: "expo.out" }, 5.22);
+      tl.set("#q-o3", { className: "" }, 5.15); tl.set("#q-o4", { className: "on" }, 5.15);
+      tl.set("#q-slide", { textContent: "Slide 4 of 8" }, 5.15);
+      window.__timelines["qa"] = tl;
+    })();
+  </script>
+</template>

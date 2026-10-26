@@ -1,0 +1,41 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--canvas); font-family: var(--sans); }
+    #e-flood { position: absolute; inset: 0; background: var(--dark); }
+    #e-stack { position: absolute; left: 0; right: 0; top: 200px; display: flex; flex-direction: column; align-items: center; }
+    #e-logo { width: 760px; }
+    #e-logo img { width: 100%; display: block; }
+    #e-title { margin-top: 70px; color: #fff; font-size: 116px; font-weight: 700; letter-spacing: -.07em; line-height: 1; white-space: nowrap; }
+    #e-title span { display: inline-block; }
+    #e-title em { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.03em; }
+    #e-row { margin-top: 64px; display: flex; align-items: center; gap: 44px; }
+    #e-cta { display: inline-flex; align-items: center; gap: 14px; padding: 26px 46px; border-radius: 18px; background: var(--accent); color: var(--ink); font-size: 44px; font-weight: 700; letter-spacing: -.03em; }
+    #e-url { color: #fff; font-size: 52px; font-weight: 600; letter-spacing: -.03em; }
+    #e-cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; }
+  </style>
+  <div id="root" data-composition-id="endcard" data-width="1920" data-height="1080">
+    <div id="e-flood"></div>
+    <div id="e-stack">
+      <div id="e-logo"><img src="assets/img/logo-dark.png" alt="SlideSpoken, with AI Presenter"></div>
+      <h2 id="e-title"><span>Your</span> <span>slides.</span> <span>Now</span> <span><em>presenting.</em></span></h2>
+      <div id="e-row"><span id="e-cta">Start free →</span><span id="e-url">slidespoken.com</span></div>
+    </div>
+    <svg id="e-cursor" viewBox="0 0 64 64" aria-hidden="true"><path d="M10 6 L10 50 L22 39 L30 58 L38 54 L30 36 L46 36 Z" fill="#ffffff" stroke="#111311" stroke-width="3" stroke-linejoin="round"/></svg>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#e-flood", { clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)", duration: 0.45, ease: "power2.inOut" }, 0);
+      tl.fromTo("#e-logo", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "power3.out" }, 0.18);
+      gsap.utils.toArray("#e-title > span").forEach((w, i) =>
+        tl.fromTo(w, { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "power4.out" }, 1.15 + i * 0.12));
+      tl.fromTo("#e-cta", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.4)" }, 1.95);
+      tl.fromTo("#e-url", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power4.out" }, 2.15);
+      // the cursor presses Start free, then leaves the frame clear
+      tl.fromTo("#e-cursor", { x: 1400, y: 1120 }, { x: 860, y: 800, duration: 0.7, ease: "power3.out" }, 2.5);
+      tl.to("#e-cta", { scale: 0.94, duration: 0.09, yoyo: true, repeat: 1, ease: "power2.out" }, 3.25);
+      tl.to("#e-cursor", { x: 1500, y: 1200, duration: 0.5, ease: "power3.in" }, 3.8);
+      window.__timelines["endcard"] = tl;
+    })();
+  </script>
+</template>

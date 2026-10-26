@@ -1,0 +1,29 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; pointer-events: none; font-family: var(--sans); }
+    .cap { position: absolute; left: 0; right: 0; top: 904px; display: flex; justify-content: center; }
+    .cap p { padding: 12px 26px; border-radius: 14px; background: rgba(17,19,17,.84); color: #fff; font-size: 34px; font-weight: 500; letter-spacing: -.015em; line-height: 1.25; white-space: nowrap; }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div class="cap clip" id="cap-01" data-start="0.3" data-duration="1.8"><p>What if your slides could present themselves…</p></div>
+    <div class="cap clip" id="cap-02" data-start="2.1" data-duration="1.75"><p>…and answer questions?</p></div>
+    <div class="cap clip" id="cap-03" data-start="4.2" data-duration="2.3"><p>Meet SlideSpoken. Upload your deck—</p></div>
+    <div class="cap clip" id="cap-04" data-start="6.5" data-duration="2.3"><p>—or create one with AI.</p></div>
+    <div class="cap clip" id="cap-05" data-start="9.2" data-duration="3.2"><p>An AI Presenter delivers it live—in the room,</p></div>
+    <div class="cap clip" id="cap-06" data-start="12.4" data-duration="3.4"><p>or on Google Meet, Zoom and Teams.</p></div>
+    <div class="cap clip" id="cap-07" data-start="16.2" data-duration="2.75"><p>HR teams train new hires.</p></div>
+    <div class="cap clip" id="cap-08" data-start="18.95" data-duration="2.85"><p>Real estate agents pitch properties to investors.</p></div>
+    <div class="cap clip" id="cap-09" data-start="22.2" data-duration="2.8"><p>Sales teams run product demos.</p></div>
+    <div class="cap clip" id="cap-10" data-start="25.0" data-duration="2.8"><p>Educators turn lessons into conversations.</p></div>
+    <div class="cap clip" id="cap-11" data-start="28.2" data-duration="2.6"><p>Ask a question. SlideSpoken answers,</p></div>
+    <div class="cap clip" id="cap-12" data-start="30.8" data-duration="3.0"><p>then picks up right where it left off.</p></div>
+    <div class="cap clip" id="cap-13" data-start="34.2" data-duration="2.2"><p>Stop just sharing slides. Let them speak.</p></div>
+    <div class="cap clip" id="cap-14" data-start="36.4" data-duration="3.5"><p>Start free at SlideSpoken.com.</p></div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,78 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: var(--canvas); font-family: var(--sans); }
+    #h-dots { position: absolute; inset: 0; background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 20px 20px; }
+    #h-flood { position: absolute; inset: 0; background: var(--live-bg); }
+    #h-cam { position: absolute; left: 160px; top: 90px; width: 1600px; height: 900px; }
+    #h-title { position: absolute; left: 150px; top: 250px; width: 680px; font-size: 112px; line-height: .94; font-weight: 700; letter-spacing: -.07em; color: var(--ink); }
+    #h-title em { font-family: var(--serif); font-weight: 400; font-style: italic; letter-spacing: -.04em; }
+    #h-title span { display: inline-block; }
+    #h-sub { position: absolute; left: 154px; top: 640px; font-size: 40px; font-weight: 500; letter-spacing: -.03em; color: var(--muted); }
+    #h-sub em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--ink); }
+    #h-q { position: absolute; left: 880px; top: 560px; width: 560px; }
+    .q-status { display: inline-flex; align-items: center; gap: 12px; padding: 12px 18px; border-radius: 999px; background: var(--ink); color: #fff; font: 500 18px var(--mono); letter-spacing: .1em; }
+    .q-status i { width: 11px; height: 11px; border-radius: 50%; background: var(--accent); }
+    .bubble { margin-top: 16px; padding: 22px 26px; border: 1px solid var(--border); border-radius: 22px; background: #fff; box-shadow: 0 22px 60px rgba(17,19,17,.16); }
+    .bubble small { color: var(--olive); font: 500 17px var(--mono); letter-spacing: .13em; }
+    .bubble p { margin-top: 8px; font-size: 36px; font-weight: 600; letter-spacing: -.03em; color: var(--ink); }
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1920" data-height="1080">
+    <div id="h-dots"></div>
+    <div id="h-flood"></div>
+    <div id="h-cam">
+      <div class="live">
+        <div class="live-head"><span class="live-tag" id="h-tag">● LIVE</span><strong id="h-status">AI Presenter is presenting</strong><small>Slide 3 of 8</small></div>
+        <div class="live-body">
+          <div class="outline"><i>01</i><i>02</i><i class="on">03</i><i>04</i><i>05</i></div>
+          <div class="slide">
+            <small>EXECUTIVE REVIEW</small>
+            <h3>Growth accelerated<br>across key markets.</h3>
+            <p>Revenue +25% YoY</p>
+            <div class="bars"><i id="h-b1" style="height:30%"></i><i id="h-b2" style="height:48%"></i><i id="h-b3" style="height:62%"></i><i id="h-b4" style="height:82%"></i></div>
+          </div>
+          <div class="transcript">
+            <div class="ai-mark"><span>AI</span><i id="h-w1" style="left:28px"></i><i id="h-w2" style="left:39px"></i><i id="h-w3" style="left:50px"></i></div>
+            <small>AI PRESENTER</small>
+            <p id="h-words"><span>Revenue</span> <span>increased</span> <span>25%</span> <span>year</span> <span>over</span> <span>year,</span> <span>driven</span> <span>primarily</span> <span>by</span> <span>expansion…</span></p>
+          </div>
+        </div>
+        <div class="live-ctrl"><span>AI voice ready</span><b>Pause</b><b class="next">Next Slide →</b></div>
+      </div>
+    </div>
+    <h1 id="h-title"><span>Your</span> <span>slides</span> <span>can</span> <span>present</span> <span><em>themselves.</em></span></h1>
+    <p id="h-sub">…and <em>answer questions.</em></p>
+    <div id="h-q" data-layout-allow-overlap>
+      <div class="q-status"><i></i>QUESTION DETECTED</div>
+      <div class="bubble"><small>AUDIENCE</small><p>Can you explain this chart?</p></div>
+    </div>
+  </div>
+  <script>
+    (() => {
+      const tl = gsap.timeline({ paused: true });
+      // f0: the live slide already fills the frame (1600x900 at 1.2 = full bleed)
+      tl.fromTo("#h-cam", { scale: 1.2, x: 0, y: 0 }, { scale: 1.2, duration: 0.01 }, 0);
+      // the slide wakes up: tag + status, voice bars, chart, transcript
+      tl.fromTo("#h-tag", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.35, ease: "expo.out" }, 0.15);
+      tl.fromTo("#h-status", { opacity: 0.25 }, { opacity: 1, duration: 0.3 }, 0.2);
+      [["#h-w1", 0.13, 2.2], ["#h-w2", 0.1, 2.9], ["#h-w3", 0.16, 1.8]].forEach(([s, d, k], i) =>
+        tl.fromTo(s, { scaleY: 0.4 }, { scaleY: k, duration: d, ease: "sine.inOut", yoyo: true, repeat: 23 }, 0.2 + i * 0.04));
+      ["#h-b1", "#h-b2", "#h-b3", "#h-b4"].forEach((s, i) =>
+        tl.fromTo(s, { scaleY: 0.08 }, { scaleY: 1, duration: 0.55, ease: "expo.out" }, 0.3 + i * 0.12));
+      gsap.utils.toArray("#h-words span").forEach((w, i) =>
+        tl.fromTo(w, { opacity: 0.12 }, { opacity: 1, duration: 0.12 }, 0.3 + i * 0.11));
+      // camera pulls back as the ground floods to canvas
+      tl.to("#h-cam", { scale: 0.58, x: 330, y: -60, duration: 0.85, ease: "power2.inOut" }, 1.2);
+      tl.to("#h-flood", { opacity: 0, duration: 0.6, ease: "power2.inOut" }, 1.3);
+      // headline lands per word, blur in, no slide
+      gsap.utils.toArray("#h-title > span").forEach((w, i) =>
+        tl.fromTo(w, { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "power4.out" }, 1.55 + i * 0.09));
+      // a question arrives
+      tl.fromTo("#h-q .q-status", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out" }, 2.45);
+      tl.fromTo("#h-q .bubble", { opacity: 0, scale: 0.86, transformOrigin: "0% 0%" }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.4)" }, 2.6);
+      tl.fromTo("#h-sub", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.25, ease: "power4.out" }, 2.8);
+      // whip out to the reveal
+      tl.to("#root", { x: -260, opacity: 0, filter: "blur(14px)", duration: 0.25, ease: "power3.in" }, 3.75);
+      window.__timelines["hook"] = tl;
+    })();
+  </script>
+</template>

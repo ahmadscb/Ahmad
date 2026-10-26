@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>SlideSpoken — Your slides. Now presenting.</title>
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Inter"; font-weight: 400; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/inter-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 600; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/fonts/inter-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "DM Mono"; font-weight: 400; src: url("assets/fonts/dm-mono-latin-400-normal.woff2") format("woff2"); }
+      @font-face { font-family: "DM Mono"; font-weight: 500; src: url("assets/fonts/dm-mono-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Gelasio"; font-weight: 400; font-style: italic; src: url("assets/fonts/gelasio-latin-400-italic.woff2") format("woff2"); }
+      /* SlideSpoken design system tokens */
+      :root {
+        --canvas: #f8f8f6; --surface: #ffffff; --surface-soft: #f2f3ef; --surface-sage: #eef1e9;
+        --ink: #111311; --muted: #666a66; --border: #dedfdb; --dot: #d5d8d0;
+        --accent: #d8ff73; --accent-deep: #bde947; --olive: #5e7d22; --accent-soft: #f1fbd5;
+        --dark: #111611; --dark-soft: #192019; --dark-border: #354035; --dark-muted: #aeb6ad; --live-bg: #101510;
+        --sans: "Inter", Arial, sans-serif; --mono: "DM Mono", monospace; --serif: "Gelasio", Georgia, serif;
+      }
+      /* the live presenter UI, rebuilt from the product's journey-live state at 1600 x 900; shared by every scene */
+    .live { width: 1600px; height: 900px; border-radius: 28px; overflow: hidden; background: var(--live-bg); color: #fff; display: flex; flex-direction: column; border: 1px solid #2d332e; }
+    .live-head { height: 84px; display: flex; align-items: center; gap: 22px; padding: 0 36px; border-bottom: 1px solid #2d332e; }
+    .live-tag { padding: 8px 14px; border-radius: 8px; background: var(--accent); color: var(--ink); font: 500 20px var(--mono); letter-spacing: .08em; }
+    .live-head strong { font-size: 28px; font-weight: 600; letter-spacing: -.02em; }
+    .live-head small { margin-left: auto; color: #919991; font: 500 22px var(--mono); }
+    .live-body { flex: 1; display: grid; grid-template-columns: 96px 1fr 380px; min-height: 0; }
+    .outline { display: flex; flex-direction: column; gap: 16px; padding: 28px 16px; border-right: 1px solid #2d332e; }
+    .outline i { display: grid; place-items: center; height: 54px; border: 1px solid #394039; border-radius: 8px; color: #8c938c; font: 500 18px var(--mono); font-style: normal; }
+    .outline i.on { border-color: var(--accent); color: var(--accent); }
+    .slide { position: relative; padding: 64px 60px; background: #151e1d; overflow: hidden; }
+    .slide small { color: var(--accent); font: 500 20px var(--mono); letter-spacing: .13em; }
+    .slide h3 { margin-top: 30px; font-size: 70px; line-height: .98; font-weight: 700; letter-spacing: -.055em; }
+    .slide p { margin-top: 30px; color: #b7bdb8; font-size: 30px; }
+    .bars { position: absolute; right: 56px; bottom: 56px; display: flex; align-items: flex-end; gap: 16px; height: 260px; }
+    .bars i { display: block; width: 46px; background: var(--accent); transform-origin: 50% 100%; border-radius: 4px 4px 0 0; }
+    .bars b { position: absolute; bottom: -38px; font: 500 16px var(--mono); color: #919991; font-weight: 500; }
+    .transcript { padding: 34px 28px; border-left: 1px solid #2d332e; display: flex; flex-direction: column; gap: 22px; }
+    .transcript small { color: var(--accent); font: 500 18px var(--mono); letter-spacing: .13em; }
+    .transcript p { color: #c4cac4; font-size: 27px; line-height: 1.5; }
+    .ai-mark { position: relative; width: 84px; height: 84px; border-radius: 24px; border: 1px solid #4b554b; background: var(--dark); box-shadow: inset 0 0 0 7px #202720; display: grid; place-items: center; color: var(--accent); font: 500 20px var(--mono); }
+    .ai-mark span { position: absolute; top: 13px; font-size: 17px; }
+    .ai-mark i { position: absolute; bottom: 15px; width: 5px; height: 12px; border-radius: 3px; background: var(--accent); transform-origin: 50% 100%; }
+    .live-ctrl { height: 84px; display: flex; align-items: center; gap: 16px; padding: 0 36px; border-top: 1px solid #2d332e; }
+    .live-ctrl > span { margin-right: auto; color: #9da49d; font-size: 22px; }
+    .live-ctrl b { padding: 12px 20px; border: 1px solid #3c433c; border-radius: 10px; font-size: 22px; font-weight: 600; }
+    .live-ctrl b.next { border-color: var(--accent); background: var(--accent); color: var(--ink); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: var(--canvas); }
+      #root { position: relative; width: 100%; height: 100%; font-family: var(--sans); color: var(--ink); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="40" data-width="1920" data-height="1080">
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="0" data-duration="4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="reveal" data-composition-id="reveal" data-composition-src="compositions/reveal.html" data-start="4" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="floor" data-composition-id="floor" data-composition-src="compositions/floor.html" data-start="9" data-duration="7" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="cases" data-composition-id="cases" data-composition-src="compositions/cases.html" data-start="16" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="more" data-composition-id="more" data-composition-src="compositions/more.html" data-start="22" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="qa" data-composition-id="qa" data-composition-src="compositions/qa.html" data-start="28" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="endcard" data-composition-id="endcard" data-composition-src="compositions/endcard.html" data-start="34" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="40" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 50"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

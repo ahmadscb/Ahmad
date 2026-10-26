@@ -1,0 +1,5 @@
+.hyperframes/
+out/render*.mp4
+variants/*/out/
+variants/*/.hyperframes/
+node_modules/
