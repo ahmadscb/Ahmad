@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SlideSpoken Shorts frame</title>
+<style>
+  @font-face { font-family: "Inter"; font-weight: 900; src: url("../assets/fonts/inter-latin-900-normal.woff2"); }
+  @font-face { font-family: "DM Mono"; font-weight: 500; src: url("../assets/fonts/dm-mono-latin-500-normal.woff2"); }
+  @font-face { font-family: "Gelasio"; font-style: italic; src: url("../assets/fonts/gelasio-latin-400-italic.woff2"); }
+  * { margin: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; background: #111611; font-family: Inter, Arial, sans-serif; color: #fff; }
+  #dots { position: absolute; inset: 0; background-image: radial-gradient(#223022 1.5px, transparent 1.7px); background-size: 24px 24px; }
+  #logo { position: absolute; left: 50%; top: 190px; width: 480px; transform: translateX(-50%); }
+  h1 { position: absolute; left: 0; right: 0; top: 345px; text-align: center; font-size: 74px; font-weight: 900; letter-spacing: -.065em; line-height: 1; }
+  h1 em { font-family: Gelasio, Georgia, serif; font-weight: 400; letter-spacing: -.03em; color: #d8ff73; }
+  #live { position: absolute; left: 50%; top: 470px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 12px; padding: 10px 20px; border-radius: 999px; background: #d8ff73; color: #111311; font: 500 24px "DM Mono", monospace; letter-spacing: .12em; white-space: nowrap; }
+  #live i { width: 11px; height: 11px; border-radius: 50%; background: #111311; }
+  /* the panel the 16:9 film sits in: 1000 x 541 at (40, 600), drawn 6 px larger */
+  #panel { position: absolute; left: 34px; top: 594px; width: 1012px; height: 553px; border-radius: 18px; border: 2px solid #354035; background: #050605; }
+  #url { position: absolute; left: 0; right: 0; top: 1470px; text-align: center; font: 500 30px "DM Mono", monospace; letter-spacing: .14em; color: #aeb6ad; }
+</style>
+</head>
+<body>
+  <div id="dots"></div>
+  <img id="logo" src="../assets/img/logo-dark.png" alt="">
+  <h1>Your slides. Now <em>presenting.</em></h1>
+  <div id="live"><i></i>AI PRESENTER · LIVE Q&amp;A</div>
+  <div id="panel"></div>
+  <p id="url">SLIDESPOKEN.COM</p>
+</body>
+</html>

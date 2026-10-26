@@ -1,0 +1,26 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,Inter ExtraBold,64,&H00FFFFFF,&H00FFFFFF,&H00111611,&H00111611,0,0,0,0,100,100,-1,0,1,0,0,8,90,90,1215,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.30,0:00:02.10,Cap,,0,0,0,,What if your slides could present themselves…
+Dialogue: 0,0:00:02.10,0:00:03.85,Cap,,0,0,0,,…and answer questions?
+Dialogue: 0,0:00:04.20,0:00:06.50,Cap,,0,0,0,,Meet SlideSpoken. Upload your deck—
+Dialogue: 0,0:00:06.50,0:00:08.80,Cap,,0,0,0,,—or create one with AI.
+Dialogue: 0,0:00:09.20,0:00:12.40,Cap,,0,0,0,,An AI Presenter delivers it live—in the room,
+Dialogue: 0,0:00:12.40,0:00:15.80,Cap,,0,0,0,,or on Google Meet, Zoom and Teams.
+Dialogue: 0,0:00:16.20,0:00:18.95,Cap,,0,0,0,,HR teams train new hires.
+Dialogue: 0,0:00:18.95,0:00:21.80,Cap,,0,0,0,,Real estate agents pitch properties to investors.
+Dialogue: 0,0:00:22.20,0:00:25.00,Cap,,0,0,0,,Sales teams run product demos.
+Dialogue: 0,0:00:25.00,0:00:27.80,Cap,,0,0,0,,Educators turn lessons into conversations.
+Dialogue: 0,0:00:28.20,0:00:30.80,Cap,,0,0,0,,Ask a question. SlideSpoken answers,
+Dialogue: 0,0:00:30.80,0:00:33.80,Cap,,0,0,0,,then picks up right where it left off.
+Dialogue: 0,0:00:34.20,0:00:36.40,Cap,,0,0,0,,Stop just sharing slides. Let them speak.
+Dialogue: 0,0:00:36.40,0:00:39.90,Cap,,0,0,0,,Start free at SlideSpoken.com.
