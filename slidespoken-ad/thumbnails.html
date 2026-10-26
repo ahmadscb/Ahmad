@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>SlideSpoken YouTube thumbnails</title>
+<style>
+  @font-face { font-family: "Inter"; font-weight: 600; src: url("assets/fonts/inter-latin-600-normal.woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 800; src: url("assets/fonts/inter-latin-800-normal.woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 900; src: url("assets/fonts/inter-latin-900-normal.woff2"); }
+  @font-face { font-family: "DM Mono"; font-weight: 500; src: url("assets/fonts/dm-mono-latin-500-normal.woff2"); }
+  @font-face { font-family: "Gelasio"; font-style: italic; src: url("assets/fonts/gelasio-latin-400-italic.woff2"); }
+  :root { --ink: #111311; --dark: #0d110d; --lime: #d8ff73; --canvas: #f8f8f6; --olive: #5e7d22; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #333; font-family: Inter, Arial, sans-serif; }
+  .t { position: relative; width: 1280px; height: 720px; overflow: hidden; }
+  .t[hidden] { display: none; }
+  .logo { position: absolute; width: 250px; }
+  .mono { font-family: "DM Mono", monospace; font-weight: 500; letter-spacing: .12em; }
+  /* a small live slide used in every concept */
+  .slide { position: absolute; border-radius: 22px; background: #151e1d; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+  .slide .bar { position: absolute; left: 0; right: 0; top: 0; height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 20px; background: #101510; border-bottom: 1px solid #2d332e; color: #fff; font-weight: 600; font-size: 20px; }
+  .live { padding: 5px 10px; border-radius: 7px; background: var(--lime); color: var(--ink); font: 500 15px "DM Mono", monospace; letter-spacing: .08em; }
+  .slide h4 { position: absolute; left: 30px; top: 86px; color: #fff; font-size: 40px; font-weight: 800; letter-spacing: -.05em; line-height: .98; }
+  .bars { position: absolute; right: 30px; bottom: 30px; display: flex; align-items: flex-end; gap: 12px; height: 170px; }
+  .bars i { display: block; width: 36px; background: var(--lime); border-radius: 4px 4px 0 0; }
+  .wave { display: flex; align-items: center; gap: 7px; }
+  .wave i { display: block; width: 10px; border-radius: 6px; background: var(--ink); }
+
+  /* 1. WHO'S PRESENTING? */
+  #t1 { background: radial-gradient(60% 70% at 72% 62%, #1d2a1f 0%, #0d110d 70%); color: #fff; }
+  #t1 h1 { position: absolute; left: 56px; top: 34px; font-size: 120px; font-weight: 900; letter-spacing: -.065em; line-height: .9; }
+  #t1 h1 span { color: var(--lime); }
+  #t1 .beam { position: absolute; left: 150px; top: 260px; width: 360px; height: 560px; background: linear-gradient(180deg, rgba(255,250,225,.42), rgba(255,250,225,.05) 92%); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); }
+  #t1 .pool { position: absolute; left: 150px; top: 640px; width: 360px; height: 80px; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,250,225,.45), transparent); }
+  #t1 .podium { position: absolute; left: 240px; top: 470px; width: 180px; height: 250px; }
+  #t1 .screen { position: absolute; left: 640px; top: 330px; width: 580px; height: 330px; }
+  #t1 .answer { position: absolute; left: 660px; top: 262px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 999px; background: var(--lime); color: var(--ink); font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+  #t1 .heads { position: absolute; left: 0; right: 0; bottom: -70px; height: 120px; }
+  #t1 .heads i { position: absolute; bottom: 0; width: 120px; height: 150px; border-radius: 60px 60px 0 0; background: #050705; box-shadow: inset 0 6px 0 rgba(216,255,115,.12); }
+  #t1 .logo { right: 44px; top: 44px; width: 230px; }
+
+  /* 2. THESE SLIDES PRESENT THEMSELVES */
+  #t2 { background: var(--dark); color: #fff; }
+  #t2 .dots { position: absolute; inset: 0; background-image: radial-gradient(#253025 1.4px, transparent 1.6px); background-size: 22px 22px; }
+  #t2 h1 { position: absolute; left: 52px; top: 60px; font-size: 100px; font-weight: 900; letter-spacing: -.06em; line-height: .92; }
+  #t2 h1 mark { display: inline-block; margin: 8px 0; padding: 0 18px 6px; border-radius: 18px; background: var(--lime); color: var(--ink); font-size: 128px; }
+  #t2 .slide { left: 700px; top: 92px; width: 540px; height: 340px; transform: rotate(4deg); }
+  #t2 .bubble { position: absolute; left: 620px; top: 430px; width: 560px; height: 220px; border-radius: 48px; background: var(--lime); display: grid; place-items: center; transform: rotate(-3deg); box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+  #t2 .bubble::before { content: ""; position: absolute; right: 120px; top: -46px; width: 90px; height: 90px; background: var(--lime); clip-path: polygon(30% 100%, 100% 0, 85% 100%); }
+  #t2 .logo { left: 56px; bottom: 44px; width: 230px; }
+
+  /* 3. IT ANSWERS BACK */
+  #t3 { background: var(--canvas); color: var(--ink); }
+  #t3 .dots { position: absolute; inset: 0; background-image: radial-gradient(#d5d8d0 1.4px, transparent 1.6px); background-size: 22px 22px; }
+  #t3 h1 { position: absolute; left: 52px; top: 50px; font-size: 112px; font-weight: 900; letter-spacing: -.065em; line-height: .9; }
+  #t3 h1 em { font-family: Gelasio, Georgia, serif; font-weight: 400; letter-spacing: -.03em; }
+  #t3 .slide { left: 690px; top: 70px; width: 540px; height: 330px; }
+  #t3 .q { position: absolute; left: 52px; top: 380px; max-width: 640px; padding: 26px 34px; border-radius: 34px 34px 34px 8px; background: var(--ink); color: #fff; font-size: 50px; font-weight: 800; letter-spacing: -.04em; line-height: 1.02; box-shadow: 0 26px 60px rgba(17,19,17,.25); }
+  #t3 .q small { display: block; margin-bottom: 10px; color: var(--lime); font: 500 18px "DM Mono", monospace; letter-spacing: .14em; }
+  #t3 .a { position: absolute; left: 600px; top: 470px; width: 630px; padding: 24px 30px; border-radius: 34px 34px 8px 34px; background: var(--lime); font-size: 38px; font-weight: 800; letter-spacing: -.035em; line-height: 1.08; box-shadow: 0 26px 60px rgba(17,19,17,.2); display: grid; grid-template-columns: 74px 1fr; gap: 20px; align-items: center; }
+  #t3 .a small { display: block; margin-bottom: 6px; color: var(--olive); font: 500 17px "DM Mono", monospace; letter-spacing: .14em; }
+  #t3 .ai { position: relative; width: 74px; height: 74px; border-radius: 22px; background: var(--ink); display: grid; place-items: center; }
+  #t3 .ai .wave i { background: var(--lime); width: 6px; }
+  #t3 .logo { left: 56px; bottom: 36px; width: 210px; }
+</style>
+</head>
+<body>
+<!-- 1 -->
+<div class="t" id="t1">
+  <div class="beam"></div><div class="pool"></div>
+  <svg class="podium" viewBox="0 0 180 250" aria-hidden="true">
+    <path d="M120 40 C120 10 100 0 86 6" fill="none" stroke="#9aa39a" stroke-width="5" stroke-linecap="round"/>
+    <rect x="78" y="0" width="18" height="12" rx="6" fill="#d8ff73"/>
+    <path d="M0 52 H180 L166 250 H14 Z" fill="#232a23"/>
+    <rect x="-6" y="40" width="192" height="20" rx="6" fill="#323b32"/>
+    <path d="M14 70 H166" stroke="#d8ff73" stroke-opacity=".35" stroke-width="3"/>
+  </svg>
+  <div class="slide screen">
+    <div class="bar"><span class="live">● LIVE</span>AI Presenter is presenting</div>
+    <h4>Q3 growth,<br>explained.</h4>
+    <div class="bars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:70%"></i><i style="height:94%"></i></div>
+  </div>
+  <div class="answer">Your slides. With AI.</div>
+  <h1>WHO'S<br><span>PRESENTING?</span></h1>
+  <div class="heads"><i style="left:560px"></i><i style="left:720px"></i><i style="left:880px"></i><i style="left:1040px"></i><i style="left:1200px"></i></div>
+  <img class="logo" src="assets/img/logo-dark.png" alt="">
+</div>
+<!-- 2 -->
+<div class="t" id="t2">
+  <div class="dots"></div>
+  <h1>THESE SLIDES<br><mark>PRESENT</mark><br>THEMSELVES</h1>
+  <div class="slide">
+    <div class="bar"><span class="live">● LIVE</span>Slide 3 of 8</div>
+    <h4>Growth,<br>explained.</h4>
+    <div class="bars"><i style="height:34%"></i><i style="height:52%"></i><i style="height:70%"></i><i style="height:94%"></i></div>
+  </div>
+  <div class="bubble"><div class="wave">
+    <i style="height:30px"></i><i style="height:60px"></i><i style="height:110px"></i><i style="height:70px"></i><i style="height:140px"></i><i style="height:90px"></i><i style="height:160px"></i><i style="height:100px"></i><i style="height:130px"></i><i style="height:64px"></i><i style="height:120px"></i><i style="height:80px"></i><i style="height:150px"></i><i style="height:96px"></i><i style="height:56px"></i><i style="height:104px"></i><i style="height:40px"></i><i style="height:76px"></i><i style="height:30px"></i>
+  </div></div>
+  <img class="logo" src="assets/img/logo-dark.png" alt="">
+</div>
+<!-- 3 -->
+<div class="t" id="t3">
+  <div class="dots"></div>
+  <h1>Slides that<br><em>answer back.</em></h1>
+  <div class="slide">
+    <div class="bar"><span class="live">● LIVE</span>Paused for Q&amp;A</div>
+    <h4>Revenue<br>by quarter</h4>
+    <div class="bars"><i style="height:34%;opacity:.35"></i><i style="height:52%;opacity:.35"></i><i style="height:70%;opacity:.35"></i><i style="height:94%"></i></div>
+  </div>
+  <div class="q"><small>AUDIENCE</small>“Can you explain this chart?”</div>
+  <div class="a"><div class="ai"><div class="wave"><i style="height:16px"></i><i style="height:30px"></i><i style="height:22px"></i></div></div><div><small>AI PRESENTER</small>Q4 is the highest. Here's why…</div></div>
+  <img class="logo" src="assets/img/logo-light.png" alt="">
+</div>
+</body>
+</html>
