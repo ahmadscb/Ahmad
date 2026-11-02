@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<!-- Made with the Bang Motion skill v1.19.0 by Bang Tutorial (https://youtube.com/bangtutorial) - MIT - https://github.com/bangtutorial/bang-motion -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SlideSpoken — Reel</title>
+<!-- Style brief: STYLE-BRIEF.md. Concept: question → answer inside the world. Stage 1080x1920 (9:16), 25 s.
+     Opens by double-click (file://): GSAP and fonts are local files beside this page. ?debug=1 = scrub panel, ?clean=1 = no autoplay (export). -->
+<script src="gsap.min.js"></script>
+<style>
+@font-face{font-family:"Instrument Serif";font-style:normal;src:url(fonts/instrument-serif-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Instrument Serif";font-style:italic;src:url(fonts/instrument-serif-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:500;src:url(fonts/inter-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:600;src:url(fonts/inter-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Inter";font-weight:700;src:url(fonts/inter-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"DM Mono";font-weight:500;src:url(fonts/dm-mono-latin-500-normal.woff2) format("woff2")}
+:root{
+  --lime:#d8ff73; --lime-deep:#bde947; --olive:#5e7d22; --sage:#8a9b76;
+  --base:#060906; --panel:#0e140e; --panel2:#151d15; --line:#2a352a; --ink:#f3f6ef; --muted:#9aa49a;
+  --serif:"Instrument Serif",Georgia,serif; --ui:"Inter",Arial,sans-serif; --mono:"DM Mono",ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:var(--ui);color:var(--ink)}
+#filters{position:fixed;width:0;height:0;opacity:0;pointer-events:none}
+#stage{position:fixed;left:50%;top:50%;width:1080px;height:1920px;transform:translate(-50%,-50%);overflow:hidden;
+  background:var(--base);perspective:1800px;perspective-origin:50% 50%}
+
+/* ---- background: grainy gradient + brand orbit rings (moves with the camera at a parallax factor) ---- */
+#bg{position:absolute;left:-300px;top:-300px;width:1680px;height:2520px;will-change:transform}
+#bg .base{position:absolute;inset:0;background:
+  radial-gradient(48% 30% at 50% 52%,rgba(94,125,34,.38),transparent 70%),
+  linear-gradient(180deg,#030503 0%,#0a120a 46%,#050805 100%)}
+#bg .glow{position:absolute;width:1300px;height:1300px;border-radius:50%;left:190px;top:700px;
+  background:radial-gradient(circle,rgba(216,255,115,.20) 0%,rgba(189,233,71,.08) 38%,transparent 66%);will-change:transform}
+#bg svg{position:absolute;left:0;top:0;width:1680px;height:2520px;overflow:visible}
+#grain{position:absolute;inset:-80px;pointer-events:none;opacity:.17;mix-blend-mode:overlay;z-index:30}
+#vig{position:absolute;inset:0;pointer-events:none;z-index:29;
+  background:radial-gradient(ellipse 90% 62% at 50% 50%,transparent 45%,rgba(0,0,0,.55) 85%,rgba(0,0,0,.85) 100%)}
+
+/* ---- the world: one 3D space the camera moves through ---- */
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;will-change:transform}
+.obj{position:absolute;transform-style:preserve-3d}
+
+/* the deck: SlideSpoken's live presenter state, rebuilt (Inter = the product's UI font) */
+#deck{left:80px;top:650px;width:920px;height:600px;border-radius:30px;overflow:hidden;
+  background:linear-gradient(180deg,#121a12,#0b110b);border:1px solid #2f3b2f;
+  box-shadow:0 60px 120px rgba(0,0,0,.65),0 0 0 1px rgba(216,255,115,.05),inset 0 1px 0 rgba(255,255,255,.06)}
+.dhead{height:78px;display:flex;align-items:center;gap:18px;padding:0 30px;border-bottom:1px solid #263026}
+.live{padding:7px 13px;border-radius:9px;background:var(--lime);color:#0b0f0b;font:500 22px var(--mono);letter-spacing:.08em}
+.dhead strong{position:relative;font-size:27px;font-weight:600;letter-spacing:-.02em;width:470px;height:34px}
+.dhead strong span{position:absolute;left:0;top:0;white-space:nowrap}
+.dhead small{margin-left:auto;font:500 24px var(--mono);color:var(--muted)}
+.dslide{position:relative;height:440px;padding:44px 46px;background:radial-gradient(80% 90% at 85% 100%,rgba(216,255,115,.07),transparent 60%),#121b19}
+.dslide small{font:500 22px var(--mono);letter-spacing:.14em;color:var(--lime)}
+.dslide h3{margin-top:22px;font:700 58px/1 var(--ui);letter-spacing:-.055em;color:#fff}
+.dslide p{margin-top:22px;font:500 26px var(--ui);color:#b7bdb8}
+.bars{position:absolute;right:48px;bottom:58px;display:flex;align-items:flex-end;gap:18px;height:230px}
+.bars .b{position:relative;width:52px}
+.bars i{display:block;width:52px;background:var(--lime);border-radius:6px 6px 0 0;transform-origin:50% 100%}
+.bars em{position:absolute;left:0;right:0;bottom:-40px;text-align:center;font:500 22px var(--mono);font-style:normal;color:var(--muted)}
+.dfoot{height:82px;display:flex;align-items:center;gap:16px;padding:0 30px;border-top:1px solid #263026}
+.dfoot b{font:500 20px var(--mono);letter-spacing:.12em;color:var(--lime);font-weight:500;white-space:nowrap}
+.dfoot p{font:500 24px var(--ui);color:#c9cfc9;white-space:nowrap;overflow:hidden}
+
+/* the voice orb: the "o" of the SlideSpoken wordmark, alive */
+#orb{left:0;top:0;width:180px;height:180px;margin:-90px 0 0 -90px;will-change:transform}
+#orb .disc{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 34% 28%,#f4ffd0 0%,#d8ff73 32%,#bde947 64%,#8fb52e 100%);
+  box-shadow:0 0 50px rgba(216,255,115,.55),0 0 140px rgba(216,255,115,.22),inset 0 -10px 24px rgba(60,90,10,.45)}
+#orb .wave{position:absolute;left:0;right:0;top:50%;display:flex;align-items:center;justify-content:center;gap:9px;transform:translateY(-50%)}
+#orb .wave i{display:block;width:8px;height:20px;border-radius:5px;background:#0b0f0b}
+#orb .ring{position:absolute;inset:0;border-radius:50%;border:3px solid rgba(216,255,115,.7);opacity:0}
+
+/* the audience question + the answer */
+#status{left:150px;top:1300px;display:flex;align-items:center;gap:14px;padding:14px 24px;border-radius:999px;
+  background:rgba(8,12,8,.92);border:1px solid #2f3b2f;font:500 26px var(--mono);letter-spacing:.1em;color:var(--ink);white-space:nowrap;opacity:0}
+#status i{width:13px;height:13px;border-radius:50%;background:var(--lime);box-shadow:0 0 14px var(--lime)}
+#resume{left:150px;top:1300px;padding:14px 26px;border-radius:999px;background:var(--lime);color:#0b0f0b;font:500 26px var(--mono);letter-spacing:.08em;white-space:nowrap;opacity:0}
+#q{left:110px;top:1392px;width:860px;padding:30px 34px;border-radius:34px 34px 34px 10px;opacity:0;
+  background:linear-gradient(180deg,rgba(32,42,32,.96),rgba(18,25,18,.96));border:1px solid #3a4a3a;box-shadow:0 40px 90px rgba(0,0,0,.6)}
+#q .who{display:flex;align-items:center;gap:16px;font:500 24px var(--mono);letter-spacing:.12em;color:var(--muted)}
+#q .who b{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--sage);color:#0b0f0b;font:700 24px var(--ui);letter-spacing:0}
+#q p{margin-top:18px;font:600 54px/1.1 var(--ui);letter-spacing:-.035em;color:#fff;min-height:60px}
+#ans{left:110px;top:985px;width:580px;padding:26px 30px;border-radius:30px 30px 30px 10px;opacity:0;transform-origin:100% 40%;
+  background:linear-gradient(150deg,#e9ffb2,#d8ff73 60%,#c3ec52);color:#0b0f0b;box-shadow:0 40px 90px rgba(0,0,0,.55)}
+#ans small{font:500 22px var(--mono);letter-spacing:.14em;color:#3f5a12}
+#ans p{margin-top:10px;font:600 38px/1.16 var(--ui);letter-spacing:-.03em}
+
+/* the meeting carousel: Agent Mode on Google Meet, Zoom and Microsoft Teams */
+#car{left:540px;top:960px;width:0;height:0;transform-style:preserve-3d}
+.mw{position:absolute;left:-390px;top:-250px;width:780px;height:500px;border-radius:28px;overflow:hidden;backface-visibility:hidden;
+  background:linear-gradient(180deg,#141b14,#0b100b);border:1px solid #334033;box-shadow:0 50px 100px rgba(0,0,0,.6)}
+.mw .mh{height:84px;display:flex;align-items:center;gap:16px;padding:0 26px;border-bottom:1px solid #263026}
+.mw .mh img{width:46px;height:46px}
+.mw .mh strong{font:600 30px var(--ui);letter-spacing:-.02em}
+.mw .mh span{margin-left:auto;padding:6px 12px;border-radius:8px;background:rgba(216,255,115,.12);color:var(--lime);font:500 20px var(--mono);letter-spacing:.08em}
+.mw .grid{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1fr 1fr;gap:14px;padding:18px;height:416px}
+.tile{position:relative;border-radius:18px;background:#1b231b;border:1px solid #2b352b;display:grid;place-items:center;align-content:center;gap:10px}
+.tile b{display:grid;place-items:center;width:78px;height:78px;border-radius:50%;background:#2e392e;color:#e3e8e3;font:600 28px var(--ui)}
+.tile span{font:500 22px var(--ui);color:#c3cac3}
+.tile.ai{grid-row:1 / 3;border:3px solid var(--lime);background:radial-gradient(70% 60% at 50% 40%,rgba(216,255,115,.14),#151d15 70%)}
+.tile.ai .mini{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#f4ffd0,#d8ff73 35%,#a9d23a);
+  box-shadow:0 0 40px rgba(216,255,115,.5);display:flex;align-items:center;justify-content:center;gap:6px}
+.tile.ai .mini i{display:block;width:6px;border-radius:4px;background:#0b0f0b}
+.tile.ai strong{font:600 28px var(--ui)}
+.tile.ai em{font:500 20px var(--mono);font-style:normal;letter-spacing:.1em;color:var(--lime)}
+#plat{left:0;top:1300px;width:1080px;height:46px;text-align:center;font:500 30px var(--mono);letter-spacing:.2em;color:var(--muted);opacity:0}
+#plat span{position:absolute;left:0;right:0;top:0}
+
+/* end: the wordmark the orb docks into */
+#logo{left:110px;top:860px;width:860px;opacity:0}
+#logo img{width:860px;display:block}
+
+/* ---- HUD: kinetic headlines on the screen layer (not zoomed by the camera) ---- */
+#hud{position:absolute;inset:0;pointer-events:none;z-index:20}
+.hl{position:absolute;left:0;right:0;text-align:center;font-family:var(--serif);font-weight:400;color:var(--ink);
+  line-height:.95;letter-spacing:-.01em;text-shadow:0 4px 30px rgba(0,0,0,.65);opacity:0;perspective:900px}
+.hl em{color:var(--lime);font-style:italic}
+.hl .w{display:inline-block;transform-origin:50% 100%;will-change:transform,opacity}
+#h1{top:210px;font-size:138px} #h2{top:1460px;font-size:120px} #h3{top:230px;font-size:132px}
+#h4{top:220px;font-size:118px} #h5{top:1180px;font-size:112px}
+#url{position:absolute;left:0;right:0;top:1500px;text-align:center;font:500 40px var(--mono);letter-spacing:.14em;color:var(--lime);opacity:0}
+#cta{position:absolute;left:50%;top:1590px;transform:translateX(-50%);padding:20px 40px;border-radius:999px;background:var(--lime);color:#0b0f0b;
+  font:600 38px var(--ui);letter-spacing:-.02em;white-space:nowrap;opacity:0}
+
+#ui{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);display:none;align-items:center;gap:12px;padding:10px 16px;border-radius:14px;
+  background:rgba(14,16,22,.92);border:1px solid rgba(255,255,255,.1);font:13px var(--ui);color:#a0a6b4;z-index:60}
+#ui.on{display:flex}
+#ui button{background:#262a34;color:#fff;border:none;padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+#scrub{width:300px;accent-color:var(--lime)}
+#clock{font-variant-numeric:tabular-nums;min-width:5.2ch;text-align:right}
+</style>
+</head>
+<body>
+<svg id="filters"><defs></defs></svg>
+
+<div id="stage">
+  <div id="bg">
+    <div class="base"></div><div class="glow" id="glow"></div>
+    <svg viewBox="0 0 1680 2520" aria-hidden="true">
+      <defs>
+        <linearGradient id="rg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8ff73" stop-opacity=".55"/><stop offset=".5" stop-color="#5e7d22" stop-opacity=".12"/><stop offset="1" stop-color="#d8ff73" stop-opacity=".35"/></linearGradient>
+        <linearGradient id="rg2" x1="1" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a9b76" stop-opacity=".4"/><stop offset=".6" stop-color="#5e7d22" stop-opacity=".08"/><stop offset="1" stop-color="#bde947" stop-opacity=".3"/></linearGradient>
+      </defs>
+      <g id="rings1" fill="none" stroke="url(#rg1)">
+        <circle cx="840" cy="1260" r="470" stroke-width="2"/><circle cx="840" cy="1260" r="620" stroke-width="1.5" stroke-dasharray="6 18"/>
+        <circle cx="840" cy="1260" r="790" stroke-width="1.2"/>
+      </g>
+      <g id="rings2" fill="none" stroke="url(#rg2)">
+        <circle cx="840" cy="1260" r="540" stroke-width="1" stroke-dasharray="2 14"/><circle cx="840" cy="1260" r="700" stroke-width="2.4"/>
+        <circle cx="840" cy="1260" r="960" stroke-width="1" stroke-dasharray="40 30"/>
+      </g>
+    </svg>
+  </div>
+
+  <div id="world">
+    <div class="obj" id="deck">
+      <div class="dhead"><span class="live">● LIVE</span><strong><span id="st-a">AI Presenter is presenting</span><span id="st-b" style="color:var(--lime);opacity:0">Paused for Q&amp;A</span></strong><small>3 / 8</small></div>
+      <div class="dslide">
+        <small>EXECUTIVE REVIEW</small>
+        <h3>Growth accelerated<br>across key markets.</h3>
+        <p>Revenue by quarter</p>
+        <div class="bars">
+          <div class="b"><i id="b1" style="height:70px"></i><em>Q1</em></div><div class="b"><i id="b2" style="height:110px"></i><em>Q2</em></div>
+          <div class="b"><i id="b3" style="height:143px"></i><em>Q3</em></div><div class="b"><i id="b4" style="height:189px"></i><em>Q4</em></div>
+        </div>
+      </div>
+      <div class="dfoot"><b>AI PRESENTER</b><p id="tr"><span>Revenue</span> <span>grew</span> <span>every</span> <span>quarter,</span> <span>and</span> <span>Q4</span> <span>was</span> <span>the</span> <span>strongest…</span></p></div>
+    </div>
+
+    <div class="obj" id="status"><i></i>QUESTION DETECTED · PAUSED</div>
+    <div class="obj" id="resume">✓ RESUMING PRESENTATION</div>
+    <div class="obj" id="q"><div class="who"><b>P</b>PRIYA · AUDIENCE</div><p id="qtext">Can you explain this chart?</p></div>
+    <div class="obj" id="ans"><small>AI PRESENTER · ANSWER</small>
+      <p id="anstext"><span>Each</span> <span>bar</span> <span>is</span> <span>a</span> <span>quarter.</span> <span>Q4</span> <span>leads,</span> <span>driven</span> <span>by</span> <span>new</span> <span>enterprise</span> <span>customers.</span></p></div>
+
+    <div class="obj" id="car">
+      <div class="mw" id="mw0"><div class="mh"><img src="img/google-meet-icon.png" alt=""><strong>Google Meet</strong><span>AGENT MODE</span></div>
+        <div class="grid"><div class="tile ai"><div class="mini"><i style="height:30px"></i><i style="height:52px"></i><i style="height:38px"></i><i style="height:60px"></i><i style="height:28px"></i></div><strong>AI Presenter</strong><em>PRESENTING</em></div>
+          <div class="tile"><b>SC</b><span>Sarah</span></div><div class="tile"><b>ML</b><span>Michael</span></div></div></div>
+      <div class="mw" id="mw1"><div class="mh"><img src="img/zoom-icon.png" alt=""><strong>Zoom</strong><span>AGENT MODE</span></div>
+        <div class="grid"><div class="tile ai"><div class="mini"><i style="height:44px"></i><i style="height:28px"></i><i style="height:58px"></i><i style="height:36px"></i><i style="height:48px"></i></div><strong>AI Presenter</strong><em>PRESENTING</em></div>
+          <div class="tile"><b>DH</b><span>Daniel</span></div><div class="tile"><b>AK</b><span>Aisha</span></div></div></div>
+      <div class="mw" id="mw2"><div class="mh"><img src="img/microsoft-teams-icon.png" alt=""><strong>Microsoft Teams</strong><span>AGENT MODE</span></div>
+        <div class="grid"><div class="tile ai"><div class="mini"><i style="height:34px"></i><i style="height:56px"></i><i style="height:26px"></i><i style="height:50px"></i><i style="height:40px"></i></div><strong>AI Presenter</strong><em>PRESENTING</em></div>
+          <div class="tile"><b>MC</b><span>Mei</span></div><div class="tile"><b>OS</b><span>Omar</span></div></div></div>
+    </div>
+    <div class="obj" id="plat"><span id="pl0">GOOGLE MEET</span><span id="pl1" style="opacity:0">ZOOM</span><span id="pl2" style="opacity:0">MICROSOFT TEAMS</span></div>
+
+    <div class="obj" id="logo"><img src="img/logo-dark.png" alt="SlideSpoken, with AI Presenter"></div>
+    <div class="obj" id="orb"><div class="disc"></div><div class="ring" id="ring1"></div><div class="ring" id="ring2"></div>
+      <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+  </div>
+
+  <div id="hud">
+    <h1 class="hl" id="h1"><span class="w">Your</span> <span class="w">slides</span><br><span class="w">present</span> <span class="w"><em>themselves</em></span></h1>
+    <h2 class="hl" id="h2"><span class="w">It</span> <span class="w">takes</span> <span class="w">the</span> <span class="w"><em>floor</em></span></h2>
+    <h2 class="hl" id="h3"><span class="w">It</span> <span class="w"><em>answers</em></span> <span class="w">back</span></h2>
+    <h2 class="hl" id="h4"><span class="w">Live</span> <span class="w">in</span> <span class="w">every</span><br><span class="w"><em>meeting</em></span></h2>
+    <h2 class="hl" id="h5"><span class="w">Your</span> <span class="w">slides.</span><br><span class="w">Now</span> <span class="w"><em>presenting.</em></span></h2>
+    <div id="url">SLIDESPOKEN.COM</div>
+    <div id="cta">Start free →</div>
+  </div>
+  <div id="vig"></div>
+  <div id="grain"></div>
+</div>
+
+<div id="ui"><button id="btn-play">Pause</button><button id="btn-restart">Restart</button>
+  <input id="scrub" type="range" min="0" max="1000" value="0"><span id="clock">0.00s</span></div>
+
+<script>
+(()=>{
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const W=1080,H=1920,DURATION=25;
+const Q=new URLSearchParams(location.search);
+const tl=gsap.timeline({paused:true});
+
+/* ---- directional motion blur (feGaussianBlur with separate x/y) ---- */
+const defs=$('#filters defs');let fc=0;
+function makeBlur(){const id='mb'+(fc++),NS='http://www.w3.org/2000/svg';const f=document.createElementNS(NS,'filter');f.id=id;
+  f.setAttribute('x','-70%');f.setAttribute('y','-70%');f.setAttribute('width','240%');f.setAttribute('height','240%');
+  const g=document.createElementNS(NS,'feGaussianBlur');g.setAttribute('stdDeviation','0 0');f.appendChild(g);defs.appendChild(f);return {url:`url(#${id})`,node:g};}
+function blurTween(targets,at,from,to,dur,{ease='power3.out',ax=1,ay=.08}={}){const b=makeBlur(),o={v:from};
+  tl.set(targets,{filter:b.url},at);
+  tl.to(o,{v:to,duration:dur,ease,onUpdate(){b.node.setAttribute('stdDeviation',`${(o.v*ax).toFixed(2)} ${(o.v*ay).toFixed(2)}`);}},at);
+  tl.set(targets,{filter:'none'},at+dur);}
+const VERT={ax:.08,ay:1};
+
+/* ---- kinetic headline doors (the signature: words roll in 3D) ---- */
+const words=el=>$$('.w',el);
+const rollIn=(el,at,{st=.11,dur=.8}={})=>{tl.set(el,{opacity:1},at);
+  tl.fromTo(words(el),{opacity:0,rotateX:-95,yPercent:30},{opacity:1,rotateX:0,yPercent:0,duration:dur,ease:'power4.out',stagger:st,immediateRender:false},at);
+  blurTween(el,at,22,0,dur+st*3,VERT);};
+const rollOut=(el,at,{dur=.38}={})=>{tl.to(words(el),{opacity:0,rotateX:90,yPercent:-30,duration:dur,ease:'power2.in',stagger:.03},at);
+  blurTween(el,at,0,26,dur+.1,{ease:'power2.in',...VERT});tl.set(el,{opacity:0},at+dur+.15);};
+const depthIn=(el,at,{st=.08,dur=1}={})=>{tl.set(el,{opacity:1},at);
+  tl.fromTo(words(el),{opacity:0,scale:2.2,z:300},{opacity:1,scale:1,z:0,duration:dur,ease:'expo.out',stagger:{each:st,from:'center'},immediateRender:false},at);
+  blurTween(el,at,18,0,dur,{ease:'expo.out',ax:1,ay:1});};
+const depthOut=(el,at,{dur=.45}={})=>{tl.to(words(el),{opacity:0,scale:.6,duration:dur,ease:'power2.in',stagger:.025},at);
+  blurTween(el,at,0,20,dur+.1,{ease:'power2.in',ax:1,ay:1});tl.set(el,{opacity:0},at+dur+.15);};
+const maskUp=(el,at,{dur=.85}={})=>{tl.set(el,{opacity:1},at);tl.set(words(el),{opacity:1},at);
+  tl.fromTo(words(el),{clipPath:'inset(100% -10% -20% -10%)',yPercent:40},{clipPath:'inset(0% -10% -20% -10%)',yPercent:0,duration:dur,ease:'power3.out',stagger:.09,immediateRender:false},at);};
+const sideIn=(el,at,{st=.1,dur=.75}={})=>{tl.set(el,{opacity:1},at);
+  tl.fromTo(words(el),{opacity:0,xPercent:60,rotateY:-50},{opacity:1,xPercent:0,rotateY:0,duration:dur,ease:'power4.out',stagger:st,immediateRender:false},at);
+  blurTween(el,at,40,0,dur+st*3,{ease:'power4.out'});};
+const sideOut=(el,at,{dur=.4}={})=>{tl.to(words(el),{opacity:0,xPercent:-60,duration:dur,ease:'power2.in',stagger:.03},at);
+  blurTween(el,at,0,40,dur+.1,{ease:'power2.in'});tl.set(el,{opacity:0},at+dur+.15);};
+const wordsOn=(sel,at,each)=>tl.fromTo($$(sel),{opacity:.15},{opacity:1,duration:.12,stagger:each,immediateRender:false},at);
+
+/* ---- camera: focus point + scale + 3D tilt, applied in render(t) ---- */
+const CAM={s:1.18,fx:540,fy:950,rx:10,ry:-14};
+const shot=(at,dur,v,ease='power2.inOut')=>tl.to(CAM,{...v,duration:dur,ease},at);
+/* the orb + carousel state */
+const ORB={x:930,y:640,s:.62,o:1,talk:1,listen:0};
+const CAR={rot:40,o:0,s:.7,z:-500};
+const flyOrb=(at,dur,v,ease='power3.inOut')=>tl.to(ORB,{...v,duration:dur,ease},at);
+
+/* ================= RUNDOWN (25 s) ================= */
+/* initial states */
+tl.set(['#status','#resume','#q','#ans','#plat','#logo'],{opacity:0},0);
+tl.set('#deck',{rotateX:8,rotateY:-6,z:0,scale:1,opacity:1},0);
+tl.set(['#b1','#b2','#b3','#b4'],{scaleY:.06,opacity:1},0);
+
+/* ACT 1 · 0–4.2 — in media res: the deck is already presenting itself */
+shot(0,4.2,{s:1.0,fx:540,fy:980,rx:4,ry:6},'sine.inOut');
+tl.to('#deck',{rotateX:3,rotateY:4,duration:4.2,ease:'sine.inOut'},0);
+['#b1','#b2','#b3','#b4'].forEach((b,i)=>tl.to(b,{scaleY:1,duration:.9,ease:'expo.out'},.3+i*.22));
+wordsOn('#tr span',.5,.3);
+rollIn($('#h1'),.35);
+rollOut($('#h1'),3.75);
+
+/* ACT 2 · 4.2–8.4 — push into the deck; the orb points along the chart */
+shot(4.0,.95,{s:1.1,fx:540,fy:950,rx:0,ry:0});
+shot(4.95,3.4,{s:1.15,ry:-3},'sine.inOut');
+tl.to('#deck',{rotateX:0,rotateY:0,duration:.95,ease:'power2.inOut'},4.0);
+flyOrb(4.6,1.0,{x:700,y:1150,s:.42});
+['#b1','#b2','#b3','#b4'].forEach((b,i)=>tl.fromTo(b,{filter:'brightness(1)'},{filter:'brightness(1.35)',duration:.25,yoyo:true,repeat:1,immediateRender:false},5.4+i*.55));
+flyOrb(5.4,2.2,{x:930},'sine.inOut');
+depthIn($('#h2'),4.9);
+depthOut($('#h2'),8.0);
+
+/* ACT 3 · 8.4–15.4 — a question arrives in the world; the answer blooms from the chart */
+shot(8.4,1.0,{s:1.06,fx:540,fy:1200,rx:-5,ry:-7});
+tl.to('#st-a',{opacity:0,duration:.15},8.5);tl.to('#st-b',{opacity:1,duration:.2},8.6);
+tl.to(ORB,{talk:0,duration:.3},8.5);
+tl.fromTo('#status',{opacity:0,y:20},{opacity:1,y:0,duration:.45,ease:'expo.out',immediateRender:false},8.55);
+tl.fromTo('#q',{opacity:0,y:120,rotateX:-30},{opacity:1,y:0,rotateX:0,duration:.8,ease:'power4.out',immediateRender:false},8.75);
+{const el=$('#qtext'),str=el.textContent,o={i:0};tl.fromTo(o,{i:0},{i:str.length,duration:1.4,ease:'none',immediateRender:false,
+  onUpdate(){el.textContent=str.slice(0,Math.round(o.i));}},9.05);}
+flyOrb(9.4,1.0,{x:880,y:1300,s:.5});              // the orb leans in to listen
+tl.to(ORB,{listen:1,duration:.3},10.0);
+tl.to(ORB,{listen:0,duration:.3},11.1);
+/* the answer: camera rises to the chart, the card blooms out of Q4 */
+shot(11.0,1.0,{s:1.08,fx:540,fy:1040,rx:0,ry:5});
+flyOrb(11.0,.9,{x:120,y:990,s:.4});
+tl.to(['#b1','#b2','#b3'],{opacity:.3,duration:.35},11.3);
+tl.to('#b4',{filter:'brightness(1.25) drop-shadow(0 0 18px rgba(216,255,115,.8))',duration:.35},11.3);
+tl.fromTo('#ans',{opacity:0,scale:.12,rotateY:-40},{opacity:1,scale:1,rotateY:0,duration:.85,ease:'expo.out',immediateRender:false},11.45);
+tl.to(ORB,{talk:1,duration:.3},11.6);
+wordsOn('#anstext span',11.75,.13);
+maskUp($('#h3'),11.9);
+/* resume */
+tl.to('#status',{opacity:0,duration:.2},14.0);
+tl.fromTo('#resume',{opacity:0,scale:.85},{opacity:1,scale:1,duration:.4,ease:'back.out(1.6)',immediateRender:false},14.1);
+tl.to('#st-b',{opacity:0,duration:.15},14.2);tl.to('#st-a',{opacity:1,duration:.2},14.3);
+tl.to(['#q','#ans'],{opacity:0,y:-80,duration:.45,ease:'power2.in',stagger:.08},14.6);
+tl.to(['#b1','#b2','#b3'],{opacity:1,duration:.3},14.6);tl.to('#b4',{filter:'none',duration:.3},14.6);
+tl.to('#h3 .w',{opacity:0,yPercent:-40,duration:.35,ease:'power2.in',stagger:.04},14.9);
+shot(14.4,1.0,{s:1.0,fx:540,fy:980,rx:3,ry:0});
+flyOrb(14.5,1.0,{x:540,y:960,s:.7});
+
+/* ACT 4 · 15.4–21 — the deck folds away; meeting windows rotate in from depth around the orb */
+tl.to('#resume',{opacity:0,duration:.25},15.3);
+tl.to('#deck',{scale:.4,z:-700,rotateX:30,opacity:0,duration:.9,ease:'power3.in'},15.3);
+tl.to(CAR,{o:1,s:1.0,z:0,rot:0,duration:1.3,ease:'expo.out'},15.8);
+shot(15.6,1.4,{s:.92,fx:540,fy:960,rx:9,ry:0});
+tl.fromTo('#plat',{opacity:0},{opacity:1,duration:.4,immediateRender:false},16.4);
+sideIn($('#h4'),16.4);
+tl.to(CAR,{rot:-120,duration:.8,ease:'power3.inOut'},18.0);
+tl.to('#pl0',{opacity:0,yPercent:-60,duration:.25},18.1);tl.fromTo('#pl1',{opacity:0,yPercent:60},{opacity:1,yPercent:0,duration:.3,immediateRender:false},18.35);
+tl.to(CAR,{rot:-240,duration:.8,ease:'power3.inOut'},19.5);
+tl.to('#pl1',{opacity:0,yPercent:-60,duration:.25},19.6);tl.fromTo('#pl2',{opacity:0,yPercent:60},{opacity:1,yPercent:0,duration:.3,immediateRender:false},19.85);
+shot(17.0,4.0,{s:.98,rx:4},'sine.inOut');
+sideOut($('#h4'),20.75);
+
+/* ACT 5 · 21–25 — the windows fold into the orb; the orb becomes the "o" of the wordmark */
+tl.to(CAR,{s:.05,o:0,rot:-330,duration:.7,ease:'power3.in'},20.9);
+tl.to('#plat',{opacity:0,duration:.25},20.9);
+shot(21.0,1.0,{s:1.0,fx:540,fy:960,rx:0,ry:0});
+tl.to(ORB,{s:.95,duration:.35,ease:'power2.out'},21.4);
+flyOrb(21.75,.85,{x:703.6,y:941,s:.49});          // the o disc of logo-dark.png: centre (820,112) × .7239, from left 110 / top 860
+tl.to(ORB,{talk:.35,duration:.4},21.75);
+tl.set('#logo',{opacity:1,clipPath:'circle(0px at 593.6px 81px)'},22.55);
+tl.to('#logo',{clipPath:'circle(900px at 593.6px 81px)',duration:.9,ease:'power3.inOut'},22.55);
+tl.to(ORB,{o:0,duration:.2},23.2);
+rollIn($('#h5'),22.85,{st:.1});
+tl.fromTo('#url',{opacity:0,letterSpacing:'.5em'},{opacity:1,letterSpacing:'.14em',duration:.9,ease:'power3.out',immediateRender:false},23.6);
+tl.fromTo('#cta',{opacity:0,y:20},{opacity:1,y:0,duration:.6,ease:'back.out(1.6)',immediateRender:false},23.9);
+shot(22.6,2.4,{s:1.035,fy:1000},'sine.inOut');
+tl.to({},{duration:.01},DURATION-.01);
+
+/* ================= RENDER: everything visible is a function of t ================= */
+const world=$('#world'),bg=$('#bg'),glow=$('#glow'),r1=$('#rings1'),r2=$('#rings2'),orb=$('#orb'),car=$('#car');
+const bars=$$('#orb .wave i'),rings=[$('#ring1'),$('#ring2')],mws=$$('.mw'),grainEl=$('#grain');
+/* grain tile: seeded noise, made once (no Math.random) */
+{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d'),img=x.createImageData(256,256);
+ let s=1234567;const rnd=()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+ for(let i=0;i<img.data.length;i+=4){const v=rnd()*255;img.data[i]=img.data[i+1]=img.data[i+2]=v;img.data[i+3]=255;}
+ x.putImageData(img,0,0);grainEl.style.backgroundImage=`url(${c.toDataURL()})`;}
+function render(t){
+  const s=CAM.s*(1+.006*Math.sin(t*.8));
+  world.style.transformOrigin=`${CAM.fx}px ${CAM.fy}px`;
+  world.style.transform=`translate(${W/2-CAM.fx}px,${H/2-CAM.fy}px) rotateX(${CAM.rx}deg) rotateY(${CAM.ry}deg) scale(${s})`;
+  bg.style.transform=`translate(${(540-CAM.fx)*.25-CAM.ry*6}px,${(960-CAM.fy)*.25+CAM.rx*6}px) scale(${1+(s-1)*.25})`;
+  r1.setAttribute('transform',`rotate(${t*7} 840 1260)`);r2.setAttribute('transform',`rotate(${-t*4.5} 840 1260)`);
+  glow.style.transform=`translate(${Math.sin(t*.35)*70}px,${Math.cos(t*.27)*50}px)`;
+  const k=Math.floor(t*12);grainEl.style.transform=`translate(${k*37%60-30}px,${k*61%60-30}px)`;
+  /* orb */
+  orb.style.transform=`translate3d(${ORB.x}px,${ORB.y}px,60px) scale(${ORB.s})`;orb.style.opacity=ORB.o;
+  bars.forEach((b,i)=>{const env=1-Math.abs(i-4)/5.2;
+    const sp=Math.abs(Math.sin(t*(7.3+i*1.7)+i*1.9))*.6+Math.abs(Math.sin(t*(3.1+i*.9)+i))*.4;
+    b.style.height=(14+env*(ORB.talk*86*sp+ (1-ORB.talk)*10))+'px';});
+  rings.forEach((r,i)=>{const p=((t*1.1+i*.5)%1);r.style.opacity=ORB.listen*(1-p);r.style.transform=`scale(${1+p*.9})`;});
+  /* carousel */
+  car.style.transform=`translate3d(0,0,${CAR.z}px) scale(${CAR.s}) rotateY(${CAR.rot}deg)`;car.style.opacity=CAR.o;
+  mws.forEach((m,i)=>{const a=i*120;const rel=((a+CAR.rot)%360+540)%360-180;const f=Math.cos(rel*Math.PI/180);
+    m.style.transform=`rotateY(${a}deg) translateZ(470px)`;m.style.opacity=Math.max(0,.15+.85*f);});
+}
+
+/* ================= GLUE: autoplay, loop, ?debug=1 scrub, export hooks ================= */
+const stage=$('#stage');const fit=()=>{const sc=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${sc})`;};
+addEventListener('resize',fit);fit();
+const clock=$('#clock'),scrub=$('#scrub'),btn=$('#btn-play');let scrubbing=false;
+(function frame(){const t=tl.time();render(t);clock.textContent=t.toFixed(2)+'s';if(!scrubbing)scrub.value=String(t/DURATION*1000);requestAnimationFrame(frame);})();
+const toggle=()=>{if(tl.paused()||tl.progress()>=1){if(tl.progress()>=1)tl.progress(0);tl.play();btn.textContent='Pause';}else{tl.pause();btn.textContent='Play';}};
+btn.onclick=toggle;$('#btn-restart').onclick=()=>{tl.pause(0);tl.play();};
+scrub.addEventListener('pointerdown',()=>{scrubbing=true;tl.pause();btn.textContent='Play';});addEventListener('pointerup',()=>scrubbing=false);
+scrub.addEventListener('input',()=>{tl.pause();tl.time(scrub.value/1000*DURATION);});
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();toggle();}if(/^[rR]$/.test(e.key)){tl.pause(0);tl.play();}});
+if(Q.has('debug'))$('#ui').classList.add('on');
+tl.eventCallback('onComplete',()=>{tl.play(0);});
+const seek=t=>{tl.pause();tl.time(t,false);render(t);};
+window.OPENER={tl,DURATION,seek,W,H,ready:false};
+document.fonts.ready.then(()=>{window.OPENER.ready=true;if(!Q.has('clean'))tl.play(0);});
+})();
+</script>
+</body>
+</html>
