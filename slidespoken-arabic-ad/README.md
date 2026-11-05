@@ -6,10 +6,10 @@ The idea in one line: **you no longer have to deliver every presentation yoursel
 
 | File | What |
 |---|---|
-| `out/slidespoken-arabic-ad-1080p.mp4` | Final video: H.264 + AAC 48 kHz stereo, 1920×1080, 30 fps, Arabic subtitles burned in |
+| `out/slidespoken-arabic-ad-1080p-no-voice.mp4` | Final video **without voice** (voice to be recorded later): H.264 12 Mbps + AAC 48 kHz stereo music and SFX bed (−20 LUFS), 1920×1080, 30 fps, no burned-in subtitles |
 | `out/subtitles-ar.srt` | Arabic subtitles (SRT, same timing as the burned-in ones) |
 | `audio/voiceover.mp3` / `voice/voiceover.wav` | Arabic voiceover on its own |
-| `audio/music.wav`, `audio/sfx.wav`, `audio/mix.wav` | Music bed, sound effects, final mix |
+| `audio/music-sfx-bed.wav`, `audio/music.wav`, `audio/sfx.wav`, `audio/mix.wav` | Bed without voice, music, sound effects, and a reference mix with the offline voice |
 | `NARRATION-SCRIPT.md` | Final Arabic script with per-line timings |
 | `ELEVENLABS-SCRIPT.md` | The same script prepared for a premium voice (optional swap) |
 | `index.html` + `assets/` + `timings.js` | Editable animation source (open in Chrome; it autoplays and loops) |
@@ -31,9 +31,9 @@ python3 tools/tts.py <ar_JO-kareem-medium.onnx>    # voice/lines/*.wav (Piper, o
 python3 tools/voice_mix.py                          # timeline -> voice/voiceover.wav, timings.js, out/subtitles-ar.srt
 python3 tools/asr_check.py <whisper-small dir>      # optional: transcribe each line back (pronunciation QC)
 python3 tools/snap.py out/snap 2 12 24 36 48 58     # key-frame contact sheet
-python3 tools/export.py out/video-silent.mp4 30     # frame-exact render
+Q="&nosubs=1" python3 tools/export.py out/video-clean.mp4 30   # frame-exact render (drop Q to burn in subtitles)
 python3 tools/sound.py                              # music + sfx from the animation's cue list, final mix
-ffmpeg -i out/video-silent.mp4 -i audio/mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart out/slidespoken-arabic-ad-1080p.mp4
+ffmpeg -i out/video-clean.mp4 -i audio/music-sfx-bed.wav -map 0:v -map 1:a -c:v libx264 -preset slow -b:v 12M -maxrate 14M -bufsize 24M -tune grain -pix_fmt yuv420p -c:a aac -b:a 192k -shortest -movflags +faststart out/slidespoken-arabic-ad-1080p-no-voice.mp4
 ```
 
 **Swapping in another voice:** save one file per line as `voice/lines/<id>.wav` (ids are in `voice/lines.json`), then run `voice_mix.py`, `export.py` and `sound.py`. Every scene, subtitle and sound cue re-times itself to the new voice.
