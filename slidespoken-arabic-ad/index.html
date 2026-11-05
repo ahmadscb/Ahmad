@@ -650,6 +650,7 @@ tl.to({}, { duration: .01 }, DUR - .01);
 /* ---------- per-frame render ---------- */
 const world = $("#world"), bg = $("#bg"), subs = $("#subs span"), env = T.env;
 const NO_SUB = new Set(["s1a"]);  // the hook line is already the on-screen headline
+const SUBS_OFF = /nosubs=1/.test(location.search);  // clean master for a voice recorded later
 function wave(Wv, t, amp, k = 1) { const e = env[Math.min(env.length - 1, Math.max(0, Math.round(t * 30)))] || 0; Wv.bars.forEach((b, i) => {
   const m = Math.sin(i * 1.7 + t * 9) * .5 + Math.sin(i * .63 - t * 5.3) * .5, h = 3 + amp * e * (.45 + .55 * Math.abs(m)) * (1 - Math.abs(i - (Wv.bars.length - 1) / 2) / Wv.bars.length * k);
   b.setAttribute("y1", Wv.cy - h); b.setAttribute("y2", Wv.cy + h); }); }
@@ -664,7 +665,7 @@ function render(t) {
   wave(W1, t, 22); wave(W2L, t, 70); wave(W2R, t, 70); wave(W3b, t, 26); wave(W4, t, 24, .3);
   // subtitles: follow the voice line by line
   let cur = null; for (const l of T.lines) if (t >= l.start - .05 && t <= l.end + .2) cur = l;
-  const txt = cur && !NO_SUB.has(cur.id) ? cur.sub : ""; if (txt !== lastSub) { subs.textContent = txt; lastSub = txt; }
+  const txt = cur && !SUBS_OFF && !NO_SUB.has(cur.id) ? cur.sub : ""; if (txt !== lastSub) { subs.textContent = txt; lastSub = txt; }
   if (cur && txt) { const a = Math.min(1, (t - cur.start + .05) / .18, (cur.end + .2 - t) / .18); subs.style.opacity = Math.max(0, a); subs.style.filter = `blur(${(1 - Math.max(0, Math.min(1, a))) * 4}px)`; } else subs.style.opacity = 0;
   drawDust(t); drawGrain(f);
 }

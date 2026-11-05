@@ -3,6 +3,7 @@ Reads the cue list the animation exposes (window.AD.SFX) so every effect sits on
   audio/music.wav  original minimal tech bed (D minor, 100 bpm), arranged to the scenes
   audio/sfx.wav    chalk, eraser, whooshes, UI, email chime, brand impact
   audio/mix.wav    voice + ducked music + sfx, loudness-normalised (-14 LUFS, -1.5 dBTP)
+  audio/music-sfx-bed.wav  the same without voice (-20 LUFS bed) for a voice recorded later
 Usage: python3 tools/sound.py"""
 import json, pathlib, subprocess, numpy as np
 from scipy.signal import butter, sosfilt, fftconvolve
@@ -145,4 +146,8 @@ fc = ("[0:a]highpass=f=75,equalizer=f=220:t=q:w=1:g=-1.5,equalizer=f=3200:t=q:w=
       "[2:a]volume=0.55[s];[v][md][s]amix=inputs=3:normalize=0,atrim=0:" + f"{DUR}" + ",loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000[o]")
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(ROOT / "voice/voiceover.wav"), "-i", str(AUD / "music.wav"), "-i", str(AUD / "sfx.wav"),
                 "-filter_complex", fc, "-map", "[o]", "-ar", "48000", str(AUD / "mix.wav")], check=True)
+# bed without voice (for a voice recorded later): music + sfx at background level, room left for narration
+subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(AUD / "music.wav"), "-i", str(AUD / "sfx.wav"), "-filter_complex",
+                f"[0:a]volume=0.34[m];[1:a]volume=0.55[s];[m][s]amix=inputs=2:normalize=0,atrim=0:{DUR},loudnorm=I=-20:TP=-2:LRA=11,aresample=48000[o]",
+                "-map", "[o]", "-ar", "48000", str(AUD / "music-sfx-bed.wav")], check=True)
 print("cues", len(CUES), "->", AUD / "mix.wav")
