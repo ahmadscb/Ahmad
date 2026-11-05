@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920">
+<title>SlideSpoken Arabic Ad</title>
+<!-- SlideSpoken: premium Arabic ad, cinematic chalkboard. 1920x1080, 30 fps, ~61 s.
+     Timing comes from timings.js (written by tools/voice_mix.py), so a new voice re-syncs every scene.
+     ?clean=1 = render mode (no autoplay); otherwise it autoplays and loops in the browser. -->
+<style>
+@font-face{font-family:Plex;font-weight:400;src:url(assets/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011}
+@font-face{font-family:Plex;font-weight:500;src:url(assets/fonts/ibm-plex-sans-arabic-arabic-500-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011}
+@font-face{font-family:Plex;font-weight:600;src:url(assets/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011}
+@font-face{font-family:Plex;font-weight:700;src:url(assets/fonts/ibm-plex-sans-arabic-arabic-700-normal.woff2) format('woff2');unicode-range:U+0600-06FF,U+0750-077F,U+08A0-08FF,U+FB50-FDFF,U+FE70-FEFF,U+200C-200F,U+2010-2011}
+@font-face{font-family:Plex;font-weight:400;src:url(assets/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2713}
+@font-face{font-family:Plex;font-weight:500;src:url(assets/fonts/ibm-plex-sans-arabic-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2713}
+@font-face{font-family:Plex;font-weight:600;src:url(assets/fonts/ibm-plex-sans-arabic-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2713}
+@font-face{font-family:Plex;font-weight:700;src:url(assets/fonts/ibm-plex-sans-arabic-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2713}
+@font-face{font-family:Mono;font-weight:500;src:url(assets/fonts/dm-mono-latin-500-normal.woff2) format('woff2')}
+:root{--ink:#f1f0e8;--dim:rgba(241,240,232,.55);--tq:#5fe3d6;--gd:#e2b964;--board:#151a19}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0b0d0d;overflow:hidden}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--board);font-family:Plex,sans-serif;color:var(--ink)}
+#bg{position:absolute;left:-200px;top:-160px;width:2320px;height:1400px;transform-origin:0 0}
+#world{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+.sc{position:absolute;left:0;top:0;width:1920px;height:1080px;opacity:0}
+svg.full{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible}
+.ch{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.thin{stroke-width:2.4}.faint{stroke-opacity:.45}
+.tq{stroke:var(--tq)}.gd{stroke:var(--gd)}
+.chalk{filter:url(#chalk)}.chalkT{filter:url(#chalkT)}
+.abs{position:absolute}
+.ar{direction:rtl;text-align:right}
+.mono{font-family:Mono,monospace;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+/* slide component: sized by its container's font-size (width/48) */
+.slide{position:absolute;inset:0;direction:rtl;padding:5% 6%;color:var(--ink)}
+.slide h3{margin:0;font-weight:600;font-size:2.5em;line-height:1.2}
+.slide .sub{font-size:1.05em;color:var(--dim);margin-top:.3em}
+.slide .rows{margin-top:1.6em;display:flex;flex-direction:column;gap:1.05em}
+.slide .row{display:flex;align-items:center;gap:1em;font-size:1.15em}
+.slide .row b{font-weight:500;width:5.2em}
+.slide .bar{height:1.15em;border:2px solid var(--ink);border-radius:.25em;transform-origin:100% 50%;
+  background:repeating-linear-gradient(-55deg,rgba(241,240,232,.55) 0 2px,transparent 2px 9px)}
+.slide .bar.hot{border-color:var(--tq);background:repeating-linear-gradient(-55deg,rgba(95,227,214,.75) 0 2px,transparent 2px 8px)}
+.slide ul{list-style:none;margin:1.5em 0 0;padding:0;display:flex;flex-direction:column;gap:.95em}
+.slide li{font-size:1.45em;display:flex;gap:.6em;align-items:center;align-self:flex-start}
+.slide li i{font-style:normal;color:var(--gd);font-weight:600}
+.slide .foot{position:absolute;left:6%;bottom:5%;font-size:.8em;color:var(--dim)}
+.vbars{position:absolute;left:8%;right:44%;bottom:15%;height:52%;display:flex;align-items:flex-end;gap:5%}
+.vbars div{flex:1;border:2px solid var(--ink);border-bottom:none;border-radius:.3em .3em 0 0;transform-origin:50% 100%;
+  background:repeating-linear-gradient(-55deg,rgba(241,240,232,.5) 0 2px,transparent 2px 9px)}
+.vbars div.hot{border-color:var(--tq);background:repeating-linear-gradient(-55deg,rgba(95,227,214,.75) 0 2px,transparent 2px 8px)}
+/* on-screen typography (screen space) */
+#ui{position:absolute;inset:0;pointer-events:none}
+.kick{position:absolute;right:112px;top:46px;font-family:Mono;font-weight:500;font-size:27px;text-shadow:0 0 14px #121615,0 0 4px #121615;letter-spacing:.16em;text-transform:uppercase;color:var(--gd);opacity:0;direction:ltr}
+.title{position:absolute;right:110px;top:82px;font-weight:600;font-size:56px;line-height:1.25;text-shadow:0 0 22px #121615,0 0 8px #121615;direction:rtl;opacity:0;white-space:nowrap}
+.title em{font-style:normal;color:var(--tq)}
+#subs{position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;pointer-events:none}
+#subs span{direction:rtl;unicode-bidi:isolate;font-weight:500;font-size:40px;line-height:1.45;padding:6px 26px 9px;border-radius:14px;
+  background:rgba(8,10,10,.62);color:#f6f5ef;max-width:1560px;text-align:center;opacity:0;box-shadow:0 0 30px rgba(0,0,0,.35)}
+#grain,#dustS{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 46%,transparent 55%,rgba(0,0,0,.55) 100%)}
+#lamp{position:absolute;inset:-200px;pointer-events:none;mix-blend-mode:soft-light;background:radial-gradient(circle at 30% 18%,rgba(255,236,200,.22),transparent 45%)}
+#eraser{position:absolute;top:-80px;width:520px;height:1240px;left:2200px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(21,26,25,.96) 30%,rgba(24,29,28,1) 50%,rgba(21,26,25,.96) 70%,transparent);filter:blur(6px)}
+/* meeting window */
+.frame{position:absolute;border:3px solid var(--ink);border-radius:22px}
+.tile{position:absolute;width:450px;height:150px;border:2.5px solid rgba(241,240,232,.7);border-radius:16px;display:flex;align-items:center;gap:18px;padding:0 22px;direction:rtl}
+.tile .av{width:76px;height:76px;border-radius:50%;border:2.5px solid var(--ink);display:grid;place-items:center;font-weight:600;font-size:30px;flex:none}
+.tile .nm{font-size:30px;font-weight:500}
+.tile .st{font-family:Mono;font-size:17px;letter-spacing:.12em;color:var(--dim);direction:ltr;text-align:right}
+.chip{position:absolute;font-family:Mono;font-weight:500;font-size:20px;letter-spacing:.13em;text-transform:uppercase;padding:9px 18px;border-radius:999px;border:2px solid var(--tq);color:var(--tq);white-space:nowrap;opacity:0;direction:ltr}
+.bubble{position:absolute;direction:rtl;font-size:38px;font-weight:500;line-height:1.4;padding:22px 32px;opacity:0}
+.doc-sec{position:absolute;left:46px;right:46px;direction:rtl}
+.doc-sec .lb{font-family:Mono;font-size:17px;letter-spacing:.15em;color:var(--gd);direction:ltr;text-align:right}
+.doc-sec .tx{font-size:27px;margin-top:6px;font-weight:500}
+.mail-row{position:absolute;left:30px;right:30px;height:92px;border-bottom:2px solid rgba(241,240,232,.25);direction:rtl;display:flex;align-items:center;gap:18px;padding:0 10px}
+.scrib{height:10px;border-radius:5px;background:rgba(241,240,232,.28)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="2320" height="1400"></canvas>
+  <div id="world">
+
+    <!-- ===== S1 · hook: a presenter at a screen; the presenter turns to chalk dust, the slide keeps presenting ===== -->
+    <section class="sc" id="s1">
+      <svg class="full chalk" viewBox="0 0 1920 1080">
+        <rect class="ch s1screen" x="820" y="200" width="900" height="520" rx="12"/>
+        <rect class="ch thin faint s1screen" x="842" y="222" width="856" height="476" rx="6"/>
+        <path class="ch thin faint s1screen" d="M1270 720 V770 M1180 772 H1360"/>
+        <g id="presenter">
+          <path class="ch pp" d="M500 314 C470 314 462 340 462 362 C462 392 480 408 500 408 C522 408 538 390 538 360 C538 336 526 314 500 314 Z"/>
+          <path class="ch thin pp" d="M468 336 Q500 300 536 344"/>
+          <path class="ch pp" d="M492 408 L494 432 M506 408 L508 432"/>
+          <path class="ch pp" d="M440 452 Q500 428 562 454"/>
+          <path class="ch pp" d="M440 452 Q424 560 440 690 M562 454 Q578 560 564 690 M440 690 H564"/>
+          <path class="ch thin pp" d="M494 436 L478 522 L500 560 M508 436 L522 522 L500 560"/>
+          <path class="ch pp" d="M556 466 Q640 474 702 442 L766 418 M766 418 l20 -7"/>
+          <path class="ch pp" d="M444 466 Q420 566 436 652"/>
+          <path class="ch pp" d="M448 690 L452 958 M500 708 L492 958 M508 708 L516 958 M560 690 L568 958"/>
+          <path class="ch pp" d="M444 962 L498 964 M512 964 L576 962"/>
+        </g>
+        <g id="s1wave"></g>
+      </svg>
+      <div class="abs chalkT" id="s1slide" style="left:842px;top:222px;width:856px;height:476px;font-size:17.8px">
+        <div class="slide">
+          <h3>خطة النمو ٢٠٢٧</h3>
+          <div class="sub">الإيرادات حسب الربع</div>
+          <ul style="position:absolute;right:6%;top:42%;width:38%;margin:0">
+            <li style="font-size:1.15em"><i>١</i>أسواق جديدة</li>
+            <li style="font-size:1.15em"><i>٢</i>فريق مبيعات أكبر</li>
+            <li style="font-size:1.15em"><i>٣</i>شراكات بالخليج</li>
+          </ul>
+          <div class="vbars"><div style="height:34%"></div><div style="height:48%"></div><div style="height:62%"></div><div class="hot" style="height:88%"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== S2 · brand, files, upload, the real product ===== -->
+    <section class="sc" id="s2">
+      <img id="logo2" class="abs" src="assets/img/logo-dark.png" style="left:470px;top:400px;width:980px;transform-origin:50% 50%">
+      <svg class="full chalk" viewBox="0 0 1920 1080"><path class="ch gd" id="logoLine" d="M560 676 C800 690 1120 690 1360 672"/></svg>
+      <div class="abs" id="ppt" style="left:330px;top:300px;width:420px;height:560px">
+        <svg class="full chalk" viewBox="0 0 1920 1080" style="width:420px;height:560px" preserveAspectRatio="none">
+        </svg>
+      </div>
+      <div class="abs" id="files"></div>
+      <div class="abs" id="drop" style="left:560px;top:290px;width:800px;height:500px;transform:scale(.78);transform-origin:50% 50%"></div>
+      <div class="abs" id="shotWrap" style="left:600px;top:236px;width:720px;height:540px;opacity:0;transform:rotate(-1.2deg)">
+        <img src="assets/img/live-presenter-hero.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:10px;filter:saturate(.9) contrast(1.02)">
+        <div class="abs mono" style="left:0;bottom:-46px;font-size:17px;color:var(--dim)">Real product UI · SlideSpoken AI Presenter</div>
+      </div>
+      <svg class="full chalk" viewBox="0 0 1920 1080">
+        <rect class="ch thin" id="shotFrame" x="584" y="220" width="752" height="572" rx="16" transform="rotate(-1.2 960 506)"/>
+        <g id="s2waveL"></g><g id="s2waveR"></g>
+      </svg>
+    </section>
+
+    <!-- ===== S3 · in-person: a boardroom, the agent presents on the wall screen ===== -->
+    <section class="sc" id="s3">
+      <svg class="full chalk" viewBox="0 0 1920 1080">
+        <path class="ch thin faint rm" d="M260 70 H1660 V610 H260 Z"/>
+        <path class="ch thin faint rm" d="M260 70 L-40 -90 M1660 70 L1960 -90 M260 610 L-60 1140 M1660 610 L1980 1140"/>
+        <path class="ch thin faint rm" d="M1730 150 V560 M1790 120 V600 M1850 90 V640 M90 140 V640 M150 170 V610"/>
+        <rect class="ch rm" x="600" y="130" width="720" height="405" rx="8"/>
+        <path class="ch rm" d="M640 690 L1280 690 L1600 1000 L320 1000 Z"/>
+        <path class="ch thin faint rm" d="M320 1000 L320 1030 M1600 1000 L1600 1030 M420 1000 L700 700 M1500 1000 L1220 700"/>
+        <g id="people"></g>
+        <g id="s3wave"></g>
+      </svg>
+      <div class="abs chalkT" id="roomScreen" style="left:612px;top:142px;width:696px;height:381px;font-size:14.5px;overflow:hidden"></div>
+      <div class="abs mono" id="roomTag" style="left:880px;top:562px;width:160px;text-align:center;font-size:15px;color:var(--tq);opacity:0">AI Presenter</div>
+    </section>
+
+    <!-- ===== S4-S6 · online meeting -> Q&A -> summary report -> email ===== -->
+    <section class="sc" id="s4">
+      <div class="frame chalkT" id="mframe" style="left:110px;top:150px;width:1700px;height:790px"></div>
+      <div class="abs" id="meet" style="left:0;top:0;width:1920px;height:1080px">
+        <div class="abs chalkT" id="mbar" style="left:130px;top:166px;width:1660px;height:52px;display:flex;align-items:center;gap:16px;direction:ltr">
+          <div style="position:relative;width:40px;height:40px">
+            <img class="pf" data-p="0" src="assets/img/google-meet-icon.png" style="position:absolute;inset:0;width:40px">
+            <img class="pf" data-p="1" src="assets/img/microsoft-teams-icon.png" style="position:absolute;inset:0;width:40px;opacity:0">
+            <img class="pf" data-p="2" src="assets/img/zoom-icon.png" style="position:absolute;inset:0;width:40px;opacity:0">
+          </div>
+          <div style="position:relative;width:300px;height:30px" class="mono">
+            <span class="pn" data-p="0" style="position:absolute;font-size:20px">Google Meet</span>
+            <span class="pn" data-p="1" style="position:absolute;font-size:20px;opacity:0">Microsoft Teams</span>
+            <span class="pn" data-p="2" style="position:absolute;font-size:20px;opacity:0">Zoom</span>
+          </div>
+          <div style="flex:1"></div>
+          <div class="mono" id="mstate" style="font-size:17px;color:var(--dim)">● 5 participants</div>
+          <div style="font-size:26px;font-weight:500;direction:rtl">مراجعة المبيعات الفصلية</div>
+        </div>
+        <div class="abs chalkT" id="share" style="left:130px;top:230px;width:1180px;height:664px;border:2.5px solid rgba(241,240,232,.75);border-radius:14px;overflow:hidden;font-size:24.6px"></div>
+        <div class="abs mono chalkT" id="slideNo" style="left:150px;top:850px;font-size:17px;color:var(--dim)">Slide 3 of 8</div>
+        <div class="tile chalkT" id="tAI" style="left:1340px;top:230px;border-color:var(--tq)">
+          <img src="assets/img/icon-512.png" style="width:76px;height:76px;border-radius:18px;flex:none">
+          <div><div class="nm" style="direction:ltr;text-align:right">AI Presenter</div><div class="st" id="aiSt">PRESENTING</div></div>
+          <svg width="90" height="60" style="margin-right:auto" id="aiWave"></svg>
+        </div>
+        <div class="tile chalkT pt" style="left:1340px;top:396px"><div class="av">س</div><div><div class="nm">سارة م.</div><div class="st">LISTENING</div></div></div>
+        <div class="tile chalkT pt" id="tQ" style="left:1340px;top:562px"><div class="av" id="qAv">خ</div><div><div class="nm">خالد ع.</div><div class="st" id="qSt">LISTENING</div></div></div>
+        <div class="tile chalkT pt" style="left:1340px;top:728px"><div class="av">ل</div><div><div class="nm">ليلى ح.</div><div class="st">LISTENING</div></div></div>
+        <div class="chip chalkT" id="joined" style="left:150px;top:248px">AI Presenter joined the meeting</div>
+        <div class="chip chalkT" id="paused" style="left:150px;top:248px;border-color:var(--gd);color:var(--gd)">Question detected · Presentation paused</div>
+        <div class="chip chalkT" id="resumed" style="left:150px;top:248px">Resuming presentation ✓</div>
+        <svg class="full chalk" viewBox="0 0 1920 1080">
+          <path class="ch gd" id="qBub" d="M780 700 H1250 Q1280 700 1280 730 V745 L1336 712 L1280 785 V800 Q1280 830 1250 830 H780 Q750 830 750 800 V730 Q750 700 780 700 Z"/>
+          <path class="ch tq" id="aBub" d="M190 300 H670 Q700 300 700 330 V610 Q700 640 670 640 H190 Q160 640 160 610 V330 Q160 300 190 300 Z"/>
+          <rect class="ch tq" id="hiBox" x="470" y="560" width="800" height="78" rx="12"/>
+          <path class="ch tq thin" id="hiLink" d="M650 560 C620 520 640 520 690 520" stroke-dasharray="0"/>
+        </svg>
+        <div class="bubble" id="qTx" style="left:760px;top:716px;width:510px;padding:12px 24px;color:var(--ink)">ممكن توضح هاي النقطة؟</div>
+        <div class="bubble" id="aTx" style="left:168px;top:306px;width:524px;font-size:31px;padding:18px 26px;color:var(--ink)"></div>
+      </div>
+
+      <!-- summary report (lives inside the morphed frame) -->
+      <div class="abs" id="doc" style="left:260px;top:150px;width:560px;height:780px;opacity:0">
+        <div class="abs" style="left:46px;right:46px;top:40px;display:flex;align-items:center;gap:14px;direction:ltr">
+          <img src="assets/img/icon-512.png" style="width:48px;height:48px;border-radius:12px">
+          <div><div style="font-size:31px;font-weight:600;line-height:1.1">Meeting Summary Report</div>
+          <div class="ar" style="font-size:21px;color:var(--dim);text-align:left">مراجعة المبيعات الفصلية · ٥ نوفمبر</div></div>
+        </div>
+        <div class="abs" style="left:46px;right:46px;top:132px;border-top:2px solid rgba(241,240,232,.35)"></div>
+        <div class="doc-sec ds" style="top:156px"><div class="lb">KEY POINTS</div><div class="tx">• نمو واضح بالسعودية والإمارات</div><div class="tx">• خطة التوسّع للربع الجاي</div></div>
+        <div class="doc-sec ds" style="top:330px"><div class="lb">DECISIONS</div><div class="tx">• اعتماد خطة التوسّع</div></div>
+        <div class="doc-sec ds" style="top:442px"><div class="lb">ACTION ITEMS</div><div class="tx">• تجهيز الميزانية · خالد</div><div class="tx">• تعيين فريق الدوحة · ليلى</div></div>
+        <div class="doc-sec ds" style="top:612px"><div class="lb">Q&amp;A</div><div class="tx" style="font-size:25px">س: ممكن توضح هاي النقطة؟ ✓ تمت الإجابة</div></div>
+        <div class="abs" id="scan" style="left:20px;right:20px;top:150px;height:3px;background:var(--tq);box-shadow:0 0 18px var(--tq);opacity:0"></div>
+      </div>
+      <svg class="full chalk" viewBox="0 0 1920 1080">
+        <path class="ch" id="env" d="M-130 -80 H130 V80 H-130 Z M-130 -80 L0 18 L130 -80" transform="translate(540 540)"/>
+      </svg>
+      <div class="abs" id="inbox" style="left:960px;top:170px;width:820px;height:740px;opacity:0">
+        <div class="frame chalkT" style="inset:0"></div>
+        <div class="abs chalkT" style="left:34px;right:34px;top:26px;display:flex;align-items:center;justify-content:space-between;direction:ltr">
+          <div class="mono" style="font-size:20px">Inbox</div><div style="font-size:24px;font-weight:500">البريد الوارد</div>
+        </div>
+        <div class="abs chalkT" style="left:30px;right:30px;top:80px;border-top:2px solid rgba(241,240,232,.35)"></div>
+        <div class="abs chalkT" id="rows" style="left:0;right:0;top:84px;height:640px;overflow:hidden">
+          <div class="mail-row" id="newRow" style="top:0;border-color:var(--tq)">
+            <div style="width:14px;height:14px;border-radius:50%;background:var(--gd);flex:none"></div>
+            <img src="assets/img/icon-512.png" style="width:52px;height:52px;border-radius:13px;flex:none">
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;justify-content:space-between;direction:ltr"><span class="mono" style="font-size:15px;color:var(--dim)">now</span><span style="font-size:24px;font-weight:600">SlideSpoken</span></div>
+              <div style="font-size:23px;white-space:nowrap;direction:ltr;text-align:right">Meeting Summary — <span dir="rtl">مراجعة المبيعات الفصلية</span></div>
+            </div>
+            <div class="mono" style="font-size:15px;padding:5px 10px;border:2px solid var(--gd);color:var(--gd);border-radius:8px;flex:none">PDF</div>
+          </div>
+          <div class="mail-row old" style="top:92px"><div style="flex:1"><div class="scrib" style="width:40%;margin-bottom:12px"></div><div class="scrib" style="width:78%"></div></div></div>
+          <div class="mail-row old" style="top:184px"><div style="flex:1"><div class="scrib" style="width:32%;margin-bottom:12px"></div><div class="scrib" style="width:64%"></div></div></div>
+          <div class="abs" id="mailOpen" style="left:30px;right:30px;top:120px;height:500px;opacity:0">
+            <div style="font-size:36px;font-weight:600;direction:ltr;text-align:right;margin-top:24px">Meeting Summary</div>
+            <div style="font-size:23px;color:var(--dim);direction:rtl;margin-top:4px">مرحبا، هاد ملخص <b style="color:var(--ink)">مراجعة المبيعات الفصلية</b>.</div>
+            <div style="margin-top:22px;border:2px solid var(--tq);border-radius:14px;padding:16px 22px;display:grid;grid-template-columns:auto 1fr;gap:10px 22px;direction:ltr;font-size:20px">
+              <span class="mono" style="font-size:15px;color:var(--gd)">KEY POINTS</span><span dir="rtl" style="text-align:right">نمو بالسعودية والإمارات · خطة التوسّع</span>
+              <span class="mono" style="font-size:15px;color:var(--gd)">DECISIONS</span><span dir="rtl" style="text-align:right">اعتماد خطة التوسّع</span>
+              <span class="mono" style="font-size:15px;color:var(--gd)">ACTION ITEMS</span><span dir="rtl" style="text-align:right">الميزانية · فريق الدوحة</span>
+              <span class="mono" style="font-size:15px;color:var(--gd)">Q&amp;A</span><span dir="rtl" style="text-align:right">سؤال واحد · تمت الإجابة</span>
+            </div>
+            <div class="mono" style="margin-top:18px;font-size:16px;color:var(--dim);direction:ltr;text-align:right">📎 Meeting-Summary.pdf attached</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== S7 · every stroke converges into the brand ===== -->
+    <section class="sc" id="s7">
+      <svg class="full chalk" viewBox="0 0 1920 1080">
+        <ellipse class="ch gd thin" id="orbA" cx="960" cy="380" rx="640" ry="190"/>
+        <ellipse class="ch tq thin" id="orbB" cx="960" cy="380" rx="560" ry="150" transform="rotate(-4 960 380)"/>
+      </svg>
+      <img id="logo7" class="abs" src="assets/img/logo-dark.png" style="left:500px;top:262px;width:920px">
+      <div class="abs ar chalkT" id="tag1" style="left:0;width:1920px;top:536px;text-align:center;font-size:58px;font-weight:600">البرزنتيشن تبعك،</div>
+      <div class="abs ar chalkT" id="tag2" style="left:0;width:1920px;top:616px;text-align:center;font-size:58px;font-weight:600">ووكيل الذكاء الاصطناعي <span style="color:var(--tq)">بيقدّم عنك.</span></div>
+      <div class="abs chalkT" id="cta" style="left:760px;top:740px;width:400px;height:84px;border:3px solid var(--tq);border-radius:999px;display:grid;place-items:center;font-size:36px;font-weight:600;background:rgba(95,227,214,.1);opacity:0">جرّب الخدمة مجاناً</div>
+      <div class="abs ar" id="nocc" style="left:0;width:1920px;top:832px;text-align:center;font-size:26px;color:var(--dim);opacity:0">بدون بطاقة ائتمان</div>
+      <div class="abs mono chalkT" id="url" style="left:0;width:1920px;top:872px;text-align:center;font-size:40px;color:var(--gd);letter-spacing:.08em;text-transform:none;opacity:0">SlideSpoken.com</div>
+    </section>
+
+    <canvas id="dust" width="1920" height="1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none"></canvas>
+  </div>
+
+  <div id="eraser"></div>
+  <div id="lamp"></div>
+
+  <!-- screen-space typography -->
+  <div id="ui">
+    <div class="title chalkT" id="h1" style="font-size:74px;top:auto;bottom:58px;right:0;left:0;text-align:center">مين قال لازم <em>إنت</em> تقدّم كل برزنتيشن؟</div>
+    <div class="kick" id="k2a">PowerPoint&nbsp;&nbsp;|&nbsp;&nbsp;PDF</div>
+    <div class="title chalkT" id="h2a">ارفع البرزنتيشن</div>
+    <div class="title chalkT" id="h2b"><em>وكيل الذكاء الاصطناعي</em> بيقدّم عنك</div>
+    <div class="kick" id="k3">Present In-Person</div>
+    <div class="title chalkT" id="h3">بالشركة أو بغرفة الاجتماعات</div>
+    <div class="kick" id="k4" style="display:flex;gap:26px;letter-spacing:.1em">
+      <span class="pk" data-p="2">Zoom</span><span class="pk" data-p="1">Microsoft Teams</span><span class="pk" data-p="0">Google Meet</span></div>
+    <div class="title chalkT" id="h4"><em>وكيل الذكاء الاصطناعي</em> بيقدّم عنك</div>
+    <div class="kick" id="k5">Interactive AI Q&amp;A</div>
+    <div class="title chalkT" id="h5">تفاعل مباشر مع الحضور</div>
+    <div class="kick" id="k6">Automatic Summary Report</div>
+    <div class="title chalkT" id="h6">بيوصلك <em>تلقائياً</em> على الإيميل</div>
+  </div>
+  <canvas id="dustS" width="1920" height="1080"></canvas>
+  <div id="subs"><span></span></div>
+  <div id="vig"></div>
+  <canvas id="grain" width="1920" height="1080"></canvas>
+</div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- chalk: grainy broken pigment + slightly wobbly edge + soft dust halo -->
+    <filter id="chalk" x="-3%" y="-3%" width="106%" height="106%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="4" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.62" result="m"/>
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="c"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="11" result="w"/>
+      <feDisplacementMap in="c" in2="w" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="2.2" result="b"/>
+      <feComponentTransfer in="b" result="h"><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+      <feMerge><feMergeNode in="h"/><feMergeNode in="d"/></feMerge>
+    </filter>
+    <filter id="chalkT" x="-3%" y="-6%" width="106%" height="112%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="g"/>
+      <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.2 0 0 0 -0.18" result="m"/>
+      <feComposite in="SourceGraphic" in2="m" operator="in" result="c"/>
+      <feGaussianBlur in="c" stdDeviation="1.6" result="b"/>
+      <feComponentTransfer in="b" result="h"><feFuncA type="linear" slope="0.4"/></feComponentTransfer>
+      <feMerge><feMergeNode in="h"/><feMergeNode in="c"/></feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<script src="assets/gsap.min.js"></script>
+<script src="timings.js"></script>
+<script>
+Promise.all(['400','500','600'].flatMap(w => [document.fonts.load(`${w} 40px Plex`, 'مرحبا SlideSpoken'), document.fonts.load(`${w} 40px Plex`, 'Meeting')]).concat([document.fonts.load('500 20px Mono', 'Inbox')])).then(() => {
+const T = window.TIMINGS, Lid = {}; T.lines.forEach(l => Lid[l.id] = l);
+const L = id => Lid[id], DUR = T.total, $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const clean = /clean=1/.test(location.search);
+// deterministic RNG (no Math.random anywhere)
+const rng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const R = rng(20261105);
+const SFX = [];  // {t,type,dur} -> tools/sound.py builds the sound design from these cues
+const sfx = (t, type, dur = 0.5, gain = 1) => SFX.push({ t: +t.toFixed(3), type, dur: +dur.toFixed(3), gain });
+
+/* ---------- slide content (Arabic, illustrative) ---------- */
+const SL = {
+  bars: `<div class="slide"><h3>نمو المبيعات حسب المنطقة</h3><div class="sub">الربع الثالث ٢٠٢٦</div>
+    <div class="rows">
+      <div class="row"><b>السعودية</b><div class="bar hot" style="width:62%"></div></div>
+      <div class="row"><b>الإمارات</b><div class="bar" style="width:52%"></div></div>
+      <div class="row"><b>قطر</b><div class="bar" style="width:41%"></div></div>
+      <div class="row"><b>الأردن</b><div class="bar" style="width:33%"></div></div></div></div>`,
+  agenda: `<div class="slide"><h3>أجندة الاجتماع</h3><div class="sub">مراجعة المبيعات الفصلية</div>
+    <ul><li><i>١</i>نتائج الربع الثالث</li><li><i>٢</i>خطة التوسّع</li><li><i>٣</i>الخطوات الجاية</li></ul></div>`,
+  plan: `<div class="slide"><h3>خطة التوسّع</h3><div class="sub">٢٠٢٧</div>
+    <svg viewBox="0 0 1000 300" style="position:absolute;left:6%;right:6%;top:42%;width:88%">
+      <path class="ch pl" d="M60 150 H940" style="stroke-width:5"/>
+      <circle class="ch pl tq" cx="900" cy="150" r="26" style="stroke-width:5"/><circle class="ch pl" cx="500" cy="150" r="26" style="stroke-width:5"/><circle class="ch pl gd" cx="100" cy="150" r="26" style="stroke-width:5"/>
+    </svg>
+    <div style="position:absolute;left:6%;right:6%;top:66%;display:flex;justify-content:space-between;font-size:1.25em;direction:rtl">
+      <span>الرياض</span><span>الدوحة</span><span>عمّان</span></div></div>`,
+  prio: `<div class="slide"><h3>أهم الأولويات</h3><div class="sub">الربع الجاي</div>
+    <ul><li><i>١</i>التوسّع بالسعودية والإمارات</li><li id="hotLi"><i>٢</i>فريق مبيعات جديد بالدوحة</li><li><i>٣</i>إطلاق الخدمة بعمّان</li></ul></div>`
+};
+function slideDeck(host, keys) { host.innerHTML = keys.map((k, i) => `<div class="deck" data-i="${i}" style="position:absolute;inset:0;opacity:${i ? 0 : 1}">${SL[k]}</div>`).join(""); return [...host.querySelectorAll(".deck")]; }
+const roomDeck = slideDeck($("#roomScreen"), ["agenda", "bars"]);
+const shareDeck = slideDeck($("#share"), ["bars", "plan", "prio"]);
+
+/* ---------- generated chalk geometry ---------- */
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+function waveG(g, cx, cy, n, gap, cls) { const bars = []; for (let i = 0; i < n; i++) bars.push(el("line", { class: "wv " + cls, x1: cx + (i - (n - 1) / 2) * gap, x2: cx + (i - (n - 1) / 2) * gap, y1: cy - 3, y2: cy + 3, "stroke-width": 5, "stroke-linecap": "round", stroke: cls === "gd" ? "var(--gd)" : "var(--tq)" }, g)); return { bars, cy, n }; }
+const W1 = waveG($("#s1wave"), 1270, 668, 34, 15, "tq");
+const W2L = waveG($("#s2waveL"), 330, 506, 22, 16, "tq"), W2R = waveG($("#s2waveR"), 1590, 506, 22, 16, "tq");
+const aiw = $("#aiWave"); const W4 = { bars: [], cy: 30, n: 9 }; for (let i = 0; i < 9; i++) W4.bars.push(el("line", { x1: 6 + i * 10, x2: 6 + i * 10, y1: 27, y2: 33, stroke: "var(--tq)", "stroke-width": 5, "stroke-linecap": "round" }, aiw));
+const W3b = waveG($("#s3wave"), 960, 600, 20, 12, "tq");
+// seated people around the boardroom table (heads + shoulders + chair backs)
+const seats = [[560, 760, 1], [450, 860, 1.12], [350, 960, 1.24], [1360, 760, 1], [1470, 860, 1.12], [1570, 960, 1.24]];
+seats.forEach(([x, y, s]) => {
+  el("path", { class: "ch thin faint pe", d: `M${x - 66 * s} ${y + 40 * s} Q${x - 70 * s} ${y - 90 * s} ${x} ${y - 96 * s} Q${x + 70 * s} ${y - 90 * s} ${x + 66 * s} ${y + 40 * s}` }, $("#people"));
+  el("circle", { class: "ch pe", cx: x, cy: y - 70 * s, r: 27 * s }, $("#people"));
+  el("path", { class: "ch pe", d: `M${x - 58 * s} ${y + 8 * s} Q${x - 50 * s} ${y - 34 * s} ${x} ${y - 36 * s} Q${x + 50 * s} ${y - 34 * s} ${x + 58 * s} ${y + 8 * s}` }, $("#people"));
+});
+// document cards (PowerPoint + PDF) and the upload dropzone, drawn in chalk
+$("#ppt").remove();
+const files = $("#files");
+files.innerHTML = [["ppt", 150, "PPTX", "gd", "خطة-المبيعات.pptx", "خطة المبيعات ٢٠٢٧"], ["pdf", 1350, "PDF", "tq", "تقرير-الربع-الثالث.pdf", "تقرير الربع الثالث"]].map(([id, x, badge, c, fname, ttl]) => `
+  <div class="abs fcard" id="${id}" style="left:${x}px;top:300px;width:420px;height:540px;transform-origin:50% 50%">
+    <svg class="chalk" width="420" height="540" viewBox="0 0 420 540" style="position:absolute;left:0;top:0;overflow:visible">
+      <path class="ch fd" d="M40 20 H300 L380 100 V480 H40 Z"/><path class="ch thin fd" d="M300 20 V100 H380"/>
+      <rect class="ch thin fd" x="70" y="140" width="280" height="160" rx="8"/>
+      <path class="ch thin faint fd" d="M330 180 H170 M330 214 H210 M330 248 H190"/>
+      <path class="ch thin fd ${c}" d="M110 288 V250 M140 288 V226 M170 288 V200"/>
+      <path class="ch thin faint fd" d="M340 340 H90 M340 376 H130 M340 412 H160"/>
+      <rect class="ch fd ${c}" x="60" y="420" width="${badge.length * 28 + 34}" height="48" rx="10"/>
+    </svg>
+    <div class="abs mono" style="left:76px;top:430px;font-size:24px;color:var(--${c});opacity:0" data-b>${badge}</div>
+    <div class="abs chalkT fn" dir="ltr" style="left:0;right:0;top:500px;text-align:center;font-size:26px;opacity:0">${fname}</div>
+  </div>`).join("");
+$("#drop").innerHTML = `
+  <svg class="chalk" width="800" height="500" viewBox="0 0 800 500" style="position:absolute;inset:0;overflow:visible">
+    <rect class="ch dz" x="6" y="6" width="788" height="488" rx="30"/>
+    <rect class="ch thin faint dz" x="34" y="34" width="732" height="432" rx="20" stroke-dasharray="14 14"/>
+    <path class="ch dz tq" d="M400 210 V100 M360 140 L400 100 L440 140"/>
+    <path class="ch thin dz" d="M330 232 H470"/>
+    <rect class="ch thin dz" x="160" y="400" width="480" height="22" rx="11"/>
+    <path class="ch tq" id="prog" d="M626 411 H174" style="stroke-width:12"/>
+  </svg>
+  <div class="abs ar chalkT" id="dropTx" style="left:0;right:0;top:262px;text-align:center;font-size:52px;font-weight:600;opacity:0">ارفع البرزنتيشن</div>
+  <div class="abs mono" id="dropSub" style="left:0;right:0;top:342px;text-align:center;font-size:20px;color:var(--dim);opacity:0">PowerPoint · PDF</div>
+  <div class="abs ar" id="dropOk" style="left:0;right:0;top:436px;text-align:center;font-size:26px;color:var(--tq);opacity:0">✓ جاهز للتقديم</div>`;
+
+/* ---------- board, grain ---------- */
+function paintBoard() {
+  const c = $("#bg"), x = c.getContext("2d"), W = c.width, H = c.height, r = rng(7);
+  const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#1c2221"); g.addColorStop(.55, "#151a19"); g.addColorStop(1, "#0f1312"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.filter = "blur(26px)";
+  for (let i = 0; i < 70; i++) { x.strokeStyle = `rgba(235,240,232,${.012 + r() * .022})`; x.lineWidth = 60 + r() * 150; x.beginPath(); const cx = r() * W, cy = r() * H, rr = 120 + r() * 420, a = r() * 6.28; x.arc(cx, cy, rr, a, a + 1 + r() * 2.4); x.stroke(); }
+  x.filter = "blur(1.2px)";
+  for (let i = 0; i < 120; i++) { x.strokeStyle = `rgba(235,240,232,${.02 + r() * .035})`; x.lineWidth = 1.5 + r() * 2; x.beginPath(); let px = r() * W, py = r() * H; x.moveTo(px, py); for (let k = 0; k < 6; k++) { px += (r() - .5) * 90; py += (r() - .5) * 30; x.lineTo(px, py); } x.stroke(); }
+  x.filter = "none";
+  const d = x.getImageData(0, 0, W, H), p = d.data, rn = rng(3);
+  for (let i = 0; i < p.length; i += 4) { const n = (rn() - .5) * 14; p[i] += n; p[i + 1] += n; p[i + 2] += n; }
+  x.putImageData(d, 0, 0);
+}
+const grainTiles = []; { for (let k = 0; k < 6; k++) { const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d"), d = x.createImageData(256, 256), r = rng(100 + k); for (let i = 0; i < d.data.length; i += 4) { const v = r() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 22; } x.putImageData(d, 0, 0); grainTiles.push(c); } }
+const gctx = $("#grain").getContext("2d");
+function drawGrain(f) { gctx.clearRect(0, 0, 1920, 1080); const t = grainTiles[f % 6], ox = (f * 37) % 256, oy = (f * 91) % 256; gctx.globalCompositeOperation = "source-over"; for (let y = -oy; y < 1080; y += 256) for (let x = -ox; x < 1920; x += 256) gctx.drawImage(t, x, y); }
+
+/* ---------- dust particles (stateless: position is a function of time) ---------- */
+const P = [];  // {t0,x,y,vx,vy,life,r,a,c,layer,g,tx,ty}
+const COL = { w: "241,240,232", t: "95,227,214", g: "226,185,100" };
+function sampleEl(e, n) {  // world-space points along an SVG stroke (stage is at 0,0 and camera is identity at init)
+  const len = e.getTotalLength(), m = e.getScreenCTM(), pts = [];
+  for (let i = 0; i <= n; i++) { const p = e.getPointAtLength(len * i / n), q = new DOMPoint(p.x, p.y).matrixTransform(m); pts.push([q.x, q.y]); }
+  return pts;
+}
+const cache = new Map(); $$(".ch").forEach(e => { try { cache.set(e, sampleEl(e, Math.max(8, Math.min(60, Math.round(e.getTotalLength() / 16))))); } catch (_) {} });
+const colOf = e => e.classList.contains("tq") ? "t" : e.classList.contains("gd") ? "g" : "w";
+function chalkDust(e, t0, dur) {
+  const pts = cache.get(e); if (!pts) return; const c = colOf(e);
+  pts.forEach(([x, y], i) => { const te = t0 + dur * i / (pts.length - 1); for (let k = 0; k < 2; k++) P.push({ t0: te, x, y, vx: (R() - .5) * 40, vy: -10 + R() * 30, life: .5 + R() * .9, r: .6 + R() * 1.6, a: .55 + R() * .4, c, layer: 0, g: 70 }); });
+}
+function burstPts(pts, t0, o = {}) { pts.forEach(([x, y]) => P.push({ t0: t0 + (o.spread || 0) * R(), x, y, vx: (o.vx || 0) + (R() - .5) * (o.v || 120), vy: (o.vy || 0) + (R() - .5) * (o.v || 120), life: (o.life || 1.2) * (.6 + R() * .8), r: (o.r || 1.4) * (.5 + R()), a: o.a || .8, c: o.c || "w", layer: o.layer || 0, g: o.g ?? 40, tx: o.tx, ty: o.ty })); }
+function edgeDust(rect, t0, dur, rtl, layer = 1, c = "w") { // dust at the tip of RTL / LTR handwriting
+  const n = Math.round(dur * 70); for (let i = 0; i < n; i++) { const f = i / n, x = rtl ? rect.right - f * rect.width : rect.left + f * rect.width; P.push({ t0: t0 + f * dur, x, y: rect.top + R() * rect.height, vx: (R() - .5) * 30, vy: -6 + R() * 24, life: .45 + R() * .7, r: .6 + R() * 1.4, a: .7, c, layer, g: 60 }); }
+}
+const dctx = [$("#dust").getContext("2d"), $("#dustS").getContext("2d")];
+function drawDust(t) {
+  dctx.forEach(c => c.clearRect(0, 0, 1920, 1080));
+  for (const p of P) { const a = t - p.t0; if (a < 0 || a > p.life) continue; const k = a / p.life; let x, y;
+    if (p.tx != null) { const e = 1 - Math.pow(1 - Math.min(1, k * 1.15), 3); x = p.x + (p.tx - p.x) * e + p.vx * a * (1 - e); y = p.y + (p.ty - p.y) * e + p.vy * a * (1 - e); }
+    else { x = p.x + p.vx * a; y = p.y + p.vy * a + .5 * p.g * a * a; }
+    const al = p.a * Math.pow(1 - k, 1.4); const c = dctx[p.layer]; c.fillStyle = `rgba(${COL[p.c]},${al.toFixed(3)})`; c.beginPath(); c.arc(x, y, p.r, 0, 6.283); c.fill(); }
+}
+
+/* ---------- timeline helpers ---------- */
+const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+function D(sel, t0, dur, stag = 0, opt = {}) { // chalk draw-on with dust at the tip
+  const els = typeof sel === "string" ? $$(sel) : sel.length != null ? [...sel] : [sel];
+  els.forEach((e, i) => { e.setAttribute("pathLength", 1); e.style.strokeDasharray = "1 1"; e.style.strokeDashoffset = 1;
+    const a = t0 + i * stag; tl.set(e, { opacity: 1 }, a); tl.to(e, { strokeDashoffset: 0, duration: dur, ease: opt.ease || "power1.inOut" }, a);
+    if (opt.dust !== false) chalkDust(e, a, dur); });
+  if (opt.sound !== false && els.length) sfx(t0, "chalk", Math.min(dur + stag * (els.length - 1), 2.4), opt.gain || 1);
+}
+function rect(e) { const r = e.getBoundingClientRect(); return { left: r.left, top: r.top + r.height * .2, width: r.width, height: r.height * .6, right: r.right }; }
+function write(sel, t0, dur, o = {}) { // handwriting reveal: Arabic right-to-left, Latin left-to-right
+  const e = $(sel), rtl = o.ltr ? false : true, r = rect(e);
+  tl.set(e, { opacity: 1 }, t0);
+  tl.fromTo(e, { clipPath: rtl ? "inset(-30% 0% -30% 100%)" : "inset(-30% 100% -30% 0%)" }, { clipPath: "inset(-30% 0% -30% 0%)", duration: dur, ease: "power1.inOut" }, t0);
+  edgeDust(r, t0, dur, rtl, o.layer ?? 1, o.c || "w"); if (o.sound !== false) sfx(t0, "chalk", dur, .8);
+}
+const fadeIn = (s, t, d = .5) => tl.fromTo(s, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: d, ease: "power3.out" }, t);  // no CSS blur: it would replace the chalk filter
+const fadeOut = (s, t, d = .35) => tl.to(s, { opacity: 0, duration: d, ease: "power2.in" }, t);
+function title(k, h, t0, t1, hd = .9) { if (k) { fadeIn(k, t0, .5); fadeOut(k, t1); } if (h) { write(h, t0 + .12, hd); fadeOut(h, t1); } }
+const CAM = { x: 960, y: 540, s: 1, r: 0 };
+const cam = (t, d, v, ease = "power2.inOut") => tl.to(CAM, { ...v, duration: d, ease }, t);
+const scene = (id, a, b, fi = .01) => { tl.set(id, { opacity: 0 }, 0); tl.to(id, { opacity: 1, duration: fi, ease: "none" }, a); if (b != null) tl.set(id, { opacity: 0 }, b); };
+function eraseWipe(t, outId, inId, d = .75) { // an eraser sweeps right->left; old scene is wiped, new one is revealed behind it
+  const o = { x: 2200 }; tl.fromTo(o, { x: 2200 }, { x: -700, duration: d, ease: "power2.inOut", onUpdate: () => {
+    const bx = o.x + 260; $("#eraser").style.left = o.x + "px";
+    const cut = Math.max(0, Math.min(1920, bx)); $(outId).style.clipPath = `inset(0 ${1920 - cut}px 0 0)`; if (inId) $(inId).style.clipPath = `inset(0 0 0 ${cut}px)`; } }, t);
+  tl.set(outId, { opacity: 0, clipPath: "none" }, t + d); if (inId) tl.set(inId, { clipPath: "none" }, t + d + .01);
+  sfx(t, "erase", d, 1); const pts = []; for (let i = 0; i < 260; i++) pts.push([1920 - (i / 260) * 2200, 60 + R() * 960]);
+  pts.forEach(([x, y], i) => P.push({ t0: t + d * i / 260, x, y, vx: -80 - R() * 120, vy: (R() - .5) * 60, life: .7 + R() * .8, r: .8 + R() * 2, a: .55, c: "w", layer: 1, g: 30 }));
+}
+
+/* ======================= SCENES ======================= */
+const S = k => T.scenes[k];  // [first word, last word] per scene
+const B2 = L("s2a").start - .3, B3 = L("s3a").start - .45, B4 = L("s4a").start - .4, B5 = L("s5a").start - .25, B6 = L("s6a").start - .35, B7 = L("s7a").start - .5;
+
+// ---- S1 hook (0 -> B2)
+scene("#s1", 0, B2 + .45);
+CAM.x = 1000; CAM.y = 560; CAM.s = 1.16; CAM.r = -1.2;
+cam(0, 1.5, { x: 960, y: 520, s: 1.02, r: 0 }, "power2.out");
+D(".s1screen", 0.0, .75, .08, { gain: 1.2 });
+D(".pp", 0.05, .5, .05, { ease: "power2.out" });
+tl.fromTo("#s1slide", { opacity: 0 }, { opacity: 1, duration: .4 }, .45);
+tl.from("#s1slide .vbars div", { scaleY: 0, duration: .6, stagger: .08, ease: "power3.out" }, .6);
+tl.from("#s1slide li", { opacity: 0, x: 20, duration: .35, stagger: .1 }, .75);
+write("#h1", .25, 1.15, { c: "w" });
+tl.fromTo("#h1 em", { color: "#f1f0e8" }, { color: "#e2b964", duration: .3 }, 1.25);
+// the push: camera rushes the screen; the presenter becomes chalk dust
+const PUSH = 1.6;
+cam(PUSH, .9, { x: 1270, y: 500, s: 1.62 }, "expo.inOut"); sfx(PUSH - .1, "whoosh", .9, 1.1);
+tl.to("#presenter", { opacity: 0, duration: .55, ease: "power1.in" }, PUSH + .05);
+{ const pts = []; $$(".pp").forEach(e => (cache.get(e) || []).forEach(p => { for (let k = 0; k < 7; k++) pts.push([p[0] + (R() - .5) * 8, p[1] + (R() - .5) * 8]); }));
+  burstPts(pts, PUSH + .05, { spread: .45, vx: 90, vy: -70, v: 160, life: 1.6, r: 1.6, a: .9, g: -10 }); sfx(PUSH + .05, "dust", 1.2, 1); }
+tl.to("#h1", { opacity: 0, duration: .4 }, L("s1a").end + .05);
+// the AI voice appears where the presenter used to be
+tl.set(".wv", { opacity: 1 }, 0);
+tl.fromTo("#s1wave", { opacity: 0 }, { opacity: 1, duration: .5 }, PUSH + .5);
+// zoom through the slide into scene 2
+cam(B2 - .35, .6, { x: 1270, y: 460, s: 4.2 }, "power3.in"); tl.to("#s1", { opacity: 0, duration: .3 }, B2 - .05); sfx(B2 - .4, "whoosh", .7, .9);
+
+// ---- S2 brand -> files -> upload -> real product (B2 -> B3)
+scene("#s2", B2 + .22, B3 + .9);
+tl.set(CAM, { x: 960, y: 540, s: 1.18, r: 0 }, B2 + .22); cam(B2 + .22, 1.4, { s: 1 }, "power3.out");
+{ const e = $("#logo2"); const r = e.getBoundingClientRect();
+  tl.fromTo(e, { clipPath: "inset(-10% 100% -10% 0%)", opacity: 1 }, { clipPath: "inset(-10% 0% -10% 0%)", duration: 1.0, ease: "power2.inOut" }, L("s2a").start - .05);
+  edgeDust({ left: 470, width: 980, top: 410, height: 200, right: 1450 }, L("s2a").start - .05, 1.0, false, 0); sfx(L("s2a").start, "reveal", 1.4, 1); }
+D("#logoLine", L("s2a").start + .7, .7);
+tl.to("#logo2", { x: -646, y: -380, scale: .36, duration: 1.0, ease: "power3.inOut" }, L("s2a").start + 1.9);
+tl.to("#logoLine", { opacity: 0, duration: .3 }, L("s2a").start + 1.9);
+D("#ppt .fd", L("s2a").start + 2.2, .55, .06); D("#pdf .fd", L("s2a").start + 2.5, .55, .06, { sound: false });
+tl.to("#ppt [data-b], #pdf [data-b], .fn", { opacity: 1, duration: .4, stagger: .1 }, L("s2a").start + 2.9);
+tl.from("#ppt, #pdf", { y: 26, duration: 1.2, ease: "power2.out", immediateRender: false }, L("s2a").start + 2.2);
+fadeIn("#k2a", L("s2b").start, .5); tl.to("#ppt", { scale: 1.06, duration: .3, yoyo: true, repeat: 1 }, L("s2b").start + .05); const SAY_PDF = L("s2b").pauses[0] ? L("s2b").pauses[0][1] : L("s2b").start + 1.4;
+tl.to("#pdf", { scale: 1.06, duration: .3, yoyo: true, repeat: 1 }, SAY_PDF);
+// upload
+const DZ = L("s2b").start + .5, UP = SAY_PDF + .9;
+D("#drop .dz", DZ, .6, .05);
+fadeIn("#dropTx", DZ + .3, .4); fadeIn("#dropSub", DZ + .5, .4);
+tl.to("#ppt", { x: 600, y: 40, scale: .25, opacity: 0, duration: .5, ease: "power3.in" }, UP - .55); tl.to("#pdf", { x: -620, y: 40, scale: .25, opacity: 0, duration: .5, ease: "power3.in" }, UP - .42);
+sfx(UP - .05, "click", .2, 1);
+D("#prog", UP, .75, 0, { ease: "power1.inOut", dust: false, sound: false }); sfx(UP, "tick", .75, .7);
+fadeIn("#dropOk", UP + .75, .3); write("#h2a", DZ + .2, .7); tl.to("#k2a,#h2a", { opacity: 0, duration: .35 }, L("s2c").start - .1);
+// the uploaded deck becomes the live AI presentation (a real product capture)
+const PR = L("s2c").start;
+const SH = Math.max(PR, UP + 1.15);
+tl.to("#drop", { scale: .7, opacity: 0, duration: .45, ease: "power2.in" }, SH - .2);
+tl.fromTo("#shotWrap", { opacity: 0, scale: .92 }, { opacity: 1, scale: 1, duration: .8, ease: "power3.out" }, SH + .05); sfx(SH + .05, "ui", .6, .8);
+D("#shotFrame", SH + .1, .8);
+tl.fromTo("#s2waveL, #s2waveR", { opacity: 0 }, { opacity: 1, duration: .6 }, SH + .7);
+write("#h2b", PR + .3, 1.2); fadeOut("#h2b", B3 - .2);
+cam(PR, B3 - PR - .1, { s: 1.08, y: 520 }, "sine.inOut");
+eraseWipe(B3 - .1, "#s2", "#s3");
+
+// ---- S3 in-person boardroom (B3 -> B4)
+scene("#s3", B3 - .1, B4 + .16);
+cam(B3 + .7, B4 - B3 - 1.3, { x: 960, y: 420, s: 1.24 }, "sine.inOut");
+D("#s3 .rm", B3 + .2, .8, .07, { gain: 1.1 }); D(".pe", B3 + .9, .55, .045);
+tl.fromTo("#roomScreen", { opacity: 0 }, { opacity: 1, duration: .5 }, B3 + 1.0);
+tl.fromTo("#roomTag, #s3wave", { opacity: 0 }, { opacity: 1, duration: .4 }, B3 + 1.2);
+const ADV1 = L("s3b").pauses[0] ? L("s3b").pauses[0][0] - .2 : L("s3b").start + 2.2;
+tl.to(roomDeck[0], { opacity: 0, x: 40, duration: .35, ease: "power2.in" }, ADV1); tl.fromTo(roomDeck[1], { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: .45 }, ADV1 + .25); sfx(ADV1, "slide", .4, .8);
+tl.from(roomDeck[1].querySelectorAll(".bar"), { scaleX: 0, duration: .6, stagger: .08, ease: "power3.out" }, ADV1 + .35);
+title("#k3", "#h3", B3 + .65, B4 - .55, 1.0);
+// push through the wall screen: the room becomes the online meeting
+cam(B4 - .6, .75, { x: 960, y: 332.5, s: 1920 / 696 }, "power3.in"); sfx(B4 - .65, "whoosh", .8, 1);
+
+// ---- S4 online meeting (B4 -> B5)
+scene("#s4", B4 + .15, null);
+tl.set(CAM, { x: 720, y: 562, s: 1920 / 1180 }, B4 + .15); cam(B4 + .3, 1.3, { x: 960, y: 545, s: 1 }, "power3.inOut");
+tl.from("#mframe, #mbar, .pt, #slideNo", { opacity: 0, duration: .6, stagger: .06 }, B4 + .55);
+sfx(B4 + .4, "digital", 1.0, 1);
+// the AI Presenter joins
+const JOIN = L("s4a").start + .9;
+tl.from("#tAI", { opacity: 0, scale: .85, duration: .55, ease: "back.out(1.6)" }, JOIN); sfx(JOIN, "join", .5, 1);
+tl.fromTo("#joined", { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: .4 }, JOIN + .15); tl.to("#joined", { opacity: 0, duration: .3 }, JOIN + 2.1);
+// platforms switch exactly on the spoken names
+const p4 = L("s4b").pauses, tMeet = L("s4b").start + (p4[0] ? (p4[0][0] - L("s4b").start) * .55 : 2.6), tTeams = p4[0] ? p4[0][1] - .05 : L("s4b").start + 3.5, tZoom = p4[1] ? p4[1][1] - .05 : L("s4b").start + 4.3;
+fadeIn("#k4", L("s4a").start + .1, .5);
+tl.set(".pk", { color: "rgba(241,240,232,.4)" }, 0);
+[[0, tMeet], [1, tTeams], [2, tZoom]].forEach(([p, t]) => {
+  tl.to(`.pk[data-p="${p}"]`, { color: "#e2b964", duration: .2 }, t); if (p) tl.to(`.pk[data-p="${p - 1}"]`, { color: "rgba(241,240,232,.4)", duration: .2 }, t);
+  if (p) { tl.to(`.pf[data-p="${p - 1}"], .pn[data-p="${p - 1}"]`, { opacity: 0, duration: .15 }, t); tl.to(`.pf[data-p="${p}"], .pn[data-p="${p}"]`, { opacity: 1, duration: .2 }, t + .1);
+    tl.to("#mframe", { borderColor: "#e2b964", duration: .12, yoyo: true, repeat: 1 }, t); }
+  sfx(t, "ui", .3, .7); });
+tl.to(".pk", { color: "#e2b964", duration: .3 }, L("s4c").start - .1);
+// the deck advances while the agent explains
+const ADV2 = L("s4b").start + .5, ADV3 = L("s4c").start + .3;
+tl.to(shareDeck[0], { opacity: 0, duration: .3 }, ADV2); tl.to(shareDeck[1], { opacity: 1, duration: .4 }, ADV2 + .2); sfx(ADV2, "slide", .4, .8);
+tl.set("#slideNo", { textContent: "Slide 4 of 8" }, ADV2 + .2);
+D(shareDeck[1].querySelectorAll(".pl"), ADV2 + .45, .7, .12);
+tl.to(shareDeck[1], { opacity: 0, duration: .3 }, ADV3); tl.to(shareDeck[2], { opacity: 1, duration: .4 }, ADV3 + .2); sfx(ADV3, "slide", .4, .8);
+tl.set("#slideNo", { textContent: "Slide 5 of 8" }, ADV3 + .2);
+tl.from(shareDeck[2].querySelectorAll("li"), { opacity: 0, x: 30, duration: .4, stagger: .14 }, ADV3 + .35);
+fadeOut("#k4", L("s4c").start + .1); write("#h4", L("s4c").start + .15, 1.1); fadeOut("#h4", B5 - .1);
+
+// ---- S5 interactive Q&A (B5 -> B6)
+const Q = L("s5a").start;
+title("#k5", "#h5", Q - .1, B6 - .2, .9);
+cam(Q - .1, 1.2, { x: 1010, y: 520, s: 1.12 }, "power2.inOut");
+tl.to("#tQ", { borderColor: "#e2b964", duration: .3 }, Q + .1); tl.to("#qAv", { borderColor: "#e2b964", color: "#e2b964", duration: .3 }, Q + .1); tl.set("#qSt", { textContent: "ASKING", color: "#e2b964" }, Q + .1);
+D("#qBub", Q + .3, .6); fadeIn("#qTx", Q + .7, .4); sfx(Q + .3, "pop", .3, .8);
+tl.fromTo("#paused", { opacity: 0 }, { opacity: 1, duration: .3 }, Q + .55); tl.to(shareDeck[2], { opacity: .55, duration: .3 }, Q + .55); tl.set("#aiSt", { textContent: "LISTENING" }, Q + .55);
+// answer: the relevant bullet lights up, the agent answers from it
+const A = L("s5b").start;
+tl.to(shareDeck[2], { opacity: 1, duration: .3 }, A - .2); tl.to("#paused", { opacity: 0, duration: .25 }, A - .2);
+{ const li = shareDeck[2].querySelector("#hotLi").getBoundingClientRect(); // box the bullet the answer comes from (measured at init)
+  $("#hiBox").setAttribute("x", li.left - 18); $("#hiBox").setAttribute("y", li.top - 10); $("#hiBox").setAttribute("width", li.width + 36); $("#hiBox").setAttribute("height", li.height + 20);
+  const cy = li.top + li.height / 2; $("#hiLink").setAttribute("d", `M${li.left - 18} ${cy} C ${li.left - 70} ${cy}, 760 470, 702 470`);
+  cache.set($("#hiBox"), sampleEl($("#hiBox"), 40)); cache.set($("#hiLink"), sampleEl($("#hiLink"), 24)); }
+D("#hiBox", A - .15, .5); tl.to("#hotLi", { color: "#5fe3d6", duration: .3 }, A);
+tl.to("#qBub, #qTx", { opacity: 0, duration: .35 }, A + .1);
+D("#aBub", A + .25, .6); D("#hiLink", A + .2, .5, 0, { sound: false });
+tl.set("#aiSt", { textContent: "ANSWERING" }, A);
+{ const words = "أكيد. حسب السلايد، الفريق الجديد بالدوحة رح يركّز على سوق قطر بالربع الجاي.".split(" ");
+  $("#aTx").innerHTML = `<div class="mono" style="font-size:16px;color:var(--tq);direction:ltr;text-align:right;margin-bottom:8px">AI Presenter · answer</div>` + words.map(w => `<span style="opacity:0">${w}</span>`).join(" ");
+  tl.set("#aTx", { opacity: 1 }, A + .5); tl.to("#aTx span", { opacity: 1, duration: .18, stagger: (L("s5b").end - A - 1.0) / words.length }, A + .55); }
+const RES = L("s5b").end - .1;
+tl.to("#aBub, #aTx, #hiBox, #hiLink", { opacity: 0, duration: .35 }, RES); tl.to("#hotLi", { color: "#f1f0e8", duration: .3 }, RES);
+tl.fromTo("#resumed", { opacity: 0 }, { opacity: 1, duration: .3 }, RES - .3); tl.to("#resumed", { opacity: 0, duration: .3 }, B6 + .3); tl.set("#aiSt", { textContent: "PRESENTING" }, RES);
+tl.set("#qSt", { textContent: "LISTENING", color: "rgba(241,240,232,.55)" }, RES); tl.to("#tQ, #qAv", { borderColor: "rgba(241,240,232,.7)", color: "#f1f0e8", duration: .3 }, RES);
+
+// ---- S6 meeting ends -> summary report -> email (B6 -> B7)
+const E = L("s6a").start;
+cam(E - .3, 1.0, { x: 960, y: 540, s: 1 }, "power2.inOut");
+tl.set("#mstate", { textContent: "■ Meeting ended", color: "#e2b964" }, E - .2); sfx(E - .2, "ui", .3, .8);
+tl.to("#meet", { opacity: 0, duration: .45, ease: "power2.in" }, E + .3);
+tl.to("#mframe", { left: 260, top: 150, width: 560, height: 780, borderRadius: 18, duration: .9, ease: "power3.inOut" }, E + .35); sfx(E + .35, "morph", .9, 1);
+title("#k6", null, E + .3, B7 - .3);
+const DOC = E + 1.1;
+tl.set("#doc", { opacity: 1 }, DOC);
+tl.from("#doc > .abs:not(#scan)", { opacity: 0, duration: .4, stagger: .1 }, DOC);
+tl.fromTo("#scan", { opacity: 0, top: 150 }, { opacity: .9, top: 150, duration: .2 }, DOC + .3); tl.to("#scan", { top: 740, duration: (L("s6b").end - DOC - .6), ease: "none" }, DOC + .4); tl.to("#scan", { opacity: 0, duration: .2 }, L("s6b").end - .2);
+$$(".ds").forEach((s, i) => { s.id = "ds" + i; s.style.opacity = 0; });
+{ const span = (L("s6b").end - DOC - 1.0) / 4; [0, 1, 2, 3].forEach(i => { tl.set("#ds" + i, { opacity: 1 }, DOC + .6 + i * span); write("#ds" + i, DOC + .6 + i * span, span * .9, { layer: 0, sound: i % 2 === 0 }); }); }
+// the report folds into an envelope and is delivered by email
+const M = L("s6c").start;
+tl.fromTo("#inbox", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: .6, ease: "power3.out" }, M - .55);
+tl.set("#newRow", { opacity: 0 }, 0); tl.set(".old", { y: -92 }, 0);
+tl.to("#doc, #mframe", { scale: .32, x: 200, y: -10, opacity: 0, duration: .55, ease: "power3.in" }, M - .1);
+tl.set("#env", { opacity: 1 }, M + .25);
+{ const env = { p: 0 }; tl.fromTo(env, { p: 0 }, { p: 1, duration: .75, ease: "power2.inOut", onUpdate() {
+    const p = env.p, x = 540 + (1370 - 540) * p, y = 540 - Math.sin(p * Math.PI) * 220 + (300 - 540) * p, s = 1 - .55 * p;
+    $("#env").setAttribute("transform", `translate(${x} ${y}) scale(${s}) rotate(${-8 * Math.sin(p * Math.PI)})`); } }, M + .25);
+  tl.to("#env", { opacity: 0, duration: .15 }, M + .98); sfx(M + .25, "whoosh", .7, .8);
+  const trail = []; for (let i = 0; i < 120; i++) { const p = i / 120; trail.push([540 + 830 * p + (R() - .5) * 30, 540 - Math.sin(p * Math.PI) * 220 - 240 * p + (R() - .5) * 30]); }
+  trail.forEach(([x, y], i) => P.push({ t0: M + .25 + .75 * i / 120, x, y, vx: (R() - .5) * 30, vy: 10 + R() * 20, life: .7 + R() * .6, r: .7 + R() * 1.4, a: .7, c: i % 3 ? "w" : "g", layer: 0, g: 20 })); }
+const ARR = M + 1.0;
+tl.to(".old", { y: 0, duration: .45, ease: "power3.out" }, ARR); tl.fromTo("#newRow", { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: .5, ease: "power3.out" }, ARR + .05); sfx(ARR + .05, "ding", 1.2, 1);
+tl.to("#newRow", { backgroundColor: "rgba(95,227,214,.10)", duration: .3 }, ARR + .1);
+write("#h6", ARR - .3, 1.0);
+tl.to(".old", { opacity: 0, duration: .3 }, ARR + 1.2); fadeIn("#mailOpen", ARR + 1.3, .5); sfx(ARR + 1.3, "click", .2, .7);
+cam(ARR + .9, B7 - ARR - .6, { x: 1370, y: 520, s: 1.12 }, "sine.inOut");
+tl.to("#h6, #k6", { opacity: 0, duration: .35 }, B7 - .25);
+
+// ---- S7 brand reveal + CTA (B7 -> end)
+scene("#s7", B7 + .15, null, .3);
+{ // everything on the board streams into the logo
+  const pts = []; for (let i = 0; i < 900; i++) pts.push([960 + (R() - .5) * 1600, 540 + (R() - .5) * 760]);
+  pts.forEach(([x, y]) => P.push({ t0: B7 - .1 + R() * .35, x, y, vx: (R() - .5) * 60, vy: (R() - .5) * 60, life: 1.0 + R() * .5, r: .7 + R() * 1.8, a: .85, c: R() < .2 ? "t" : R() < .3 ? "g" : "w", layer: 1, g: 0, tx: 520 + R() * 880, ty: 300 + R() * 160 }));
+  sfx(B7 - .1, "rise", 1.4, 1); }
+tl.to("#s4", { opacity: 0, duration: .5, ease: "power2.in" }, B7 - .05);
+tl.set(CAM, { x: 960, y: 540, s: 1.06, r: 0 }, B7 + .35); cam(B7 + .35, 3.5, { s: 1 }, "power2.out");
+D("#orbA", B7 + .35, 1.1, 0, { sound: false }); D("#orbB", B7 + .5, 1.1, 0, { sound: false });
+{ const t0 = L("s7a").start - .1; tl.fromTo("#logo7", { clipPath: "inset(-10% 100% -10% 0%)" }, { clipPath: "inset(-10% 0% -10% 0%)", duration: .9, ease: "power2.inOut" }, t0);
+  edgeDust({ left: 500, width: 920, top: 280, height: 170, right: 1420 }, t0, .9, false, 0, "w"); sfx(t0 + .1, "impact", 1.6, 1); }
+tl.to("#orbA, #orbB", { opacity: .35, duration: 1.2 }, L("s7a").start + 1.2);
+write("#tag1", L("s7b").start, .9, { layer: 0 }); write("#tag2", L("s7b").start + .95, 1.4, { layer: 0 });
+tl.fromTo("#url", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .6, ease: "power3.out" }, L("s7b").end - 1.6);
+tl.fromTo("#cta", { opacity: 0, scale: .92 }, { opacity: 1, scale: 1, duration: .6, ease: "back.out(1.5)" }, L("s7c").start - .25); sfx(L("s7c").start - .25, "shimmer", 2.4, 1);
+fadeIn("#nocc", L("s7c").start + .2, .5);
+tl.to({}, { duration: .01 }, DUR - .01);
+
+/* ---------- per-frame render ---------- */
+const world = $("#world"), bg = $("#bg"), subs = $("#subs span"), env = T.env;
+const NO_SUB = new Set(["s1a"]);  // the hook line is already the on-screen headline
+function wave(Wv, t, amp, k = 1) { const e = env[Math.min(env.length - 1, Math.max(0, Math.round(t * 30)))] || 0; Wv.bars.forEach((b, i) => {
+  const m = Math.sin(i * 1.7 + t * 9) * .5 + Math.sin(i * .63 - t * 5.3) * .5, h = 3 + amp * e * (.45 + .55 * Math.abs(m)) * (1 - Math.abs(i - (Wv.bars.length - 1) / 2) / Wv.bars.length * k);
+  b.setAttribute("y1", Wv.cy - h); b.setAttribute("y2", Wv.cy + h); }); }
+let lastSub = "";
+function render(t) {
+  const f = Math.round(t * 30);
+  const dx = Math.sin(t * .37) * 5, dy = Math.cos(t * .29) * 4, rr = CAM.r + Math.sin(t * .21) * .15;
+  world.style.transform = `translate(960px,540px) rotate(${rr}deg) scale(${CAM.s}) translate(${-(CAM.x + dx)}px,${-(CAM.y + dy)}px)`;
+  const k = .22, bs = 1 + (CAM.s - 1) * k;
+  bg.style.transform = `translate(1160px,700px) scale(${bs}) translate(${-(1160 + (CAM.x - 960) * k + dx * k)}px,${-(700 + (CAM.y - 540) * k + dy * k)}px)`;
+  $("#lamp").style.transform = `translate(${Math.sin(t * .2) * 40}px,${Math.cos(t * .17) * 25}px)`;
+  wave(W1, t, 22); wave(W2L, t, 70); wave(W2R, t, 70); wave(W3b, t, 26); wave(W4, t, 24, .3);
+  // subtitles: follow the voice line by line
+  let cur = null; for (const l of T.lines) if (t >= l.start - .05 && t <= l.end + .2) cur = l;
+  const txt = cur && !NO_SUB.has(cur.id) ? cur.sub : ""; if (txt !== lastSub) { subs.textContent = txt; lastSub = txt; }
+  if (cur && txt) { const a = Math.min(1, (t - cur.start + .05) / .18, (cur.end + .2 - t) / .18); subs.style.opacity = Math.max(0, a); subs.style.filter = `blur(${(1 - Math.max(0, Math.min(1, a))) * 4}px)`; } else subs.style.opacity = 0;
+  drawDust(t); drawGrain(f);
+}
+const seek = t => { tl.time(Math.min(t, DUR - .001), false); render(t); };
+
+window.AD = { tl, DURATION: DUR, seek, SFX, W: 1920, H: 1080, ready: false };
+Promise.all([document.fonts.ready, ...$$("img").map(i => i.decode().catch(() => {}))]).then(() => {
+  paintBoard(); seek(0); window.AD.ready = true;
+  if (!clean) { const t0 = performance.now(); const loop = () => { seek(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop); }; loop(); }
+});
+});
+</script>
+</body>
+</html>
