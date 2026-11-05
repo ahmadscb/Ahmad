@@ -17,7 +17,7 @@ The idea in one line: **you no longer have to deliver every presentation yoursel
 ## Scenes
 
 1. **0–4 s, hook.** A chalk presenter stands at a screen. The camera rushes the screen and the presenter turns to chalk dust. The slide keeps presenting, and an AI waveform appears. No logo yet.
-2. **4–15.6 s, upload.** The logo is revealed in chalk, then PowerPoint and PDF cards (each pulses as it is spoken). Both fly into the "ارفع البرزنتيشن" upload box. The box becomes the **real product UI** (labelled "Real product UI"), with waveforms that follow the actual voice.
+2. **4–15.6 s, upload.** The logo is revealed in chalk, then PowerPoint and PDF cards (each pulses as it is spoken). Both fly into the "ارفع البرزنتيشن" upload box. The box becomes the live presenter interface, drawn in chalk and in Arabic, with the product's real layout: LIVE tag, outline rail, slide, AI transcript and controls. Waveforms follow the voice.
 3. **15.6–23.1 s, in person.** A chalk boardroom in one-point perspective. The agent presents Arabic slides on the wall screen, and the slides advance on their own.
 4. **23.1–33.6 s, online.** The camera pushes through the room screen, and the same slide becomes the shared screen of an online meeting. The AI Presenter joins, and the platform switches **Google Meet → Microsoft Teams → Zoom** exactly as each name is spoken (official icons). The deck advances.
 5. **33.6–41.3 s, Q&A.** A participant asks "ممكن توضح هاي النقطة؟". The presentation pauses, the bullet it is about lights up, and the answer is built from that bullet. Then "Resuming presentation ✓". The status copy is the product's own.
@@ -46,4 +46,4 @@ ffmpeg -i out/video-silent.mp4 -i audio/mix.wav -map 0:v -map 1:a -c:v copy -c:a
 - **QC:** offline Whisper-small (sherpa-onnx) transcribes each line back.
 - **Music and SFX:** synthesised from scratch in Python (NumPy/SciPy). No samples, no licences.
 - **Fonts:** IBM Plex Sans Arabic (OFL) and DM Mono (OFL), via @fontsource.
-- **Brand:** official SlideSpoken logo, app icon and a real product capture from the existing repo assets. Google Meet, Microsoft Teams and Zoom are shown with their official icons, unmodified, as "works with" identification only.
+- **Brand:** official SlideSpoken logo and app icon from the existing repo assets. Product screens are redrawn in Arabic chalk; they follow the real product's layout and are illustrative, not captures. Google Meet, Microsoft Teams and Zoom are shown with their official icons, unmodified, as "works with" identification only.

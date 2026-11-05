@@ -127,12 +127,36 @@ svg.full{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visi
       </div>
       <div class="abs" id="files"></div>
       <div class="abs" id="drop" style="left:560px;top:290px;width:800px;height:500px;transform:scale(.78);transform-origin:50% 50%"></div>
-      <div class="abs" id="shotWrap" style="left:600px;top:236px;width:720px;height:540px;opacity:0;transform:rotate(-1.2deg)">
-        <img src="assets/img/live-presenter-hero.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:10px;filter:saturate(.9) contrast(1.02)">
-        <div class="abs mono" style="left:0;bottom:-46px;font-size:17px;color:var(--dim)">Real product UI · SlideSpoken AI Presenter</div>
+      <div class="abs chalkT" id="shotWrap" style="left:520px;top:226px;width:880px;height:568px;opacity:0;direction:rtl">
+        <div class="abs" style="right:24px;left:24px;top:18px;height:44px;display:flex;align-items:center;gap:14px">
+          <span class="mono" style="font-size:16px;padding:5px 12px;border-radius:8px;background:rgba(95,227,214,.16);border:2px solid var(--tq);color:var(--tq);letter-spacing:.12em">LIVE</span>
+          <span style="font-size:22px;font-weight:500">وكيل الذكاء الاصطناعي بيقدّم الآن</span>
+          <span style="flex:1"></span>
+          <span id="uiNo" style="font-size:19px;color:var(--dim)">سلايد ٣ من ٨</span>
+        </div>
+        <div class="abs" style="right:24px;left:24px;top:72px;border-top:2px solid rgba(241,240,232,.3)"></div>
+        <div class="abs" id="uiRail" style="right:24px;top:92px;width:178px;display:flex;flex-direction:column;gap:10px;font-size:18px">
+          <div style="color:var(--dim)"><span class="mono" style="font-size:14px">01</span>&nbsp; المقدّمة</div>
+          <div style="color:var(--dim)"><span class="mono" style="font-size:14px">02</span>&nbsp; نتائج الربع</div>
+          <div id="uiCur" style="color:var(--tq);border-right:3px solid var(--tq);padding-right:8px;margin-right:-11px"><span class="mono" style="font-size:14px">03</span>&nbsp; نمو المبيعات</div>
+          <div style="color:var(--dim)"><span class="mono" style="font-size:14px">04</span>&nbsp; خطة التوسّع</div>
+          <div style="color:var(--dim)"><span class="mono" style="font-size:14px">05</span>&nbsp; الخطوات الجاية</div>
+        </div>
+        <div class="abs" style="right:222px;top:84px;bottom:22px;border-right:2px solid rgba(241,240,232,.22)"></div>
+        <div class="abs" id="uiSlide" style="right:244px;left:24px;top:92px;height:300px;border:2.5px solid rgba(241,240,232,.75);border-radius:12px;overflow:hidden;font-size:12.7px"></div>
+        <div class="abs" style="right:244px;left:24px;top:408px;height:84px;border:2px solid rgba(95,227,214,.55);border-radius:12px;padding:10px 16px">
+          <div class="mono" style="font-size:13px;color:var(--tq);direction:ltr;text-align:right">AI PRESENTER</div>
+          <div id="uiTr" style="font-size:20px;line-height:1.45;margin-top:2px;white-space:nowrap;overflow:hidden"></div>
+        </div>
+        <div class="abs" style="right:244px;left:24px;top:506px;height:42px;display:flex;align-items:center;gap:12px;font-size:18px">
+          <span style="display:flex;align-items:center;gap:8px"><i style="width:10px;height:10px;border-radius:50%;background:var(--tq);display:inline-block"></i>صوت الوكيل جاهز</span>
+          <span style="flex:1"></span>
+          <span style="padding:6px 16px;border:2px solid rgba(241,240,232,.5);border-radius:10px">إيقاف مؤقت</span>
+          <span style="padding:6px 16px;border:2px solid var(--tq);border-radius:10px;color:var(--tq);background:rgba(95,227,214,.1)">السلايد التالي ←</span>
+        </div>
       </div>
       <svg class="full chalk" viewBox="0 0 1920 1080">
-        <rect class="ch thin" id="shotFrame" x="584" y="220" width="752" height="572" rx="16" transform="rotate(-1.2 960 506)"/>
+        <rect class="ch thin" id="shotFrame" x="504" y="210" width="912" height="600" rx="22"/>
         <g id="s2waveL"></g><g id="s2waveR"></g>
       </svg>
     </section>
@@ -347,6 +371,8 @@ const SL = {
 function slideDeck(host, keys) { host.innerHTML = keys.map((k, i) => `<div class="deck" data-i="${i}" style="position:absolute;inset:0;opacity:${i ? 0 : 1}">${SL[k]}</div>`).join(""); return [...host.querySelectorAll(".deck")]; }
 const roomDeck = slideDeck($("#roomScreen"), ["agenda", "bars"]);
 const shareDeck = slideDeck($("#share"), ["bars", "plan", "prio"]);
+const uiDeck = slideDeck($("#uiSlide"), ["bars"]);
+$("#uiTr").innerHTML = "السعودية حققت أعلى نمو هالربع، وبعدها الإمارات وقطر.".split(" ").map(w => `<span style="opacity:0">${w}</span>`).join(" ");
 
 /* ---------- generated chalk geometry ---------- */
 const NS = "http://www.w3.org/2000/svg";
@@ -523,6 +549,8 @@ const SH = Math.max(PR, UP + 1.15);
 tl.to("#drop", { scale: .7, opacity: 0, duration: .45, ease: "power2.in" }, SH - .2);
 tl.fromTo("#shotWrap", { opacity: 0, scale: .92 }, { opacity: 1, scale: 1, duration: .8, ease: "power3.out" }, SH + .05); sfx(SH + .05, "ui", .6, .8);
 D("#shotFrame", SH + .1, .8);
+tl.from(uiDeck[0].querySelectorAll(".bar"), { scaleX: 0, duration: .7, stagger: .1, ease: "power3.out" }, SH + .5);
+tl.to("#uiTr span", { opacity: 1, duration: .15, stagger: (B3 - SH - 1.6) / 8 }, SH + .8);
 tl.fromTo("#s2waveL, #s2waveR", { opacity: 0 }, { opacity: 1, duration: .6 }, SH + .7);
 write("#h2b", PR + .3, 1.2); fadeOut("#h2b", B3 - .2);
 cam(PR, B3 - PR - .1, { s: 1.08, y: 520 }, "sine.inOut");
