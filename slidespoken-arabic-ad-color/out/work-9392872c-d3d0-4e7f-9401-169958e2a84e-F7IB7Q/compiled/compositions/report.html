@@ -1,0 +1,96 @@
+<template>
+<style>
+[data-composition-id="report"] .sheet{position:absolute;left:110px;top:170px;width:1700px;height:730px;border-radius:30px;background:#fff;box-shadow:var(--shadow);transform-origin:0 0}
+[data-composition-id="report"] .doc{position:absolute;left:300px;top:170px;width:620px;height:760px;opacity:0;direction:rtl}
+[data-composition-id="report"] .row{position:absolute;left:44px;right:44px;display:flex;gap:18px;align-items:flex-start}
+[data-composition-id="report"] .row i{flex:none;width:54px;height:54px;border-radius:16px;display:grid;place-items:center;color:#fff;font-style:normal;font-weight:700;font-size:24px}
+[data-composition-id="report"] .row small{display:block;font-family:Mono;font-size:15px;letter-spacing:.15em;color:var(--muted);direction:ltr;text-align:right}
+[data-composition-id="report"] .row p{font-size:25px;font-weight:600;line-height:1.45}
+[data-composition-id="report"] .env{position:absolute;left:550px;top:480px;width:140px;height:140px;border-radius:50%;background:var(--lime);display:grid;place-items:center;box-shadow:var(--shadow);opacity:0}
+[data-composition-id="report"] .inbox{position:absolute;left:1010px;top:170px;width:800px;height:760px;border-radius:30px;background:#fff;box-shadow:var(--shadow);overflow:hidden;opacity:0}
+[data-composition-id="report"] .mrow{position:absolute;left:26px;right:26px;height:100px;border-radius:18px;display:flex;align-items:center;gap:18px;padding:0 20px;direction:rtl}
+[data-composition-id="report"] .scrib{height:13px;border-radius:7px;background:#efeef4}
+[data-composition-id="report"] .iris{position:absolute;inset:0;clip-path:circle(0px at 1700px 330px)}
+</style>
+<div id="root" data-composition-id="report" data-width="1920" data-height="1080">
+  <div class="world w-green"></div><div class="dots"></div>
+  <div class="sheet"></div>
+  <div class="doc">
+    <div style="position:absolute;left:44px;right:44px;top:36px;display:flex;align-items:center;gap:16px;direction:ltr">
+      <img src="assets/img/icon-512.png" style="width:60px;height:60px;border-radius:16px">
+      <div style="flex:1"><div style="font-size:31px;font-weight:700;line-height:1.1">Meeting Summary Report</div><div style="font-size:20px;color:var(--muted);direction:rtl;text-align:left">مراجعة المبيعات الفصلية · ٦ نوفمبر</div></div>
+      <svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="#eef0ea" stroke-width="8"/><circle class="gen" cx="32" cy="32" r="26" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round" pathLength="100" stroke-dasharray="100 120" stroke-dashoffset="110" transform="rotate(-90 32 32)"/>
+        <path class="genok" d="M21 33 L29 41 L44 25" fill="none" stroke="#14121f" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1"/></svg>
+    </div>
+    <div style="position:absolute;left:44px;right:44px;top:124px;border-top:2px solid #efeef4"></div>
+    <div class="row" style="top:150px"><i class="g-violet">✦</i><div><small>KEY POINTS</small><p>نمو واضح بالسعودية والإمارات<br>خطة التوسّع للربع الجاي</p></div></div>
+    <div class="row" style="top:300px"><i class="g-teal">✓</i><div><small>DECISIONS</small><p>اعتماد خطة التوسّع</p></div></div>
+    <div class="row" style="top:410px"><i class="g-coral">→</i><div><small>ACTION ITEMS</small><p>تجهيز الميزانية · خالد<br>تعيين فريق الدوحة · ليلى</p></div></div>
+    <div class="row" style="top:560px"><i class="g-pink">؟</i><div><small>Q&amp;A</small><p>ممكن توضح هاي النقطة؟ <span style="color:#16a34a">✓ تمت الإجابة</span></p></div></div>
+  </div>
+  <div class="env"><svg width="70" height="52" viewBox="0 0 70 52"><rect x="4" y="4" width="62" height="44" rx="8" fill="none" stroke="#14121f" stroke-width="5"/><path d="M6 8 L35 30 L64 8" fill="none" stroke="#14121f" stroke-width="5" stroke-linejoin="round"/></svg></div>
+  <div class="inbox">
+    <div style="position:absolute;left:30px;right:30px;top:26px;display:flex;justify-content:space-between;align-items:center;direction:ltr">
+      <span style="font-size:28px;font-weight:700;display:flex;align-items:center;gap:12px">Inbox <i class="badge" style="font-style:normal;font-size:16px;color:#fff;background:#ff3b5c;border-radius:999px;padding:2px 10px;opacity:0">1</i></span><span style="font-size:26px;font-weight:700">البريد الوارد</span></div>
+    <div style="position:absolute;left:30px;right:30px;top:84px;border-top:2px solid #efeef4"></div>
+    <div class="mrow new" style="top:100px;background:linear-gradient(120deg,#f1fbd2,#dff7ea);border:2px solid #b9ec8a">
+      <i style="width:14px;height:14px;border-radius:50%;background:#16a34a;flex:none"></i>
+      <img class="sic" src="assets/img/icon-512.png" style="width:58px;height:58px;border-radius:15px;flex:none">
+      <div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;direction:ltr"><span style="font-family:Mono;font-size:14px;color:var(--muted)">NOW</span><b style="font-size:26px">SlideSpoken</b></div>
+        <div style="font-size:22px;white-space:nowrap;direction:ltr;text-align:right">Meeting Summary — <span dir="rtl">مراجعة المبيعات الفصلية</span></div></div>
+      <span class="pill" style="background:#ff3b5c;color:#fff;font-size:14px;padding:5px 11px">PDF</span></div>
+    <div class="mrow old" style="top:212px"><div style="flex:1"><div class="scrib" style="width:36%;margin-bottom:12px"></div><div class="scrib" style="width:74%"></div></div></div>
+    <div class="mrow old" style="top:322px"><div style="flex:1"><div class="scrib" style="width:30%;margin-bottom:12px"></div><div class="scrib" style="width:62%"></div></div></div>
+    <div class="mail" style="position:absolute;left:30px;right:30px;top:220px;opacity:0;direction:rtl">
+      <div style="font-size:36px;font-weight:700;direction:ltr;text-align:right">Meeting Summary</div>
+      <div style="font-size:22px;color:var(--muted);margin-top:4px">مرحبا، هاد ملخص <b style="color:var(--ink)">مراجعة المبيعات الفصلية</b>.</div>
+      <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="border-radius:16px;padding:14px 18px;background:#f1edff"><small style="font-family:Mono;font-size:14px;color:#6c4bff">KEY POINTS</small><div style="font-size:21px;font-weight:600">نمو · خطة التوسّع</div></div>
+        <div style="border-radius:16px;padding:14px 18px;background:#e2fbf6"><small style="font-family:Mono;font-size:14px;color:#0f9f8f">DECISIONS</small><div style="font-size:21px;font-weight:600">اعتماد الخطة</div></div>
+        <div style="border-radius:16px;padding:14px 18px;background:#fff0e8"><small style="font-family:Mono;font-size:14px;color:#e2622b">ACTION ITEMS</small><div style="font-size:21px;font-weight:600">الميزانية · فريق الدوحة</div></div>
+        <div style="border-radius:16px;padding:14px 18px;background:#ffe9f3"><small style="font-family:Mono;font-size:14px;color:#e8338a">Q&amp;A</small><div style="font-size:21px;font-weight:600">سؤال واحد · تمت الإجابة</div></div></div>
+      <div style="margin-top:18px;display:inline-flex;gap:10px;align-items:center;direction:ltr;font-size:19px;padding:10px 16px;border:2px solid #efeef4;border-radius:14px"><span class="pill" style="background:#ff3b5c;color:#fff;font-size:13px;padding:4px 9px">PDF</span>Meeting-Summary.pdf</div>
+    </div>
+  </div>
+  <div class="kick k1">Automatic summary report</div>
+  <div class="hl h1" style="top:96px;font-size:58px">ملخص الاجتماع <mark>جاهز</mark></div>
+  <div class="hl h2" style="top:96px;font-size:58px">بيوصلك <mark>تلقائياً</mark> على الإيميل</div>
+  <div class="iris w-lime"></div>
+</div>
+<script>
+(() => {
+  const R = document.querySelector('[data-composition-id="report"]'), $ = s => R.querySelectorAll(s), $1 = s => R.querySelector(s);
+  const tl = gsap.timeline({ paused: true }), D = HF.dur("report"), cue = (t, ty, d, g) => HF.cue("report", t, ty, d, g);
+  const E = HF.line("report", "s6a"), G = HF.line("report", "s6b"), M = HF.line("report", "s6c");
+  const hl = (h, t0, t1) => { HF.words(h); tl.fromTo(h, { opacity: 0 }, { opacity: 1, duration: .01 }, t0);
+    tl.fromTo(h.querySelectorAll(".w"), { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .4, stagger: .08, ease: "expo.out" }, t0); tl.to(h, { opacity: 0, duration: .2 }, t1); cue(t0, "ui", .3, .4); };
+  // morph: the meeting window becomes the report page
+  tl.fromTo($1(".sheet"), { x: 0, y: 0, scaleX: 1, scaleY: 1 }, { x: 190, y: 0, scaleX: 620 / 1700, scaleY: 760 / 730, duration: .8, ease: "power3.inOut" }, .2); cue(.2, "morph", .8, .9);
+  tl.fromTo($1(".k1"), { opacity: 0 }, { opacity: 1, duration: .3 }, .3); tl.to($1(".k1"), { opacity: 0, duration: .2 }, D - .9);
+  const DOC = Math.max(1.0, E.e - .2);
+  tl.fromTo($1(".doc"), { opacity: 0 }, { opacity: 1, duration: .3 }, DOC);
+  tl.to($1(".gen"), { strokeDashoffset: 0, duration: Math.max(1, G.e - DOC - .3), ease: "power1.inOut" }, DOC + .1); cue(DOC + .1, "digital", .8, .6);
+  const rows = [...$(".row")], span = Math.max(.35, (G.e - DOC - .7) / rows.length);
+  rows.forEach((r, i) => { tl.fromTo(r, { opacity: 0, x: 50 }, { opacity: 1, x: 0, duration: .45, ease: "expo.out" }, DOC + .3 + i * span);
+    tl.fromTo(r.querySelector("i"), { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: .45, ease: "back.out(2)" }, DOC + .3 + i * span); cue(DOC + .3 + i * span, "pop", .25, .55); });
+  tl.to($1(".genok"), { strokeDashoffset: 0, duration: .25 }, G.e - .15); cue(G.e - .15, "ding", .5, .45);
+  hl($1(".h1"), G.s, M.s - .1);
+  // the report folds into an envelope and flies to the inbox
+  tl.fromTo($1(".inbox"), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: .55, ease: "expo.out" }, M.s - .45);
+  tl.set($1(".new"), { opacity: 0 }, 0); tl.set($(".old"), { y: -112 }, 0);
+  tl.to($1(".doc"), { opacity: 0, scale: .25, x: 80, y: 250, duration: .45, ease: "power3.in" }, M.s); tl.to($1(".sheet"), { opacity: 0, duration: .3 }, M.s + .05);
+  const ev = { p: 0 }; tl.set($1(".env"), { opacity: 1 }, M.s + .3);
+  tl.fromTo(ev, { p: 0 }, { p: 1, duration: .7, ease: "power2.inOut", onUpdate() { const p = ev.p;
+    gsap.set($1(".env"), { x: (1400 - 620) * p, y: -Math.sin(p * Math.PI) * 230 + (320 - 550) * p, scale: 1 - .5 * p, rotation: -18 * Math.sin(p * Math.PI) }); } }, M.s + .3);
+  tl.to($1(".env"), { opacity: 0, duration: .12 }, M.s + .98); cue(M.s + .3, "whoosh", .7, .9);
+  const ARR = M.s + 1.0;
+  tl.to($(".old"), { y: 0, duration: .4, ease: "expo.out" }, ARR); tl.fromTo($1(".new"), { opacity: 0, x: 60, scale: .9 }, { opacity: 1, x: 0, scale: 1, duration: .45, ease: "back.out(1.5)" }, ARR + .05); cue(ARR + .05, "ding", 1.2, 1);
+  tl.fromTo($1(".badge"), { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: .3, ease: "back.out(2.5)" }, ARR + .1);
+  hl($1(".h2"), ARR - .3, D - .65);
+  tl.to($(".old"), { opacity: 0, duration: .3 }, ARR + 1.0); tl.fromTo($1(".mail"), { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .45, ease: "expo.out" }, ARR + 1.1); cue(ARR + 1.1, "click", .2, .6);
+  // iris from the SlideSpoken icon into the brand's lime
+  tl.fromTo($1(".iris"), { clipPath: "circle(0px at 1700px 330px)" }, { clipPath: "circle(2400px at 1700px 330px)", duration: .6, ease: "power3.in" }, D - .6); cue(D - .62, "rise", .7, .8);
+  window.__timelines["report"] = tl;
+})();
+</script>
+</template>

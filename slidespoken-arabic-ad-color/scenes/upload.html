@@ -1,0 +1,129 @@
+<template>
+<style>
+[data-composition-id="upload"] .logo-card{position:absolute;left:560px;top:380px;width:800px;height:260px;border-radius:40px;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center}
+[data-composition-id="upload"] .ring{position:absolute;left:960px;top:510px;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:10px solid var(--lime)}
+[data-composition-id="upload"] .flash{position:absolute;inset:0;background:#fff;opacity:0}
+[data-composition-id="upload"] .lang{position:absolute;left:460px;top:250px;width:1000px;height:562px;font-size:20.83px;box-shadow:var(--shadow)}
+[data-composition-id="upload"] .slot{position:absolute;right:6%;top:3.6%;height:1.4em;overflow:hidden;font-size:2.5em;font-weight:700;color:#fff;line-height:1.4em;width:80%}
+[data-composition-id="upload"] .slot div{display:flex;flex-direction:column;align-items:flex-end}
+[data-composition-id="upload"] .slot span{display:block;height:1.4em;white-space:nowrap}
+[data-composition-id="upload"] .chips{position:absolute;left:0;right:0;top:840px;display:flex;justify-content:center;gap:16px;direction:rtl}
+[data-composition-id="upload"] .chips span{font-size:26px;font-weight:700;color:#fff;padding:10px 24px;border-radius:999px;background:rgba(255,255,255,.18)}
+[data-composition-id="upload"] .tile{position:absolute;width:230px;height:270px;border-radius:30px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#fff;font-weight:700}
+[data-composition-id="upload"] .tile b{font-size:110px;line-height:1;font-family:Plex}
+[data-composition-id="upload"] .tile span{font-size:26px}
+[data-composition-id="upload"] .drop{position:absolute;left:660px;top:300px;width:600px;height:420px;border-radius:36px;background:#fff;box-shadow:var(--shadow);border:4px dashed #ffc4a6}
+[data-composition-id="upload"] .cursor{position:absolute;left:0;top:0;width:64px;height:76px}
+[data-composition-id="upload"] .live{position:absolute;left:300px;top:200px;width:1320px;height:720px;border-radius:32px;background:#fff;box-shadow:var(--shadow);overflow:hidden;direction:rtl;opacity:0}
+[data-composition-id="upload"] .wv{display:flex;align-items:center;gap:7px;height:56px}
+[data-composition-id="upload"] .wv i{display:block;width:9px;height:56px;border-radius:5px;background:linear-gradient(#ff7a45,#ff4fa0)}
+</style>
+<div id="root" data-composition-id="upload" data-width="1920" data-height="1080">
+  <div class="world w-coral"></div><div class="dots"></div>
+  <!-- logo sting -->
+  <div class="ring"></div>
+  <div class="logo-card"><img src="assets/img/logo-light.png" style="width:640px"></div>
+  <div class="flash"></div>
+  <!-- any language -->
+  <div class="deckhost lang">{{slide:growth}}
+    <div class="slot"><div><span>خطة النمو ٢٠٢٧</span><span dir="ltr">Growth Plan 2027</span><span dir="ltr">Plan de croissance 2027</span><span dir="ltr">Büyüme Planı 2027</span><span>خطة النمو ٢٠٢٧</span></div></div>
+  </div>
+  <div class="chips"><span class="ch">العربية</span><span class="ch" dir="ltr">English</span><span class="ch" dir="ltr">Français</span><span class="ch" dir="ltr">Türkçe</span></div>
+  <div class="kick k1">Arabic · any language</div>
+  <div class="hl h1">بالعربي <mark>أو بأي لغة</mark></div>
+  <!-- PowerPoint / PDF into the upload card -->
+  <div class="drop">
+    <div style="position:absolute;left:250px;top:46px;width:100px;height:100px;border-radius:50%;background:var(--lime);display:grid;place-items:center">
+      <svg width="44" height="50" viewBox="0 0 44 50"><path d="M22 46 V6 M6 20 L22 4 L38 20" stroke="#14121f" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div style="position:absolute;left:0;right:0;top:168px;text-align:center;font-size:46px;font-weight:700;direction:rtl">ارفع البرزنتيشن</div>
+    <div style="position:absolute;left:0;right:0;top:236px;text-align:center;font-family:Mono;font-size:19px;letter-spacing:.14em;color:var(--muted)">POWERPOINT · PDF</div>
+    <svg style="position:absolute;left:250px;top:282px" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#f1efe9" stroke-width="12"/>
+      <circle class="prog" cx="50" cy="50" r="40" fill="none" stroke="url(#up-g)" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="100 120" stroke-dashoffset="110" transform="rotate(-90 50 50)"/>
+      <defs><linearGradient id="up-g"><stop offset="0" stop-color="#ff7a45"/><stop offset="1" stop-color="#ff4fa0"/></linearGradient></defs>
+      <path class="ok" d="M32 51 L45 63 L69 38" fill="none" stroke="#14121f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1"/></svg>
+  </div>
+  <div class="tile ppt" style="left:180px;top:380px;background:linear-gradient(140deg,#d24726,#ff7a45)"><b>P</b><span>PowerPoint</span></div>
+  <div class="tile pdf" style="left:1510px;top:380px;background:linear-gradient(140deg,#e5252a,#ff5f7a)"><b>PDF</b><span>PDF</span></div>
+  <div class="kick k2">PowerPoint · PDF</div>
+  <div class="hl h2">ارفع <mark>البرزنتيشن</mark></div>
+  <!-- the live presenter -->
+  <div class="live">
+    <div style="position:absolute;right:34px;left:34px;top:24px;height:56px;display:flex;align-items:center;gap:16px">
+      <span class="pill" style="background:var(--lime);color:var(--ink)">● LIVE</span><span style="font-size:26px;font-weight:700">وكيل الذكاء الاصطناعي بيقدّم الآن</span><span style="flex:1"></span><span style="font-size:22px;color:var(--muted)">سلايد ٣ من ٨</span></div>
+    <div style="position:absolute;right:34px;top:106px;width:220px;display:flex;flex-direction:column;gap:10px;font-size:21px;font-weight:600;color:var(--muted)">
+      <div style="padding:10px 14px;border-radius:12px">١ &nbsp;المقدّمة</div><div style="padding:10px 14px;border-radius:12px">٢ &nbsp;نتائج الربع</div>
+      <div style="padding:10px 14px;border-radius:12px;background:linear-gradient(120deg,#ff7a45,#ff4fa0);color:#fff">٣ &nbsp;نمو المبيعات</div>
+      <div style="padding:10px 14px;border-radius:12px">٤ &nbsp;خطة التوسّع</div><div style="padding:10px 14px;border-radius:12px">٥ &nbsp;الخطوات الجاية</div></div>
+    <div class="deckhost" style="right:280px;left:34px;top:104px;height:450px;font-size:20.9px;border:1px solid #eee9e4">{{slide:regions}}</div>
+    <div style="position:absolute;right:280px;left:34px;top:574px;height:112px;border-radius:18px;background:#fff4ec;padding:12px 22px;display:flex;align-items:center;gap:22px">
+      <div class="wv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div style="flex:1"><div style="font-family:Mono;font-size:15px;letter-spacing:.14em;color:#d24726;direction:ltr;text-align:right">AI PRESENTER</div>
+      <div class="tr" style="font-size:26px;font-weight:600;white-space:nowrap">السعودية حققت أعلى نمو هالربع، وبعدها الإمارات وقطر.</div></div></div>
+  </div>
+  <div class="hl h3"><mark>وكيل الذكاء الاصطناعي</mark> بيقدّم عنك</div>
+  <div class="cursor"><svg width="64" height="76" viewBox="0 0 64 76"><path d="M6 4 L6 62 L20 50 L30 72 L40 67 L30 46 L50 46 Z" fill="#14121f" stroke="#fff" stroke-width="4" stroke-linejoin="round"/></svg></div>
+  <div class="flood w-teal" style="position:absolute;inset:0;clip-path:inset(0 0 0 100%)"></div>
+</div>
+<script>
+(() => {
+  const R = document.querySelector('[data-composition-id="upload"]'), $ = s => R.querySelectorAll(s), $1 = s => R.querySelector(s);
+  const tl = gsap.timeline({ paused: true }), D = HF.dur("upload"), cue = (t, ty, d, g) => HF.cue("upload", t, ty, d, g);
+  const A = HF.line("upload", "s2a"), P = HF.line("upload", "s2b"), C = HF.line("upload", "s2c");
+  const title = (h, t0, t1) => { HF.words(h); tl.fromTo(h, { opacity: 0 }, { opacity: 1, duration: .01 }, t0);
+    tl.fromTo(h.querySelectorAll(".w"), { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: .2, stagger: .07, ease: "power3.out" }, t0);
+    tl.to(h, { opacity: 0, filter: "blur(6px)", duration: .2, ease: "power2.in" }, t1); cue(t0, "ui", .3, .4); };
+  const kick = (k, t0, t1) => { tl.fromTo(k, { opacity: 0 }, { opacity: 1, duration: .3 }, t0); tl.to(k, { opacity: 0, duration: .2 }, t1); };
+  [...R.querySelectorAll(".hl,.kick")].forEach(e => gsap.set(e, { opacity: 0 }));
+  // 1 · logo sting: slams in, one lime ring, one white frame, settles
+  const L0 = Math.max(.15, A.s - .1);
+  tl.fromTo($1(".logo-card"), { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: .38, ease: "power4.in" }, L0);
+  tl.fromTo($1(".flash"), { opacity: 0 }, { opacity: .85, duration: .03 }, L0 + .38); tl.to($1(".flash"), { opacity: 0, duration: .3 }, L0 + .42);
+  tl.fromTo($1(".ring"), { scale: 1, opacity: 1 }, { scale: 95, opacity: 0, duration: .9, ease: "power2.out" }, L0 + .38); cue(L0 + .36, "impact", 1.4, 1);
+  tl.to($1(".logo-card"), { y: -420, scale: .6, opacity: 0, duration: .55, ease: "power3.in" }, L0 + 1.55);
+  // 2 · "in Arabic or any language": the title rolls through languages, chips light in turn
+  const LG = A.marks.lang ?? (A.s + 2.4);
+  tl.fromTo($1(".lang"), { opacity: 0, y: 120, rotationX: 25, scale: .9 }, { opacity: 1, y: 0, rotationX: 0, scale: 1, duration: .8, ease: "expo.out" }, L0 + 1.75); cue(L0 + 1.75, "whoosh", .6, .7);
+  gsap.set($1(".lang .sl-t"), { opacity: 0 });
+  tl.fromTo($1(".lang .ln"), { strokeDasharray: 900, strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 1, ease: "power2.inOut" }, L0 + 2.1);
+  tl.fromTo($(".lang .kpi"), { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: .4, stagger: .08 }, L0 + 2.2);
+  const roll = $1(".slot div"), chips = [...$(".ch")];
+  tl.fromTo(chips, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .35, stagger: .06, ease: "power3.out" }, LG - .4);
+  tl.set(chips[0], { background: "#14121f" }, LG - .4);
+  [1, 2, 3, 4].forEach((k, i) => { const t = LG + i * .42; tl.to(roll, { y: `-${k * 1.4}em`, duration: .26, ease: "power3.inOut" }, t);
+    tl.set(chips, { background: "rgba(255,255,255,.18)" }, t); tl.set(chips[k % 4], { background: "#14121f" }, t); cue(t, "tick", .12, .6); });
+  title($1(".h1"), LG - .5, P.s - .1); kick($1(".k1"), LG - .5, P.s - .1);
+  // 3 · PowerPoint / PDF dragged into the upload card by a cursor; the ring fills
+  tl.to([$1(".lang"), ...chips], { opacity: 0, scale: .85, y: 30, duration: .35, ease: "power3.in" }, P.s - .25);
+  tl.fromTo($1(".drop"), { opacity: 0, scale: .85 }, { opacity: 1, scale: 1, duration: .5, ease: "back.out(1.4)" }, P.s);
+  tl.fromTo($1(".ppt"), { opacity: 0, x: -120, rotation: -12 }, { opacity: 1, x: 0, rotation: -6, duration: .55, ease: "expo.out" }, P.s + .05); cue(P.s + .05, "pop", .3, .8);
+  const PDF = P.marks.pdf ?? (P.s + 1.1);
+  tl.fromTo($1(".pdf"), { opacity: 0, x: 120, rotation: 12 }, { opacity: 1, x: 0, rotation: 6, duration: .55, ease: "expo.out" }, PDF - .3); cue(PDF - .3, "pop", .3, .8);
+  title($1(".h2"), P.s + .1, C.s + .2); kick($1(".k2"), P.s + .1, C.s + .2);
+  const cur = $1(".cursor"), G1 = Math.max(P.s + .55, PDF - .45), G2 = PDF + .35;
+  tl.fromTo(cur, { x: 120, y: 1150 }, { x: 330, y: 520, duration: .45, ease: "power3.out" }, G1 - .45);
+  tl.to(cur, { scale: .88, duration: .08, yoyo: true, repeat: 1 }, G1); cue(G1, "click", .15, .7);
+  tl.to([cur, $1(".ppt")], { x: (i) => i ? 665 : 975, y: (i) => i ? -5 : 520, rotation: 0, scale: (i) => i ? .35 : 1, duration: .45, ease: "power2.inOut" }, G1 + .1);
+  tl.to($1(".ppt"), { opacity: 0, duration: .15 }, G1 + .5);
+  tl.to(cur, { x: 1640, y: 520, duration: .35, ease: "power2.inOut" }, G1 + .6);
+  tl.to(cur, { scale: .88, duration: .08, yoyo: true, repeat: 1 }, G2); cue(G2, "click", .15, .7);
+  tl.to([cur, $1(".pdf")], { x: (i) => i ? -665 : 975, y: (i) => i ? -5 : 520, rotation: 0, scale: (i) => i ? .35 : 1, duration: .45, ease: "power2.inOut" }, G2 + .1);
+  tl.to($1(".pdf"), { opacity: 0, duration: .15 }, G2 + .5);
+  tl.to(cur, { x: 1300, y: 1180, duration: .4, ease: "power3.in" }, G2 + .6);
+  const UP = G2 + .5;
+  tl.to($1(".prog"), { strokeDashoffset: 0, duration: .75, ease: "power1.inOut" }, UP); cue(UP, "tick", .75, .6);
+  tl.to($1(".ok"), { strokeDashoffset: 0, duration: .25, ease: "power2.out" }, UP + .75); cue(UP + .75, "ding", .6, .5);
+  // 4 · the upload card opens into the live presenter (morph)
+  const SH = Math.max(C.s + .15, UP + 1.05);
+  tl.to($1(".drop"), { scale: 2.1, opacity: 0, duration: .45, ease: "power3.in" }, SH - .2);
+  tl.fromTo($1(".live"), { opacity: 0, scale: .46 }, { opacity: 1, scale: 1, duration: .6, ease: "expo.out" }, SH); cue(SH, "morph", .6, .8);
+  tl.fromTo($(".live .bar"), { scaleX: 0 }, { scaleX: 1, duration: .6, stagger: .08, ease: "power3.out" }, SH + .35);
+  tl.fromTo($1(".live .tr"), { clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)", duration: Math.max(1, D - SH - 1.4), ease: "none" }, SH + .5);
+  title($1(".h3"), SH + .1, D - .5);
+  const wv = [...$(".wv i")];
+  tl.to({ p: 0 }, { p: 1, duration: D, ease: "none", onUpdate() { HF.bars(wv, tl.time(), "upload", 1); } }, 0);
+  // colour flood into the boardroom's teal
+  tl.fromTo($1(".flood"), { clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)", duration: .45, ease: "power2.inOut" }, D - .45); cue(D - .5, "whoosh", .5, .8);
+  window.__timelines["upload"] = tl;
+})();
+</script>
+</template>

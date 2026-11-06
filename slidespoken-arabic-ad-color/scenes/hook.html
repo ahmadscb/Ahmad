@@ -1,0 +1,59 @@
+<template>
+<style>
+[data-composition-id="hook"] .fan{position:absolute;width:520px;height:292px;font-size:10.83px;border-radius:18px;box-shadow:var(--shadow)}
+[data-composition-id="hook"] .pres{position:absolute;left:810px;top:560px;width:300px;height:330px;display:flex;flex-direction:column;align-items:center;gap:14px}
+[data-composition-id="hook"] .strike{position:absolute;left:820px;top:690px;width:280px;height:14px;border-radius:7px;background:#ff3b5c;transform-origin:0 50%}
+[data-composition-id="hook"] .ai{position:absolute;left:790px;top:610px;width:340px;display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0}
+[data-composition-id="hook"] .ai-tile{width:150px;height:150px;border-radius:40px;background:var(--ink);display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+[data-composition-id="hook"] .ai-tile i{display:block;width:14px;height:70px;border-radius:7px;background:var(--lime);transform-origin:50% 50%}
+[data-composition-id="hook"] .iris{position:absolute;inset:0;clip-path:circle(0px at 960px 685px)}
+</style>
+<div id="root" data-composition-id="hook" data-width="1920" data-height="1080">
+  <div class="world w-violet"></div><div class="dots"></div>
+  <div class="cam" style="position:absolute;inset:0" data-layout-allow-overlap>
+    <div class="deckhost fan" style="left:120px;top:250px">{{slide:agenda}}</div>
+    <div class="deckhost fan" style="left:1280px;top:250px">{{slide:donut}}</div>
+    <div class="deckhost fan" style="left:180px;top:610px">{{slide:regions}}</div>
+    <div class="deckhost fan" style="left:1220px;top:610px">{{slide:plan}}</div>
+    <div class="deckhost fan hero" style="left:640px;top:220px;width:640px;height:360px;font-size:13.33px">{{slide:growth}}</div>
+  </div>
+  <div class="hl h1" style="right:0;left:0;text-align:center;top:70px;font-size:74px">مين قال لازم <mark>إنت</mark> تقدّم كل برزنتيشن؟</div>
+  <div class="pres">
+    <svg width="170" height="230" viewBox="0 0 170 230"><circle cx="85" cy="52" r="44" fill="#ffd9c2"/><path d="M8 230 V160 Q8 104 85 104 Q162 104 162 160 V230 Z" fill="#2b2464"/><path d="M85 104 L72 150 L85 200 L98 150 Z" fill="#ff4fa0"/></svg>
+    <span class="pill" style="background:rgba(255,255,255,.18);color:#fff">PRESENTER</span>
+  </div>
+  <div class="strike"></div>
+  <div class="ai"><div class="ai-tile"><i></i><i></i><i></i><i></i><i></i></div><span class="pill" style="background:var(--lime);color:var(--ink)">AI PRESENTER</span></div>
+  <div class="iris w-coral"></div>
+</div>
+<script>
+(() => {
+  const R = document.querySelector('[data-composition-id="hook"]'), $ = s => R.querySelectorAll(s), $1 = s => R.querySelector(s);
+  const tl = gsap.timeline({ paused: true }), D = HF.dur("hook"), cue = (t, ty, d, g) => HF.cue("hook", t, ty, d, g);
+  // decks fly in from depth and land in a fan
+  const fans = [...$(".fan")];
+  fans.forEach((f, i) => tl.fromTo(f, i === 4 ? { opacity: 1, scale: .82, rotation: 0, y: 40 } : { opacity: 0, scale: .35, rotation: (i % 2 ? 14 : -14), y: 260 },  // hero deck is on frame 0 (thumbnail)
+    { opacity: 1, scale: 1, rotation: [-4, 5, 3, -3, 0][i], y: 0, duration: .8, ease: "expo.out" }, .02 + i * .07));
+  cue(0, "whoosh", .8, 1);
+  tl.fromTo($1(".hero .ln"), { strokeDasharray: 900, strokeDashoffset: 900 }, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" }, .5);
+  tl.fromTo($(".hero .kpi"), { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: .45, stagger: .1, ease: "power3.out" }, .7);
+  // the question, word by word
+  const h = $1(".h1"); HF.words(h);
+  tl.fromTo(h.querySelectorAll(".w"), { opacity: 0, filter: "blur(8px)", y: 20 }, { opacity: 1, filter: "blur(0px)", y: 0, duration: .32, stagger: .08, ease: "power3.out" }, .25);
+  tl.fromTo(h.querySelector("mark"), { color: "#ffffff" }, { color: "#d8ff73", duration: .25 }, .95);
+  tl.fromTo($1(".pres"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .5, ease: "expo.out" }, .35);
+  // the presenter is struck out; the AI takes the stage
+  const X = 1.75;
+  tl.fromTo($1(".strike"), { scaleX: 0 }, { scaleX: 1, duration: .22, ease: "power3.out" }, X); cue(X, "click", .2, 1);
+  tl.to([$1(".pres"), $1(".strike")], { opacity: 0, y: 60, scale: .85, duration: .35, ease: "power3.in" }, X + .35);
+  tl.fromTo($1(".ai"), { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .55, ease: "back.out(1.7)" }, X + .55); cue(X + .55, "join", .5, 1);
+  const bars = [...$(".ai-tile i")];
+  tl.to({ p: 0 }, { p: 1, duration: D, ease: "none", onUpdate() { const t = tl.time(); bars.forEach((b, k) => b.style.transform = `scaleY(${t < X + .6 ? .25 : .35 + .65 * Math.abs(Math.sin(t * 8 + k * 1.3))})`); } }, 0);
+  // the fan gathers behind the hero deck, then an iris opens from the AI tile into the next world
+  tl.to(fans.slice(0, 4), { x: (i) => [520, -640, 460, -580][i], y: (i) => [-20, -20, -360, -360][i], scale: .7, opacity: 0, duration: .6, ease: "power3.in" }, D - 1.3);
+  tl.to(h, { opacity: 0, filter: "blur(8px)", duration: .25 }, D - .85);
+  tl.fromTo($1(".iris"), { clipPath: "circle(0px at 960px 685px)" }, { clipPath: "circle(2300px at 960px 685px)", duration: .7, ease: "power3.in" }, D - .72); cue(D - .75, "whoosh", .7, .9);
+  window.__timelines["hook"] = tl;
+})();
+</script>
+</template>

@@ -9,14 +9,17 @@ import json, os, pathlib, subprocess, numpy as np
 from scipy.signal import butter, sosfilt, fftconvolve
 from playwright.sync_api import sync_playwright
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = pathlib.Path(os.environ.get("PROJ", pathlib.Path(__file__).resolve().parent.parent)).resolve()  # project whose voice/ timings to score
 PAGE = pathlib.Path(os.environ.get("PAGE", ROOT / "index.html")).resolve()  # which film's cue list to score
 AUD = pathlib.Path(os.environ.get("AUD", ROOT / "audio")).resolve()
 SR = 48000
 T = json.load(open(ROOT / "voice/timings.json")); DUR = T["total"]; N = int(DUR * SR)
 rng = np.random.default_rng(20261105)
 
-with sync_playwright() as p:  # the cue list is owned by the animation
+if os.environ.get("CUES"):  # a cue list exported by the film itself (e.g. HyperFrames scenes)
+    CUES = json.load(open(os.environ["CUES"]))
+else:
+  with sync_playwright() as p:  # the cue list is owned by the animation
     b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1243/chrome-linux64/chrome")
     pg = b.new_page(viewport={"width": 1920, "height": 1080}); pg.goto(PAGE.as_uri() + "?clean=1")
     pg.wait_for_function("window.AD && window.AD.ready"); CUES = pg.evaluate("window.AD.SFX"); b.close()

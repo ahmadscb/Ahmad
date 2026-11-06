@@ -1,0 +1,47 @@
+<template>
+<style>
+[data-composition-id="brand"] .lcard{position:absolute;left:520px;top:200px;width:880px;height:250px;border-radius:44px;background:var(--ink);display:grid;place-items:center;box-shadow:0 40px 90px rgba(20,18,31,.35)}
+[data-composition-id="brand"] .cf{position:absolute;left:960px;top:325px;width:26px;height:26px;margin:-13px 0 0 -13px}
+[data-composition-id="brand"] .tag{position:absolute;left:0;width:1920px;text-align:center;direction:rtl;font-weight:700;font-size:62px;color:var(--ink)}
+[data-composition-id="brand"] .tag .w{display:inline-block}
+[data-composition-id="brand"] .cta{position:absolute;left:705px;top:720px;width:510px;height:100px;border-radius:999px;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;gap:16px;font-size:40px;font-weight:700;direction:rtl;box-shadow:0 20px 50px rgba(20,18,31,.3)}
+[data-composition-id="brand"] .cursor{position:absolute;left:0;top:0;width:64px;height:76px}
+</style>
+<div id="root" data-composition-id="brand" data-width="1920" data-height="1080">
+  <div class="world w-lime"></div>
+  <div class="cfs"></div>
+  <div class="lcard"><img src="assets/img/logo-dark.png" style="width:700px"></div>
+  <div class="tag t1" style="top:500px">البرزنتيشن تبعك،</div>
+  <div class="tag t2" style="top:586px">ووكيل الذكاء الاصطناعي <span style="background:var(--ink);color:var(--lime);padding:0 .25em;border-radius:.2em">بيقدّم عنك.</span></div>
+  <div class="cta">جرّب الخدمة مجاناً <span>←</span></div>
+  <div class="nocc" style="position:absolute;left:0;width:1920px;top:838px;text-align:center;font-size:26px;font-weight:600;color:#3d5a10;direction:rtl">بدون بطاقة ائتمان</div>
+  <div class="url" style="position:absolute;left:0;width:1920px;top:880px;text-align:center;font-size:42px;font-weight:700;color:var(--ink);direction:ltr">slidespoken.com</div>
+  <div class="cursor"><svg width="64" height="76" viewBox="0 0 64 76"><path d="M6 4 L6 62 L20 50 L30 72 L40 67 L30 46 L50 46 Z" fill="#fff" stroke="#14121f" stroke-width="4" stroke-linejoin="round"/></svg></div>
+</div>
+<script>
+(() => {
+  const R = document.querySelector('[data-composition-id="brand"]'), $ = s => R.querySelectorAll(s), $1 = s => R.querySelector(s);
+  const tl = gsap.timeline({ paused: true }), D = HF.dur("brand"), cue = (t, ty, d, g) => HF.cue("brand", t, ty, d, g);
+  const A = HF.line("brand", "s7a"), Bl = HF.line("brand", "s7b"), C = HF.line("brand", "s7c");
+  // confetti in the palette, fixed angles (no randomness)
+  const cols = ["#6c4bff", "#ff4fa0", "#ff7a45", "#14c8b4", "#2f6bff", "#ffb53d", "#14121f"];
+  $1(".cfs").innerHTML = Array.from({ length: 28 }, (_, i) => `<i class="cf" style="background:${cols[i % 7]};border-radius:${i % 3 ? "50%" : "6px"}"></i>`).join("");
+  const L0 = Math.max(.25, A.s - .05);
+  tl.fromTo($1(".lcard"), { opacity: 0, scale: 1.7 }, { opacity: 1, scale: 1, duration: .4, ease: "power4.in" }, L0); cue(L0 + .38, "impact", 1.6, 1);
+  tl.to($1(".lcard"), { scale: 1.03, duration: .08, yoyo: true, repeat: 1 }, L0 + .4);
+  [...$(".cf")].forEach((c, i) => { const a = i / 28 * Math.PI * 2 + (i % 2) * .11, r = 420 + (i % 5) * 70;
+    tl.fromTo(c, { x: 0, y: 0, scale: 0, rotation: 0, opacity: 1 }, { x: Math.cos(a) * r * 1.4, y: Math.sin(a) * r * .8, scale: .7 + (i % 4) * .25, rotation: 200 + i * 17, opacity: 0, duration: 1.4, ease: "expo.out" }, L0 + .4); });
+  const words = (el, t0) => { HF.words(el); tl.fromTo(el.querySelectorAll(".w"), { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: .45, stagger: .09, ease: "expo.out" }, t0); };
+  words($1(".t1"), Bl.s); words($1(".t2"), Bl.s + .5); cue(Bl.s, "ui", .3, .5);
+  tl.fromTo($1(".url"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .5, ease: "expo.out" }, Bl.e - 1.2);
+  const K = C.s - .3;
+  tl.fromTo($1(".cta"), { opacity: 0, scale: .7 }, { opacity: 1, scale: 1, duration: .55, ease: "back.out(1.7)" }, K); cue(K, "shimmer", 2.2, 1);
+  tl.fromTo($1(".nocc"), { opacity: 0 }, { opacity: 1, duration: .4 }, K + .3);
+  // the cursor presses the button
+  tl.fromTo($1(".cursor"), { x: 1500, y: 1140 }, { x: 1010, y: 790, duration: .6, ease: "expo.out" }, K + .5);
+  tl.to($1(".cursor"), { scale: .85, duration: .09, yoyo: true, repeat: 1 }, K + 1.15); tl.to($1(".cta"), { scale: .95, duration: .09, yoyo: true, repeat: 1 }, K + 1.15); cue(K + 1.15, "click", .2, .9);
+  tl.to($1(".cursor"), { x: 1250, y: 1150, duration: .5, ease: "power3.in" }, K + 1.7);
+  window.__timelines["brand"] = tl;
+})();
+</script>
+</template>

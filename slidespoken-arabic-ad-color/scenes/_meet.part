@@ -1,0 +1,18 @@
+    <div class="mwin">
+      <i class="acc"></i>
+      <div class="mbar">
+        <span class="pf-box"><img class="pf p0" src="assets/img/google-meet-icon.png"><img class="pf p1" src="assets/img/microsoft-teams-icon.png"><img class="pf p2" src="assets/img/zoom-icon.png"></span>
+        <span class="pn-box"><b class="pn p0">Google Meet</b><b class="pn p1">Microsoft Teams</b><b class="pn p2">Zoom</b></span>
+        <span style="flex:1"></span>
+        <span class="mstate">● 4 participants</span>
+        <b style="font-size:26px;direction:rtl">مراجعة المبيعات الفصلية</b>
+      </div>
+      <div class="deckhost share">
+        <div class="dk d1">{{slide:regions}}</div><div class="dk d2">{{slide:plan}}</div><div class="dk d3">{{slide:prio}}</div>
+        <span class="sno">SLIDE 3 OF 8</span>
+      </div>
+      <div class="mtile tai"><div class="aim"><i></i><i></i><i></i><i></i><i></i></div><div><b style="direction:ltr;display:block;text-align:right">AI Presenter</b><small class="aist">PRESENTING</small></div><span class="pill spk">Speaking</span></div>
+      <div class="mtile"><span class="av" style="width:76px;height:76px;font-size:30px;background:linear-gradient(140deg,#6c4bff,#a35bff)">س</span><div><b>سارة م.</b><small>LISTENING</small></div></div>
+      <div class="mtile tq"><span class="av qav" style="width:76px;height:76px;font-size:30px;background:linear-gradient(140deg,#ff7a45,#ffb53d)">خ</span><div><b>خالد ع.</b><small class="qst">LISTENING</small></div></div>
+      <div class="mtile"><span class="av" style="width:76px;height:76px;font-size:30px;background:linear-gradient(140deg,#14c8b4,#3fe0c5)">ل</span><div><b>ليلى ح.</b><small>LISTENING</small></div></div>
+    </div>
