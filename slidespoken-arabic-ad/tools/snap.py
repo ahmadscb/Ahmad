@@ -1,9 +1,9 @@
 """Key-frame check (key frames, Python Playwright): python3 tools/snap.py OUTDIR 1 3.5 8 ..."""
-import sys, pathlib
+import os, sys, pathlib
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageDraw
 out = pathlib.Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True); times = [float(x) for x in sys.argv[2:]]
-url = (pathlib.Path(__file__).resolve().parent.parent / "index.html").as_uri() + "?clean=1"
+url = pathlib.Path(os.environ.get("PAGE", pathlib.Path(__file__).resolve().parent.parent / "index.html")).resolve().as_uri() + "?clean=1"
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1243/chrome-linux64/chrome")
     pg = b.new_page(viewport={"width": 1920, "height": 1080})

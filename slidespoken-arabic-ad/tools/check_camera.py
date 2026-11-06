@@ -1,8 +1,8 @@
 """Self-check: frame-by-frame playback (what export.py does) must put the camera where a direct seek does
 (what snap.py shows). Catches overlapping camera tweens. Usage: python3 tools/check_camera.py"""
-import pathlib, re, sys
+import os, pathlib, re, sys
 from playwright.sync_api import sync_playwright
-url = (pathlib.Path(__file__).resolve().parent.parent / "index.html").as_uri() + "?clean=1&nosubs=1"
+url = pathlib.Path(os.environ.get("PAGE", pathlib.Path(__file__).resolve().parent.parent / "index.html")).resolve().as_uri() + "?clean=1&nosubs=1"
 TF = "document.getElementById('world').style.transform"
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1243/chrome-linux64/chrome")

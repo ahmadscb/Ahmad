@@ -3,7 +3,7 @@
 import sys, subprocess, pathlib, os
 from playwright.sync_api import sync_playwright
 OUT = sys.argv[1]; FPS = int(sys.argv[2]) if len(sys.argv) > 2 else 30
-url = (pathlib.Path(__file__).resolve().parent.parent / "index.html").as_uri() + "?clean=1" + os.environ.get("Q", "")
+url = pathlib.Path(os.environ.get("PAGE", pathlib.Path(__file__).resolve().parent.parent / "index.html")).resolve().as_uri() + "?clean=1" + os.environ.get("Q", "")
 ff = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "image2pipe", "-framerate", str(FPS), "-c:v", "png", "-i", "-",
     "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-tune", "grain", "-profile:v", "high", "-pix_fmt", "yuv420p",
     "-r", str(FPS), "-movflags", "+faststart", OUT], stdin=subprocess.PIPE)

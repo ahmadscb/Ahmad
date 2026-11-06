@@ -5,20 +5,22 @@ Reads the cue list the animation exposes (window.AD.SFX) so every effect sits on
   audio/mix.wav    voice + ducked music + sfx, loudness-normalised (-14 LUFS, -1.5 dBTP)
   audio/music-sfx-bed.wav  the same without voice (-20 LUFS bed) for a voice recorded later
 Usage: python3 tools/sound.py"""
-import json, pathlib, subprocess, numpy as np
+import json, os, pathlib, subprocess, numpy as np
 from scipy.signal import butter, sosfilt, fftconvolve
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+PAGE = pathlib.Path(os.environ.get("PAGE", ROOT / "index.html")).resolve()  # which film's cue list to score
+AUD = pathlib.Path(os.environ.get("AUD", ROOT / "audio")).resolve()
 SR = 48000
 T = json.load(open(ROOT / "voice/timings.json")); DUR = T["total"]; N = int(DUR * SR)
 rng = np.random.default_rng(20261105)
 
 with sync_playwright() as p:  # the cue list is owned by the animation
     b = p.chromium.launch(executable_path="/opt/pw-browsers/chromium-1243/chrome-linux64/chrome")
-    pg = b.new_page(viewport={"width": 1920, "height": 1080}); pg.goto((ROOT / "index.html").as_uri() + "?clean=1")
+    pg = b.new_page(viewport={"width": 1920, "height": 1080}); pg.goto(PAGE.as_uri() + "?clean=1")
     pg.wait_for_function("window.AD && window.AD.ready"); CUES = pg.evaluate("window.AD.SFX"); b.close()
-(ROOT / "audio").mkdir(exist_ok=True); json.dump(CUES, open(ROOT / "audio/sfx-cues.json", "w"), indent=0)
+AUD.mkdir(parents=True, exist_ok=True); json.dump(CUES, open(AUD / "sfx-cues.json", "w"), indent=0)
 
 def bp(x, lo, hi, o=2): return sosfilt(butter(o, [lo, hi], "bandpass", fs=SR, output="sos"), x)
 def lp(x, f, o=2): return sosfilt(butter(o, f, "lowpass", fs=SR, output="sos"), x)
@@ -132,7 +134,6 @@ mus *= lvl
 mus = np.stack([verb(mus[0], .3), verb(mus[1], .3)])
 mus *= np.minimum(1, (DUR - t) / 1.2) * np.minimum(1, t / .4)  # fade in/out
 
-AUD = ROOT / "audio"; AUD.mkdir(exist_ok=True)
 def wav(path, x):
     x = np.clip(x, -1, 1); pcm = (x.T * 32767).astype("<i2").tobytes()
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "s16le", "-ar", str(SR), "-ac", "2", "-i", "-", str(path)], input=pcm, check=True)
