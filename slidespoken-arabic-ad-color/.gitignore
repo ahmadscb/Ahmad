@@ -7,3 +7,4 @@ voice/lines/
 out/work-*/
 .thumbnails/
 .waveform-cache/
+out/snap.json
