@@ -2,7 +2,7 @@
 <style>
 [data-composition-id="qa"] .bub{position:absolute;direction:rtl;border-radius:30px;background:#fff;box-shadow:var(--shadow);padding:22px 30px;font-size:36px;font-weight:700;display:flex;align-items:center;gap:18px;transform-origin:100% 50%}
 [data-composition-id="qa"] .q{left:700px;top:770px}
-[data-composition-id="qa"] .ans{left:150px;top:300px;width:560px;display:block;font-size:30px;font-weight:600;line-height:1.5;border:4px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(120deg,#6c4bff,#ff4fa0,#ffb53d) border-box;transform-origin:0 50%}
+[data-composition-id="qa"] .ans{left:150px;top:300px;width:560px;display:block;font-size:30px;font-weight:600;line-height:1.5;border:4px solid transparent;background:linear-gradient(#fff,#fff) padding-box,linear-gradient(120deg,#14121f,#7cc614,#d8ff73) border-box;transform-origin:0 50%}
 [data-composition-id="qa"] .stat{position:absolute;left:170px;top:280px}
 [data-composition-id="qa"] .link{position:absolute;left:0;top:0;overflow:visible}
 </style>
@@ -13,9 +13,9 @@
   <i class="lring" style="position:absolute;left:1270px;top:250px;width:510px;height:140px;border-radius:24px;border:5px solid var(--lime);opacity:0"></i>
   <span class="pill stat" style="background:var(--lime);color:var(--ink)">Question detected · Presentation paused</span>
   <span class="pill stat res" style="background:var(--ink);color:#fff">Resuming presentation ✓</span>
-  <svg class="link" width="1920" height="1080"><path class="lk" d="" fill="none" stroke="#ff4fa0" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/></svg>
-  <div class="bub q"><span class="av" style="width:64px;height:64px;font-size:28px;background:linear-gradient(140deg,#ff7a45,#ffb53d)">خ</span>ممكن توضح هاي النقطة؟</div>
-  <div class="bub ans"><div style="font-family:Mono;font-size:15px;letter-spacing:.14em;color:#e8338a;direction:ltr;text-align:right;margin-bottom:8px">AI PRESENTER · ANSWER</div><span class="atx"></span></div>
+  <svg class="link" width="1920" height="1080"><path class="lk" d="" fill="none" stroke="#7cc614" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/></svg>
+  <div class="bub q"><span class="av" style="width:64px;height:64px;font-size:28px;background:linear-gradient(140deg,#4f8f0f,#7cc614)">خ</span>ممكن توضح هاي النقطة؟</div>
+  <div class="bub ans"><div style="font-family:Mono;font-size:15px;letter-spacing:.14em;color:#4f8f0f;direction:ltr;text-align:right;margin-bottom:8px">AI PRESENTER · ANSWER</div><span class="atx"></span></div>
   <div class="kick k1">Interactive AI Q&amp;A</div>
   <div class="hl h1" style="top:96px;font-size:58px">تفاعل <mark>مباشر</mark> مع الحضور</div>
 </div>
@@ -33,7 +33,7 @@
   tl.fromTo($1(".k1"), { opacity: 0 }, { opacity: 1, duration: .3 }, .1); cue(.15, "ui", .3, .4);
   tl.to([hl, $1(".k1")], { opacity: 0, duration: .2 }, D - .7);
   // the question (chat-message entry: from the sender's side, scale .75 -> 1)
-  tl.to($1(".tq"), { borderColor: "#ffb53d", backgroundColor: "#fff6e8", duration: .25 }, Q.s); tl.set($1(".qst"), { textContent: "ASKING", color: "#d27a00" }, Q.s);
+  tl.to($1(".tq"), { borderColor: "#7cc614", backgroundColor: "#f4fbe6", duration: .25 }, Q.s); tl.set($1(".qst"), { textContent: "ASKING", color: "#4f8f0f" }, Q.s);
   tl.fromTo($1(".q"), { opacity: 0, scale: .75, x: 40 }, { opacity: 1, scale: 1, x: 0, duration: .35, ease: "back.out(1.6)" }, Q.s + .2); cue(Q.s + .2, "pop", .3, .9);
   tl.to($1(".stat"), { opacity: 1, duration: .25 }, Q.s + .5); tl.to($1(".share .d3"), { opacity: .45, duration: .3 }, Q.s + .5);
   tl.set($1(".aist"), { textContent: "LISTENING" }, Q.s + .5); tl.set($1(".spk"), { textContent: "Listening" }, Q.s + .5);

@@ -1,21 +1,53 @@
 <template>
 <style>
-[data-composition-id="brand"] .lcard{position:absolute;left:520px;top:200px;width:880px;height:250px;border-radius:44px;background:var(--ink);display:grid;place-items:center;box-shadow:0 40px 90px rgba(20,18,31,.35)}
-[data-composition-id="brand"] .cf{position:absolute;left:960px;top:325px;width:26px;height:26px;margin:-13px 0 0 -13px}
-[data-composition-id="brand"] .tag{position:absolute;left:0;width:1920px;text-align:center;direction:rtl;font-weight:700;font-size:62px;color:var(--ink)}
-[data-composition-id="brand"] .tag .w{display:inline-block}
-[data-composition-id="brand"] .cta{position:absolute;left:705px;top:720px;width:510px;height:100px;border-radius:999px;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;gap:16px;font-size:40px;font-weight:700;direction:rtl;box-shadow:0 20px 50px rgba(20,18,31,.3)}
+[data-composition-id="brand"] .cl{position:absolute;inset:0;perspective:1600px}
+[data-composition-id="brand"] .app{position:absolute;width:170px;height:170px;border-radius:40px;display:grid;place-items:center}
+[data-composition-id="brand"] .app img{width:96px;height:96px}
+[data-composition-id="brand"] .fc{position:absolute;border-radius:26px;direction:rtl;padding:22px 26px}
+[data-composition-id="brand"] .fc b{display:block;font-size:30px;font-weight:700}
+[data-composition-id="brand"] .ln{height:12px;border-radius:6px;background:#eceee8;margin-top:12px}
+[data-composition-id="brand"] .bars{position:absolute;left:34px;bottom:30px;display:flex;align-items:flex-end;gap:12px}
+[data-composition-id="brand"] .bars i{display:block;width:36px;border-radius:7px 7px 0 0;transform-origin:50% 100%}
+[data-composition-id="brand"] .hd{position:absolute;right:110px;top:190px;direction:rtl;text-align:right;font-weight:700;font-size:84px;line-height:1.14;color:var(--ink);white-space:nowrap}
+[data-composition-id="brand"] .hd .w{display:inline-block}
+[data-composition-id="brand"] .feat{position:absolute;right:110px;top:560px;display:flex;flex-direction:column;gap:18px;direction:rtl}
+[data-composition-id="brand"] .feat div{display:flex;align-items:center;gap:22px;font-size:32px;font-weight:600}
+[data-composition-id="brand"] .feat i{width:74px;height:74px;border-radius:20px;background:#f3faea;display:grid;place-items:center;flex:none}
 [data-composition-id="brand"] .cursor{position:absolute;left:0;top:0;width:64px;height:76px}
 </style>
 <div id="root" data-composition-id="brand" data-width="1920" data-height="1080">
   <div class="world w-lime"></div>
-  <div class="cfs"></div>
-  <div class="lcard"><img src="assets/img/logo-dark.png" style="width:700px"></div>
-  <div class="tag t1" style="top:500px">البرزنتيشن تبعك،</div>
-  <div class="tag t2" style="top:586px">ووكيل الذكاء الاصطناعي <span style="background:var(--ink);color:var(--lime);padding:0 .25em;border-radius:.2em">بيقدّم عنك.</span></div>
-  <div class="cta">جرّب الخدمة مجاناً <span>←</span></div>
-  <div class="nocc" style="position:absolute;left:0;width:1920px;top:838px;text-align:center;font-size:26px;font-weight:600;color:#3d5a10;direction:rtl">بدون بطاقة ائتمان</div>
-  <div class="url" style="position:absolute;left:0;width:1920px;top:880px;text-align:center;font-size:42px;font-weight:700;color:var(--ink);direction:ltr">slidespoken.com</div>
+  <!-- left: the AI orb, its platforms and decks -->
+  <div class="cl">
+    <svg class="links" width="1920" height="1080" style="position:absolute;left:0;top:0;overflow:visible">
+      <path class="lk" d="M255 310 C 300 400, 420 400, 470 455" fill="none" stroke="#b6f53a" stroke-width="7" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" style="filter:drop-shadow(0 0 8px rgba(182,245,58,.9))"/>
+      <path class="lk" d="M520 270 C 520 340, 520 380, 520 430" fill="none" stroke="#b6f53a" stroke-width="7" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" style="filter:drop-shadow(0 0 8px rgba(182,245,58,.9))"/>
+      <path class="lk" d="M785 310 C 740 400, 620 400, 570 455" fill="none" stroke="#b6f53a" stroke-width="7" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" style="filter:drop-shadow(0 0 8px rgba(182,245,58,.9))"/>
+    </svg>
+    <div class="app glass a1" style="left:170px;top:140px"><img src="assets/img/zoom-icon.png"></div>
+    <div class="app glass a2" style="left:435px;top:100px"><img src="assets/img/google-meet-icon.png"></div>
+    <div class="app glass a3" style="left:700px;top:140px"><img src="assets/img/microsoft-teams-icon.png"></div>
+    <div class="fc glass f1" style="left:80px;top:470px;width:280px;height:190px"><b>تدريب الموظفين</b><div class="ln" style="width:70%"></div><div class="ln" style="width:55%"></div><div class="ln" style="width:62%"></div></div>
+    <div class="fc glass f2" style="left:700px;top:470px;width:280px;height:190px"><b>عرض المبيعات</b>
+      <svg width="86" height="86" viewBox="0 0 42 42" style="position:absolute;left:24px;bottom:20px"><circle cx="21" cy="21" r="15.9" fill="none" stroke="#eef1ea" stroke-width="7"/><circle class="pie" cx="21" cy="21" r="15.9" fill="none" stroke="#7cc614" stroke-width="7" pathLength="100" stroke-dasharray="68 100" transform="rotate(-90 21 21)"/></svg></div>
+    <svg class="orbit" width="900" height="260" viewBox="0 0 900 260" style="left:70px;top:520px"><ellipse cx="450" cy="130" rx="420" ry="88" pathLength="1" stroke-dasharray="1 1.2" stroke-dashoffset="1.1" transform="rotate(-6 450 130)"/></svg>
+    <div class="orb" style="left:385px;top:400px;width:270px;height:270px"><div class="orb-glow"></div><div class="orb-ball"><div class="orb-visor"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+    <div class="fc glass f3" style="left:210px;top:700px;width:620px;height:280px"><b style="font-size:40px">عرض المنتج</b><i style="display:block;width:110px;height:8px;border-radius:4px;background:#b6f53a;margin-top:10px"></i>
+      <div class="ln" style="width:40%;margin-top:26px"></div><div class="ln" style="width:32%"></div><div class="ln" style="width:36%"></div>
+      <div class="bars"><i style="height:60px;background:#dff5b0"></i><i style="height:92px;background:#c4ec74"></i><i style="height:124px;background:#9be010"></i><i style="height:156px;background:#7cc614"></i><i style="height:196px;background:#4f8f0f"></i></div></div>
+  </div>
+  <!-- right: brand, promise, features -->
+  <img class="logo" src="assets/img/logo-light.png" style="position:absolute;right:110px;top:64px;width:470px">
+  <div class="hd"><div class="hdl">البرزنتيشن تبعك،</div><div class="hdl">ووكيل الذكاء الاصطناعي</div><div class="hdl" style="color:#7cc614">بيقدّم عنك.</div></div>
+  <div class="feat">
+    <div><i><svg width="38" height="38" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="#14121f" stroke-width="2"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6" fill="none" stroke="#14121f" stroke-width="2"/><circle cx="18" cy="17" r="3" fill="#7cc614"/></svg></i>قدّم بدون ما تكون موجود</div>
+    <div><i><svg width="38" height="38" viewBox="0 0 24 24"><rect x="3" y="12" width="3.5" height="8" rx="1" fill="#14121f"/><rect x="9" y="8" width="3.5" height="12" rx="1" fill="#14121f"/><rect x="15" y="4" width="3.5" height="16" rx="1" fill="#7cc614"/></svg></i>بالشركة أو أونلاين</div>
+    <div><i><svg width="38" height="38" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="#14121f" stroke-width="2" stroke-linejoin="round"/><circle cx="9" cy="10.5" r="1.3" fill="#7cc614"/><circle cx="12.5" cy="10.5" r="1.3" fill="#7cc614"/><circle cx="16" cy="10.5" r="1.3" fill="#7cc614"/></svg></i>بيجاوب على الأسئلة مباشرة</div>
+    <div><i><svg width="38" height="38" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="#14121f" stroke-width="2"/><path d="M4 7l8 6 8-6" fill="none" stroke="#7cc614" stroke-width="2"/></svg></i>بيبعتلك الملخص تلقائياً</div>
+  </div>
+  <div class="cta-pill cta" style="position:absolute;left:510px;top:930px;width:900px;height:98px;direction:rtl;justify-content:center;font-size:36px">
+    <span class="play"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M7 4 L20 12 L7 20 Z" fill="#0d0e0c"/></svg></span>
+    <span>جرّب الخدمة مجاناً — <span style="color:#b6f53a;direction:ltr;unicode-bidi:isolate">SlideSpoken.com</span></span><span style="color:#b6f53a">←</span></div>
   <div class="cursor"><svg width="64" height="76" viewBox="0 0 64 76"><path d="M6 4 L6 62 L20 50 L30 72 L40 67 L30 46 L50 46 Z" fill="#fff" stroke="#14121f" stroke-width="4" stroke-linejoin="round"/></svg></div>
 </div>
 <script>
@@ -23,24 +55,31 @@
   const R = document.querySelector('[data-composition-id="brand"]'), $ = s => R.querySelectorAll(s), $1 = s => R.querySelector(s);
   const tl = gsap.timeline({ paused: true }), D = HF.dur("brand"), cue = (t, ty, d, g) => HF.cue("brand", t, ty, d, g);
   const A = HF.line("brand", "s7a"), Bl = HF.line("brand", "s7b"), C = HF.line("brand", "s7c");
-  // confetti in the palette, fixed angles (no randomness)
-  const cols = ["#6c4bff", "#ff4fa0", "#ff7a45", "#14c8b4", "#2f6bff", "#ffb53d", "#14121f"];
-  $1(".cfs").innerHTML = Array.from({ length: 28 }, (_, i) => `<i class="cf" style="background:${cols[i % 7]};border-radius:${i % 3 ? "50%" : "6px"}"></i>`).join("");
-  const L0 = Math.max(.25, A.s - .05);
-  tl.fromTo($1(".lcard"), { opacity: 0, scale: 1.7 }, { opacity: 1, scale: 1, duration: .4, ease: "power4.in" }, L0); cue(L0 + .38, "impact", 1.6, 1);
-  tl.to($1(".lcard"), { scale: 1.03, duration: .08, yoyo: true, repeat: 1 }, L0 + .4);
-  [...$(".cf")].forEach((c, i) => { const a = i / 28 * Math.PI * 2 + (i % 2) * .11, r = 420 + (i % 5) * 70;
-    tl.fromTo(c, { x: 0, y: 0, scale: 0, rotation: 0, opacity: 1 }, { x: Math.cos(a) * r * 1.4, y: Math.sin(a) * r * .8, scale: .7 + (i % 4) * .25, rotation: 200 + i * 17, opacity: 0, duration: 1.4, ease: "expo.out" }, L0 + .4); });
-  const words = (el, t0) => { HF.words(el); tl.fromTo(el.querySelectorAll(".w"), { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: .45, stagger: .09, ease: "expo.out" }, t0); };
-  words($1(".t1"), Bl.s); words($1(".t2"), Bl.s + .5); cue(Bl.s, "ui", .3, .5);
-  tl.fromTo($1(".url"), { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .5, ease: "expo.out" }, Bl.e - 1.2);
-  const K = C.s - .3;
-  tl.fromTo($1(".cta"), { opacity: 0, scale: .7 }, { opacity: 1, scale: 1, duration: .55, ease: "back.out(1.7)" }, K); cue(K, "shimmer", 2.2, 1);
-  tl.fromTo($1(".nocc"), { opacity: 0 }, { opacity: 1, duration: .4 }, K + .3);
-  // the cursor presses the button
-  tl.fromTo($1(".cursor"), { x: 1500, y: 1140 }, { x: 1010, y: 790, duration: .6, ease: "expo.out" }, K + .5);
-  tl.to($1(".cursor"), { scale: .85, duration: .09, yoyo: true, repeat: 1 }, K + 1.15); tl.to($1(".cta"), { scale: .95, duration: .09, yoyo: true, repeat: 1 }, K + 1.15); cue(K + 1.15, "click", .2, .9);
-  tl.to($1(".cursor"), { x: 1250, y: 1150, duration: .5, ease: "power3.in" }, K + 1.7);
+  // the orb arrives, its orbit draws, the platforms drop in and connect
+  tl.fromTo($1(".orb"), { opacity: 0, scale: .5, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: .7, ease: "back.out(1.6)" }, .1); cue(.1, "join", .5, 1);
+  tl.fromTo($1(".orbit ellipse"), { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: .9, ease: "power2.inOut" }, .35); cue(.35, "rise", .8, .6);
+  tl.fromTo($(".app"), { opacity: 0, y: -60, rotationX: 40 }, { opacity: 1, y: 0, rotationX: 0, duration: .6, stagger: .1, ease: "expo.out" }, .5); cue(.5, "pop", .3, .7);
+  tl.fromTo($(".lk"), { strokeDashoffset: 1.1 }, { strokeDashoffset: 0, duration: .5, stagger: .1, ease: "power2.out" }, .9);
+  tl.fromTo($1(".f1"), { opacity: 0, x: -80, rotationY: 30 }, { opacity: 1, x: 0, rotation: -7, rotationY: 14, duration: .7, ease: "expo.out" }, 1.0);
+  tl.fromTo($1(".f2"), { opacity: 0, x: 80, rotationY: -30 }, { opacity: 1, x: 0, rotation: 7, rotationY: -14, duration: .7, ease: "expo.out" }, 1.1);
+  tl.fromTo($1(".f3"), { opacity: 0, y: 120, rotationX: 30 }, { opacity: 1, y: 0, rotation: -5, rotationX: 10, duration: .8, ease: "expo.out" }, 1.2); cue(1.0, "whoosh", .7, .7);
+  tl.fromTo($(".f3 .bars i"), { scaleY: 0 }, { scaleY: 1, duration: .6, stagger: .08, ease: "power3.out" }, 1.6);
+  tl.fromTo($1(".pie"), { strokeDasharray: "0 100" }, { strokeDasharray: "68 100", duration: .8, ease: "power2.out" }, 1.5);
+  // brand + promise
+  const L0 = Math.max(.6, A.s - .1);
+  tl.fromTo($1(".logo"), { clipPath: "inset(-10% 0% -10% 100%)" }, { clipPath: "inset(-10% 0% -10% 0%)", duration: .7, ease: "power2.inOut" }, L0); cue(L0 + .1, "impact", 1.4, .8);
+  const hd = $1(".hd"); $(".hdl").forEach(l => HF.words(l));  // split per line so the line breaks survive
+  tl.fromTo(hd.querySelectorAll(".w"), { opacity: 0, y: 34, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: .45, stagger: .09, ease: "expo.out" }, Math.max(L0 + .6, Bl.s - .3)); cue(Bl.s - .3, "ui", .3, .5);
+  tl.fromTo($(".feat > div"), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: .45, stagger: .16, ease: "expo.out" }, Bl.s + .9);
+  tl.fromTo($(".feat i"), { scale: 0 }, { scale: 1, duration: .4, stagger: .16, ease: "back.out(2)" }, Bl.s + .9); cue(Bl.s + .9, "tick", .6, .4);
+  // the call to action, pressed by the cursor
+  const K = C.s - .4;
+  tl.fromTo($1(".cta"), { opacity: 0, y: 40, scale: .9 }, { opacity: 1, y: 0, scale: 1, duration: .55, ease: "back.out(1.6)" }, K); cue(K, "shimmer", 2.2, 1);
+  tl.fromTo($1(".cursor"), { x: 1500, y: 1140 }, { x: 1010, y: 990, duration: .6, ease: "expo.out" }, K + .5);
+  tl.to($1(".cursor"), { scale: .85, duration: .09, yoyo: true, repeat: 1 }, K + 1.15); tl.to($1(".cta"), { scale: .96, duration: .09, yoyo: true, repeat: 1 }, K + 1.15); cue(K + 1.15, "click", .2, .9);
+  tl.to($1(".cursor"), { x: 1300, y: 1160, duration: .5, ease: "power3.in" }, K + 1.7);
+  const vb = [...$(".orb-visor i")];
+  tl.to({ p: 0 }, { p: 1, duration: D, ease: "none", onUpdate() { const t = tl.time(); vb.forEach((b, k) => b.style.transform = `scaleY(${.35 + .65 * Math.abs(Math.sin(t * 7 + k * 1.1))})`); } }, 0);
   window.__timelines["brand"] = tl;
 })();
 </script>

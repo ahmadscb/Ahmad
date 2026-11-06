@@ -1,9 +1,9 @@
 <template>
 <style>
 [data-composition-id="room"] .cam{position:absolute;inset:0;transform-origin:960px 410px}
-[data-composition-id="room"] .wall{position:absolute;left:150px;top:150px;width:1620px;height:560px;border-radius:40px;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.25)}
+[data-composition-id="room"] .wall{position:absolute;left:150px;top:150px;width:1620px;height:560px;border-radius:40px;background:#f3f5f8;border:1px solid #e6e8ee}
 [data-composition-id="room"] .screen{position:absolute;left:610px;top:213px;width:700px;height:394px;font-size:14.58px;border-radius:16px;box-shadow:0 0 0 12px #14121f,0 40px 90px rgba(0,0,0,.35)}
-[data-composition-id="room"] .wave{position:absolute;left:960px;top:410px;width:740px;height:740px;margin:-370px 0 0 -370px;border-radius:50%;border:4px solid rgba(216,255,115,.7)}
+[data-composition-id="room"] .wave{position:absolute;left:960px;top:410px;width:740px;height:740px;margin:-370px 0 0 -370px;border-radius:50%;border:4px solid rgba(124,198,20,.45)}
 [data-composition-id="room"] .tag{position:absolute;left:820px;top:640px;width:280px;height:64px;border-radius:999px;background:var(--ink);display:flex;align-items:center;justify-content:center;gap:12px;color:#fff;font-size:22px;font-weight:700}
 [data-composition-id="room"] .tag i{display:block;width:7px;height:30px;border-radius:4px;background:var(--lime)}
 [data-composition-id="room"] .table{position:absolute;left:0;top:0}
@@ -18,12 +18,12 @@
     <div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div>
     <div class="deckhost screen"><div class="dk a">{{slide:agenda}}</div><div class="dk b" style="position:absolute;inset:0;opacity:0">{{slide:regions}}</div></div>
     <div class="tag"><i></i><i></i><i></i><i></i><span style="margin-left:8px;direction:ltr">AI Presenter</span></div>
-    <svg class="table" width="1920" height="1080"><path d="M560 760 L1360 760 L1660 1010 L260 1010 Z" fill="#ffffff" opacity=".95"/><path d="M260 1010 L260 1034 L1660 1034 L1660 1010 Z" fill="#cfe9e4"/></svg>
-    <div class="pp p1" style="left:430px;top:690px"><div class="h" style="background:#ffd9c2"></div><div class="b" style="background:#6c4bff"></div></div>
-    <div class="pp p2" style="left:300px;top:800px;transform-origin:50% 100%"><div class="h" style="background:#e8b48f"></div><div class="b" style="background:#ff7a45"></div></div>
-    <div class="pp p3" style="left:1370px;top:690px"><div class="h" style="background:#f3c9a8"></div><div class="b" style="background:#ff4fa0"></div></div>
-    <div class="pp p4" style="left:1500px;top:800px"><div class="h" style="background:#c98e6b"></div><div class="b" style="background:#2f6bff"></div></div>
-    <div class="pp p5" style="left:700px;top:640px;scale:.8"><div class="h" style="background:#ffe0cc"></div><div class="b" style="background:#ffb53d"></div></div>
+    <svg class="table" width="1920" height="1080"><path d="M560 760 L1360 760 L1660 1010 L260 1010 Z" fill="#f4f6f9" stroke="#e3e6ec" stroke-width="2"/><path d="M260 1010 L260 1034 L1660 1034 L1660 1010 Z" fill="#e3e6ec"/></svg>
+    <div class="pp p1" style="left:430px;top:690px"><div class="h" style="background:#ffd9c2"></div><div class="b" style="background:#14121f"></div></div>
+    <div class="pp p2" style="left:300px;top:800px;transform-origin:50% 100%"><div class="h" style="background:#e8b48f"></div><div class="b" style="background:#7cc614"></div></div>
+    <div class="pp p3" style="left:1370px;top:690px"><div class="h" style="background:#f3c9a8"></div><div class="b" style="background:#3a3d33"></div></div>
+    <div class="pp p4" style="left:1500px;top:800px"><div class="h" style="background:#c98e6b"></div><div class="b" style="background:#5aa31a"></div></div>
+    <div class="pp p5" style="left:700px;top:640px;scale:.8"><div class="h" style="background:#ffe0cc"></div><div class="b" style="background:#b6f53a"></div></div>
     <div class="pp p6" style="left:1100px;top:640px;scale:.8"><div class="h" style="background:#d9a07e"></div><div class="b" style="background:#14121f"></div></div>
   </div>
   <div class="kick k1">Present in-person</div>
