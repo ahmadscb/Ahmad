@@ -53,6 +53,9 @@
   tl.to($1(".share .d2"), { opacity: 0, x: 50, duration: .25, ease: "power2.in" }, S3); tl.fromTo($1(".share .d3"), { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: .35, ease: "expo.out" }, S3 + .15); cue(S3, "slide", .4, .7);
   tl.set($1(".sno"), { textContent: "SLIDE 5 OF 8" }, S3 + .15);
   tl.fromTo($(".share .d3 .pr-c"), { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: .4, stagger: .12, ease: "expo.out" }, S3 + .3);
+  // the agent walks the priorities: each card lights in turn after they land
+  { const cards = [...$(".share .d3 .pr-c")], t0 = S3 + .9, step = Math.max(.4, (D - .7 - t0) / cards.length);
+    cards.forEach((c, i) => { tl.fromTo(c, { scale: 1 }, { scale: 1.05, duration: .2, ease: "power2.out", immediateRender: false }, t0 + i * step); tl.to(c, { scale: 1, duration: .2 }, t0 + (i + 1) * step - .05); }); }
   const aim = [...$(".aim i")];
   tl.to({ p: 0 }, { p: 1, duration: D, ease: "none", onUpdate() { HF.bars(aim, tl.time(), "online", 1); } }, 0);
   // colour flood (magenta) behind the window, from Khalid's tile: the next beat is his question

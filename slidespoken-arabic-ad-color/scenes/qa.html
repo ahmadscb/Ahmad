@@ -10,6 +10,7 @@
   <div class="world w-magenta"></div>
   <div class="flood w-green" style="position:absolute;inset:0;clip-path:inset(0 0 0 100%)"></div>
 {{part:meet}}
+  <i class="lring" style="position:absolute;left:1270px;top:250px;width:510px;height:140px;border-radius:24px;border:5px solid var(--lime);opacity:0"></i>
   <span class="pill stat" style="background:var(--lime);color:var(--ink)">Question detected · Presentation paused</span>
   <span class="pill stat res" style="background:var(--ink);color:#fff">Resuming presentation ✓</span>
   <svg class="link" width="1920" height="1080"><path class="lk" d="" fill="none" stroke="#ff4fa0" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/></svg>
@@ -36,6 +37,9 @@
   tl.fromTo($1(".q"), { opacity: 0, scale: .75, x: 40 }, { opacity: 1, scale: 1, x: 0, duration: .35, ease: "back.out(1.6)" }, Q.s + .2); cue(Q.s + .2, "pop", .3, .9);
   tl.to($1(".stat"), { opacity: 1, duration: .25 }, Q.s + .5); tl.to($1(".share .d3"), { opacity: .45, duration: .3 }, Q.s + .5);
   tl.set($1(".aist"), { textContent: "LISTENING" }, Q.s + .5); tl.set($1(".spk"), { textContent: "Listening" }, Q.s + .5);
+  // listening: rings pulse out of the AI tile while the question is asked (finite, seek-safe)
+  { const L0 = Q.s + .5, n = Math.max(1, Math.floor((A.s - L0 - .2) / .6));
+    for (let k = 0; k < n; k++) tl.fromTo($1(".lring"), { scale: .9, opacity: .8 }, { scale: 1.35, opacity: 0, duration: .6, ease: "power1.out", immediateRender: false }, L0 + k * .6); }
   // the answer comes from the highlighted card on the slide
   const hot = $1(".share .d3 .hot");
   tl.to($1(".share .d3"), { opacity: 1, duration: .3 }, A.s - .25); tl.to($1(".stat"), { opacity: 0, duration: .2 }, A.s - .25);
