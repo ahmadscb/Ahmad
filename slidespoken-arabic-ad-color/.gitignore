@@ -5,3 +5,5 @@ out/render.log
 renders/
 voice/lines/
 out/work-*/
+.thumbnails/
+.waveform-cache/
