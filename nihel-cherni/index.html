@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nihel Cherni — Administration · Office Operations · Sales Support</title>
+<meta name="description" content="Nihel Cherni — multilingual administration, office operations and sales support professional based in Doha, Qatar. Arabic · French · English.">
+<meta property="og:title" content="Nihel Cherni — Administration · Office Operations · Sales Support">
+<meta property="og:description" content="Multilingual professional in Doha, Qatar. Reliable administration, disciplined follow-up and calm, customer-first service.">
+<meta property="og:image" content="nihel.jpg">
+<meta name="theme-color" content="#07080d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307080d'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-style='italic' font-size='30' fill='%23e8c48a'%3ENC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Reem+Kufi:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="is-loading">
+
+<!-- ============ PRELOADER ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__greet">
+    <span class="g" style="--i:0">Hello</span>
+    <span class="g ar" style="--i:1">مرحبا</span>
+    <span class="g" style="--i:2">Bonjour</span>
+  </div>
+  <div class="loader__name">
+    <span>N</span><span>i</span><span>h</span><span>e</span><span>l</span>
+  </div>
+  <div class="loader__bar"><i id="loaderBar"></i></div>
+  <div class="loader__count"><span id="loaderCount">0</span>%</div>
+</div>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"><i id="progress"></i></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<canvas id="stars" aria-hidden="true"></canvas>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <a href="#top" class="nav__logo" aria-label="Nihel Cherni — home">
+    <span class="mono">N<em>c</em></span>
+  </a>
+  <nav class="nav__links" id="navLinks">
+    <a href="#about">About</a>
+    <a href="#expertise">Expertise</a>
+    <a href="#journey">Journey</a>
+    <a href="#languages">Languages</a>
+    <a href="#education">Education</a>
+    <a href="#contact" class="nav__cta magnetic"><span>Let’s talk</span></a>
+  </nav>
+  <button class="nav__burger" id="burger" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <div class="hero__inner">
+    <div class="hero__text">
+      <p class="eyebrow reveal-up"><span class="pulse"></span> Available now · Doha, Qatar</p>
+      <h1 class="hero__title" aria-label="Nihel Cherni">
+        <span class="line"><span class="split" data-split>Nihel</span></span>
+        <span class="line line--2"><span class="split italic" data-split>Cherni</span></span>
+      </h1>
+      <p class="hero__role reveal-up">
+        <span class="role-static">I bring order, warmth &amp; follow-through to</span>
+        <span class="rotator" id="rotator"><span>office operations.</span></span>
+      </p>
+      <div class="hero__actions reveal-up">
+        <a href="#contact" class="btn btn--gold magnetic"><span>Get in touch</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#journey" class="btn btn--ghost magnetic"><span>View journey</span></a>
+      </div>
+      <ul class="hero__meta reveal-up">
+        <li><b>3</b> languages</li>
+        <li><b>8+</b> years experience</li>
+        <li><b>QID</b> valid · NOC available</li>
+      </ul>
+    </div>
+
+    <div class="hero__visual" id="heroVisual">
+      <div class="portrait" id="portrait">
+        <svg class="ring" viewBox="0 0 400 400" aria-hidden="true">
+          <defs><path id="circ" d="M200,200 m-180,0 a180,180 0 1,1 360,0 a180,180 0 1,1 -360,0"/></defs>
+          <text><textPath href="#circ">ADMINISTRATION ✦ OFFICE OPERATIONS ✦ SALES SUPPORT ✦ CUSTOMER CARE ✦ </textPath></text>
+        </svg>
+        <div class="orbit orbit--1" aria-hidden="true"><i></i></div>
+        <div class="orbit orbit--2" aria-hidden="true"><i></i></div>
+        <div class="arch">
+          <div class="arch__glow" aria-hidden="true"></div>
+          <img src="nihel.jpg" alt="Portrait of Nihel Cherni" width="582" height="758">
+          <div class="arch__shine" aria-hidden="true"></div>
+        </div>
+        <div class="chip chip--1"><span class="ar">مرحبا</span> Arabic · Native</div>
+        <div class="chip chip--2">🇫🇷 Français · Fluent</div>
+        <div class="chip chip--3">📍 Doha, Qatar</div>
+      </div>
+    </div>
+  </div>
+
+  <a href="#about" class="scroll-cue" aria-label="Scroll down"><span>Scroll</span><i></i></a>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<section class="marquee" aria-label="Greetings in three languages">
+  <div class="marquee__track">
+    <div class="marquee__row">
+      <span>Hello</span><b>✦</b><span class="ar">أهلاً وسهلاً</span><b>✦</b><span class="it">Bonjour</span><b>✦</b><span>Welcome</span><b>✦</b><span class="ar">مرحبا</span><b>✦</b><span class="it">Bienvenue</span><b>✦</b>
+    </div>
+    <div class="marquee__row" aria-hidden="true">
+      <span>Hello</span><b>✦</b><span class="ar">أهلاً وسهلاً</span><b>✦</b><span class="it">Bonjour</span><b>✦</b><span>Welcome</span><b>✦</b><span class="ar">مرحبا</span><b>✦</b><span class="it">Bienvenue</span><b>✦</b>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about section" id="about">
+  <div class="container">
+    <p class="kicker reveal-up"><span>01</span> Professional profile</p>
+    <p class="about__big" id="scrubText">
+      A multilingual professional who turns busy offices into calm, organised places. I welcome people warmly, keep records spotless, coordinate the day, and follow every request through to completion — with sound judgment, accuracy and a genuine service mindset.
+    </p>
+
+    <div class="stats">
+      <div class="stat reveal-up"><div class="stat__num"><span data-count="20">0</span>+</div><p>import shipments coordinated every month</p></div>
+      <div class="stat reveal-up"><div class="stat__num"><span data-count="10">0</span>+</div><p>regular clients &amp; suppliers looked after</p></div>
+      <div class="stat reveal-up"><div class="stat__num"><span data-count="8">0</span>+</div><p>years across admin, sales, logistics &amp; service</p></div>
+      <div class="stat reveal-up"><div class="stat__num"><span data-count="3">0</span></div><p>working languages — Arabic, French, English</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXPERTISE ============ -->
+<section class="expertise section" id="expertise">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker reveal-up"><span>02</span> What I do best</p>
+      <h2 class="h2 reveal-up">Four disciplines,<br><em>one steady pair of hands.</em></h2>
+    </div>
+
+    <div class="cards">
+      <article class="card tilt reveal-up">
+        <div class="card__glare"></div>
+        <div class="card__icon">
+          <svg viewBox="0 0 48 48"><rect x="8" y="10" width="32" height="30" rx="4"/><path d="M8 18h32M16 6v8M32 6v8M15 26h6M15 32h12"/></svg>
+        </div>
+        <span class="card__no">01</span>
+        <h3>Office Coordination</h3>
+        <p>Schedules, records, correspondence, priorities and the day-to-day administrative support that keeps a team moving.</p>
+      </article>
+      <article class="card tilt reveal-up">
+        <div class="card__glare"></div>
+        <div class="card__icon">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="17" r="8"/><path d="M8 42c2-9 9-13 16-13s14 4 16 13"/><path d="M36 10c3 2 4 5 4 8"/></svg>
+        </div>
+        <span class="card__no">02</span>
+        <h3>Customer Service</h3>
+        <p>Professional reception, needs assessment, clear communication, calm complaint handling and reliable follow-up.</p>
+      </article>
+      <article class="card tilt reveal-up">
+        <div class="card__glare"></div>
+        <div class="card__icon">
+          <svg viewBox="0 0 48 48"><path d="M6 38l10-12 8 7 16-19"/><path d="M30 14h10v10"/><path d="M6 44h36"/></svg>
+        </div>
+        <span class="card__no">03</span>
+        <h3>Sales Support</h3>
+        <p>Customer enquiries, order updates, relationship care, upselling support and next-action tracking.</p>
+      </article>
+      <article class="card tilt reveal-up">
+        <div class="card__glare"></div>
+        <div class="card__icon">
+          <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="6"/><circle cx="8" cy="10" r="3"/><circle cx="40" cy="10" r="3"/><circle cx="8" cy="38" r="3"/><circle cx="40" cy="38" r="3"/><path d="M10.5 12.5l9 7M37.5 12.5l-9 7M10.5 35.5l9-7M37.5 35.5l-9-7"/></svg>
+        </div>
+        <span class="card__no">04</span>
+        <h3>Operations Support</h3>
+        <p>Coordination across management, sales, suppliers, logistics, finance and service teams — nothing falls through.</p>
+      </article>
+    </div>
+
+    <!-- Strength rails -->
+    <div class="rails" aria-label="Core strengths">
+      <div class="rail">
+        <div class="rail__inner">
+          <span>Office administration</span><span>Client relations</span><span>Reception &amp; front desk</span><span>Order processing</span><span>Documentation</span><span>Calendar &amp; events</span>
+          <span aria-hidden="true">Office administration</span><span aria-hidden="true">Client relations</span><span aria-hidden="true">Reception &amp; front desk</span><span aria-hidden="true">Order processing</span><span aria-hidden="true">Documentation</span><span aria-hidden="true">Calendar &amp; events</span>
+        </div>
+      </div>
+      <div class="rail rail--rev">
+        <div class="rail__inner">
+          <span>Records &amp; data</span><span>Supplier communication</span><span>Team scheduling</span><span>Cash &amp; POS accuracy</span><span>Word · Excel · Outlook</span><span>Time management</span>
+          <span aria-hidden="true">Records &amp; data</span><span aria-hidden="true">Supplier communication</span><span aria-hidden="true">Team scheduling</span><span aria-hidden="true">Cash &amp; POS accuracy</span><span aria-hidden="true">Word · Excel · Outlook</span><span aria-hidden="true">Time management</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JOURNEY ============ -->
+<section class="journey section" id="journey">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker reveal-up"><span>03</span> Professional journey</p>
+      <h2 class="h2 reveal-up">From Tunisia<br><em>to Doha.</em></h2>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <div class="timeline__line"><i id="timelineFill"></i></div>
+
+      <article class="job">
+        <div class="job__dot"></div>
+        <div class="job__date">May 2025 — Mar 2026</div>
+        <div class="job__card">
+          <div class="job__top"><h3>Hostess</h3><span class="job__place">Leto Cafe · Doha, Qatar</span></div>
+          <ul>
+            <li>The polished first point of contact — welcoming guests, understanding preferences and guiding them through seating and service options.</li>
+            <li>Managed reservations, guest flow and high customer volumes while protecting service quality.</li>
+            <li>Handled questions, special requests and complaints calmly, coordinating with colleagues and management for timely solutions.</li>
+            <li>Built trust through attentive service, encouraging repeat visits and supporting additional sales.</li>
+          </ul>
+          <div class="tags"><span>Front of house</span><span>Reservations</span><span>Guest relations</span></div>
+        </div>
+      </article>
+
+      <article class="job">
+        <div class="job__dot"></div>
+        <div class="job__date">Jul 2023 — Apr 2025</div>
+        <div class="job__card">
+          <div class="job__top"><h3>Import Logistics Supervisor</h3><span class="job__place">ELEC Recyclage · Tunisia</span></div>
+          <ul>
+            <li>Coordinated <b>20+ import shipments per month</b> with complete documentation and close supplier &amp; transport communication.</li>
+            <li>Improved workflow efficiency and cut avoidable delays through structured follow-up and proactive issue resolution.</li>
+            <li>Maintained full customs and safety compliance while handling time-sensitive records with accuracy and confidentiality.</li>
+          </ul>
+          <div class="tags"><span>Logistics</span><span>Compliance</span><span>Supervision</span></div>
+        </div>
+      </article>
+
+      <article class="job">
+        <div class="job__dot"></div>
+        <div class="job__date">May 2022 — Jun 2023</div>
+        <div class="job__card">
+          <div class="job__top"><h3>Import Logistics &amp; Sales Manager</h3><span class="job__place">DID Recyclage · Tunisia</span></div>
+          <ul>
+            <li>Supported sales while managing import operations — keeping requirements, availability, documents and delivery aligned.</li>
+            <li>Maintained relationships with <b>10+ regular clients and suppliers</b> through responsive, dependable communication.</li>
+            <li>Raised customer satisfaction by tracking open requests and coordinating practical solutions across teams.</li>
+            <li>Prepared commercial and logistics records for accurate order processing and management visibility.</li>
+          </ul>
+          <div class="tags"><span>Sales</span><span>Client care</span><span>Operations</span></div>
+        </div>
+      </article>
+
+      <article class="job">
+        <div class="job__dot"></div>
+        <div class="job__date">Jan 2021 — Mar 2022</div>
+        <div class="job__card">
+          <div class="job__top"><h3>Logistics &amp; Sales Assistant</h3><span class="job__place">ATT · Tunisia</span></div>
+          <ul>
+            <li>Processed and tracked daily customer orders, confirming details from request through fulfilment.</li>
+            <li>Assisted customers and internal teams with order updates, documentation and inventory information.</li>
+            <li>Kept inventory records and admin files accurate, helping the team respond fast and reduce errors.</li>
+          </ul>
+          <div class="tags"><span>Orders</span><span>Inventory</span><span>Admin</span></div>
+        </div>
+      </article>
+
+      <article class="job">
+        <div class="job__dot"></div>
+        <div class="job__date">Jan 2017 — Nov 2019</div>
+        <div class="job__card">
+          <div class="job__top"><h3>Cashier Manager</h3><span class="job__place">SKMPLAST · Tunisia</span></div>
+          <ul>
+            <li>Supervised cashier operations and daily transactions with a focus on service, financial accuracy and policy compliance.</li>
+            <li>Managed team schedules and daily responsibilities, improving organisation during peak periods.</li>
+            <li>Reduced cash discrepancies through disciplined reconciliation and careful review of transaction records.</li>
+          </ul>
+          <div class="tags"><span>Team lead</span><span>Cash control</span><span>Reporting</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LANGUAGES ============ -->
+<section class="languages section" id="languages">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker reveal-up"><span>04</span> Languages</p>
+      <h2 class="h2 reveal-up">Speaking to people<br><em>in their own words.</em></h2>
+    </div>
+    <div class="langs">
+      <div class="lang reveal-up" data-level="100">
+        <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"/><circle class="bar" cx="60" cy="60" r="52"/></svg>
+        <div class="lang__inner"><span class="lang__glyph ar">ع</span><b>Arabic</b><small>Native</small></div>
+      </div>
+      <div class="lang reveal-up" data-level="90">
+        <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"/><circle class="bar" cx="60" cy="60" r="52"/></svg>
+        <div class="lang__inner"><span class="lang__glyph">Fr</span><b>French</b><small>Fluent · written &amp; spoken</small></div>
+      </div>
+      <div class="lang reveal-up" data-level="72">
+        <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"/><circle class="bar" cx="60" cy="60" r="52"/></svg>
+        <div class="lang__inner"><span class="lang__glyph">En</span><b>English</b><small>Good · written &amp; spoken</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EDUCATION / BENTO ============ -->
+<section class="education section" id="education">
+  <div class="container">
+    <div class="sec-head">
+      <p class="kicker reveal-up"><span>05</span> Education &amp; qualities</p>
+      <h2 class="h2 reveal-up">Grounded in numbers,<br><em>driven by people.</em></h2>
+    </div>
+
+    <div class="bento">
+      <div class="tile tile--edu reveal-up spot">
+        <span class="tile__year">2015</span>
+        <p class="tile__label">Bachelor’s Degree</p>
+        <h3>Management — Finance</h3>
+        <p>University of Jendouba, Tunisia</p>
+      </div>
+      <div class="tile tile--bac reveal-up spot">
+        <span class="tile__year">2012</span>
+        <p class="tile__label">Baccalaureate</p>
+        <h3>Mathematics</h3>
+        <p>Khmaies El Hajri High School, Tunisia</p>
+      </div>
+      <div class="tile tile--train reveal-up spot">
+        <p class="tile__label">Training</p>
+        <ul class="checks">
+          <li>Basics Hospitality Training</li>
+          <li>Basic First Aid SST</li>
+          <li>Hazardous Waste Management HSE</li>
+          <li>Industrial Recycling Process</li>
+        </ul>
+      </div>
+      <div class="tile tile--qual reveal-up spot">
+        <p class="tile__label">Personal qualities</p>
+        <div class="pills" id="pills">
+          <span>Professional presentation</span><span>Positive &amp; approachable</span><span>Confident communicator</span><span>Active listener</span><span>Target-aware</span><span>Self-motivated</span><span>Accurate &amp; organised</span><span>Resilient under pressure</span><span>Quick learner</span><span>Team-oriented</span><span>Reliable follow-through</span>
+        </div>
+      </div>
+      <div class="tile tile--ready reveal-up spot">
+        <p class="tile__label">Professional readiness</p>
+        <p class="ready">Ready to learn company systems, <em>CRM &amp; ERP</em> workflows, office procedures, reporting standards, product information and role-specific performance goals.</p>
+      </div>
+      <div class="tile tile--value reveal-up spot">
+        <p class="tile__label">Professional value</p>
+        <blockquote>“Creates a confident first impression, organises information carefully, and keeps reliable follow-up from the first request to completion.”</blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact section" id="contact">
+  <div class="aurora aurora--contact" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="container">
+    <p class="kicker reveal-up"><span>06</span> Contact</p>
+    <h2 class="contact__title">
+      <span class="line"><span class="split" data-split>Let’s work</span></span>
+      <span class="line"><span class="split italic gold" data-split>together.</span></span>
+    </h2>
+    <p class="contact__sub reveal-up">Based in Doha with a valid QID and NOC available — ready to join your team.</p>
+
+    <div class="contact__grid">
+      <a class="cbox reveal-up magnetic-soft" href="mailto:nihelcherni8@gmail.com" data-copy="nihelcherni8@gmail.com">
+        <span class="cbox__label">Email</span>
+        <span class="cbox__val">nihelcherni8@gmail.com</span>
+        <span class="cbox__hint">Click to write · auto-copied</span>
+        <svg class="cbox__arrow" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="cbox reveal-up magnetic-soft" href="tel:+97451378995">
+        <span class="cbox__label">Phone</span>
+        <span class="cbox__val">+974 5137 8995</span>
+        <span class="cbox__hint">Call directly</span>
+        <svg class="cbox__arrow" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="cbox reveal-up magnetic-soft" href="https://wa.me/97451378995" target="_blank" rel="noopener">
+        <span class="cbox__label">WhatsApp</span>
+        <span class="cbox__val">Message me</span>
+        <span class="cbox__hint">Fastest reply</span>
+        <svg class="cbox__arrow" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="cbox reveal-up magnetic-soft" href="https://www.linkedin.com/search/results/all/?keywords=Nihel%20Cherni" target="_blank" rel="noopener">
+        <span class="cbox__label">LinkedIn</span>
+        <span class="cbox__val">@Nihelcherni</span>
+        <span class="cbox__hint">Connect professionally</span>
+        <svg class="cbox__arrow" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer__big" aria-hidden="true">Nihel Cherni</div>
+  <div class="footer__row">
+    <span>© <span id="year">2026</span> Nihel Cherni</span>
+    <span>Administration · Office Operations · Sales Support</span>
+    <a href="#top" class="totop">Back to top ↑</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Email copied ✓</div>
+
+<script src="main.js"></script>
+</body>
+</html>
