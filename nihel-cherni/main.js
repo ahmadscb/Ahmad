@@ -89,8 +89,8 @@
     parts = Array.from({ length: n }, () => ({
       x: Math.random() * W, y: Math.random() * H,
       vx: (Math.random() - .5) * .18 * DPR, vy: (-Math.random() * .25 - .05) * DPR,
-      r: (Math.random() * 1.4 + .3) * DPR, a: Math.random() * .6 + .2, tw: Math.random() * Math.PI * 2,
-      hue: Math.random() < .75 ? '232,196,138' : '217,139,139'
+      r: (Math.random() * 1.6 + .4) * DPR, a: Math.random() * .45 + .15, tw: Math.random() * Math.PI * 2,
+      hue: Math.random() < .75 ? '168,121,58' : '31,42,90'
     }));
   }
   resize();
@@ -119,7 +119,7 @@
       for (let j = i + 1; j < parts.length; j++) {
         const b = parts[j], d = Math.hypot(a.x - b.x, a.y - b.y);
         if (d < 110 * DPR) {
-          ctx.strokeStyle = `rgba(232,196,138,${(1 - d / (110 * DPR)) * .35})`;
+          ctx.strokeStyle = `rgba(168,121,58,${(1 - d / (110 * DPR)) * .35})`;
           ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
