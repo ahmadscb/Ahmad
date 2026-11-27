@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Crypto Crash</title>
+<!-- Original 2D comedy short (Motion Studio test #1, built with Bang Motion rules): 1080x1920, 30 fps, ~30 s.
+     Character: "Dave", an original jointed vector rig with a full expression face. ?clean=1 = export mode. -->
+<style>
+@font-face{font-family:Bangers;src:url(../../vendor/fonts/bangers-latin-400-normal.woff2)}
+@font-face{font-family:Fredoka;font-weight:500;src:url(../../vendor/fonts/fredoka-latin-500-normal.woff2)}
+@font-face{font-family:Fredoka;font-weight:700;src:url(../../vendor/fonts/fredoka-latin-700-normal.woff2)}
+html,body{margin:0;height:100%;background:#0d0e1a;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#24274A}
+svg text{font-family:Fredoka,sans-serif;font-weight:700}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script>
+document.fonts.load('40px Bangers').then(() => document.fonts.load('700 40px Fredoka')).then(build);
+function build() {
+const { N, G, R, CI, EL, PA, LN, TX, J, lg, rg, shade, hash } = BM;
+const DUR = 30;
+BM.init({ W: 1080, H: 1920, DUR, svg: document.getElementById('scene') });
+const tl = BM.tl;
+const C = { wall: '#2A2D4F', wall2: '#23264A', floor: '#1B1D36', ink: '#1E1B2E', skin: '#F2B98C', skin2: '#D99A6E', hair: '#3A2418',
+  hood: '#4C7DFF', pants: '#2E3550', wood: '#8A5A3A', wood2: '#6B4329', green: '#2BE38B', red: '#FF4B5C', gold: '#FFC83D', cream: '#FFF6E0', paper: '#FBF7EE' };
+
+/* ================= CHARACTER: Dave (jointed rig + expression face) ================= */
+function dave(p, x, gy, s, { glasses = false, chain = false, legs = true } = {}) {
+  const place = G({ transform: `translate(${x},${gy}) scale(${s})` }, p), rootEl = G({}, place), root = J(rootEl), ch = { root, place, s };
+  for (const side of (legs ? ['R', 'L'] : [])) {   // legs (hidden behind desks / car doors in most shots)
+    const sx = side === 'R' ? -28 : 28, tEl = G({}, rootEl), th = J(tEl, sx, -190); R(-24, -8, 48, 112, C.pants, 22, tEl);
+    const sEl = G({}, tEl), sh = J(sEl, 0, 100); R(-21, -6, 42, 100, C.pants, 18, sEl);
+    const fEl = G({}, sEl); J(fEl, 0, 94); PA('M -24 -6 L 18 -6 C 30 6 50 6 52 18 L 52 28 L -26 28 Z', '#F4F4F8', fEl);
+    ch[side + 'thigh'] = th; ch[side + 'shin'] = sh;
+  }
+  const tEl = G({}, rootEl), torso = J(tEl, 0, -190); ch.torso = torso;
+  const arm = (side, front) => { const k = side === 'R' ? -1 : 1, aEl = G({}, tEl), a = J(aEl, 74 * k, -150);
+    R(-20, -14, 40, 96, front ? C.hood : shade(C.hood, .86), 18, aEl);
+    const fEl = G({}, aEl), f = J(fEl, 0, 82); R(-17, -10, 34, 86, front ? C.hood : shade(C.hood, .86), 16, fEl); R(-18, 62, 36, 14, shade(C.hood, .75), 6, fEl);
+    const hEl = G({}, fEl), h = J(hEl, 0, 80); CI(0, 6, 22, front ? C.skin : C.skin2, hEl);
+    ch[side + 'arm'] = a; ch[side + 'fore'] = f; ch[side + 'hand'] = h; ch[side + 'handEl'] = hEl; };
+  arm('R', false);
+  EL(0, -178, 64, 24, shade(C.hood, .8), tEl);                       // hood behind the neck
+  PA('M -70 -170 C -88 -150 -90 -100 -84 -40 L -76 10 C -40 26 40 26 76 10 L 84 -40 C 90 -100 88 -150 70 -170 C 40 -186 -40 -186 -70 -170 Z', C.hood, tEl);
+  PA('M -46 -40 L 46 -40 L 54 6 L -54 6 Z', shade(C.hood, .88), tEl);
+  TX(0, -80, 'HODL', 34, '#FFFFFF', tEl, { 'font-family': 'Bangers', 'letter-spacing': 2, opacity: .92 });
+  LN('M -16 -166 L -20 -118', '#E8ECFF', 5, tEl); LN('M 16 -166 L 20 -118', '#E8ECFF', 5, tEl);
+  R(-18, -200, 36, 34, C.skin2, 10, tEl);
+  ch.chain = G({ opacity: chain ? 1 : 0 }, tEl); LN('M -44 -172 C -30 -120 30 -120 44 -172', C.gold, 8, ch.chain); CI(0, -118, 17, C.gold, ch.chain); TX(0, -109, '$', 24, '#8A5A00', ch.chain, { 'font-family': 'Bangers' });
+  arm('L', true);
+  const hEl = G({}, tEl), head = J(hEl, 0, -196); ch.head = head;
+  EL(-102, -116, 17, 25, C.skin2, hEl); EL(102, -116, 17, 25, C.skin2, hEl);
+  EL(0, -118, 104, 112, C.skin, hEl);
+  PA('M -100 -146 C -106 -232 -20 -262 30 -246 C 70 -262 114 -220 102 -146 C 86 -180 62 -196 42 -186 C 50 -210 20 -214 6 -200 C -10 -222 -50 -214 -60 -190 C -76 -200 -94 -180 -100 -146 Z', C.hair, hEl);
+  PA('M -4 -242 C 4 -280 32 -294 46 -304 C 36 -282 36 -262 24 -244 Z', C.hair, hEl);
+  // eyes: sclera, pupil (or $), eyelid that closes from the top
+  const F = { lid: 0, blink: 0, eyeS: 1, pupS: 1, lx: 0, ly: 0, bA: 0, by: 0, bq: 0, dollar: 0, twitch: 0 };
+  ch.F = F; ch.eyes = [];
+  for (const [ex, k] of [[-40, 0], [40, 1]]) {
+    const id = `eclip${BM.S.childElementCount}_${k}_${Math.round(x)}`; const cp = N('clipPath', { id }, BM.defs); EL(0, 0, 26, 30, '#fff', cp);
+    const eg = G({}, hEl), ej = J(eg, ex, -124);
+    EL(0, 0, 26, 30, '#FFFFFF', eg);
+    const pg = G({}, eg), pj = J(pg, 0, 4); CI(0, 0, 11, C.ink, pg); CI(-4, -4, 3.6, '#FFFFFF', pg);
+    const dol = TX(0, 11, '$', 32, '#16A34A', pg, { 'font-family': 'Bangers', opacity: 0 });
+    const lid = R(-30, -34, 60, 0, C.skin, 0, eg, { 'clip-path': `url(#${id})` });
+    EL(0, 0, 26, 30, 'none', eg, { stroke: C.ink, 'stroke-width': 3.5 });
+    ch.eyes.push({ ej, pj, pupils: pg.children[0], hl: pg.children[1], dol, lid, k });
+  }
+  const bL = G({}, hEl), browL = J(bL, -40, -174); LN('M -22 2 C -10 -8 10 -8 22 2', C.hair, 9, bL);
+  const bR = G({}, hEl), browR = J(bR, 40, -174); LN('M -22 2 C -10 -8 10 -8 22 2', C.hair, 9, bR);
+  EL(0, -94, 14, 11, C.skin2, hEl);
+  ch.blush = [EL(-66, -78, 19, 10, '#FF8FA3', hEl, { opacity: 0 }), EL(66, -78, 19, 10, '#FF8FA3', hEl, { opacity: 0 })];
+  // mouths: one visible at a time
+  const mg = G({}, hEl), mj = J(mg, 0, -58); ch.mj = mj; ch.mouths = {};
+  const M = (n, build) => { const g = G({ opacity: n === 'smile' ? 1 : 0 }, mg); build(g); ch.mouths[n] = g; };
+  M('smile', g => LN('M -28 -4 C -12 12 12 12 28 -4', C.ink, 7, g));
+  M('smirk', g => LN('M -26 6 C -6 14 12 10 30 -8', C.ink, 7, g));
+  M('grin', g => { PA('M -42 -10 Q 0 50 42 -10 Z', '#7A1F2B', g); PA('M -38 -8 L 38 -8 L 31 6 L -31 6 Z', '#FFFFFF', g); EL(0, 22, 15, 8, '#FF7A8A', g); });
+  M('O', g => { EL(0, 6, 19, 26, '#7A1F2B', g); EL(0, 22, 11, 7, '#FF7A8A', g); });
+  M('frown', g => LN('M -28 12 C -10 -6 10 -6 28 12', C.ink, 7, g));
+  M('wobble', g => LN('M -32 6 L -20 -3 L -8 6 L 4 -3 L 16 6 L 28 -3', C.ink, 6, g));
+  M('flat', g => LN('M -22 4 L 22 4', C.ink, 7, g));
+  M('grit', g => { R(-34, -10, 68, 24, '#FFFFFF', 7, g, { stroke: C.ink, 'stroke-width': 4 }); LN('M -34 2 L 34 2 M -17 -10 L -17 14 M 0 -10 L 0 14 M 17 -10 L 17 14', C.ink, 3, g); });
+  M('slurp', g => { EL(0, 4, 10, 9, '#7A1F2B', g); LN('M -14 4 C -14 -6 14 -6 14 4', C.ink, 5, g); });
+  ch.sweat = PA('M 0 0 C -10 14 -10 26 0 26 C 10 26 10 14 0 0 Z', '#7FD3FF', hEl, { transform: 'translate(92,-176)', opacity: 0 });
+  ch.tears = [-40, 40].map(ex => PA('M 0 0 C -9 13 -9 24 0 24 C 9 24 9 13 0 0 Z', '#7FD3FF', hEl, { transform: `translate(${ex},-96)`, opacity: 0 }));
+  // sunglasses (fantasy) — on a joint so they can slide down the nose
+  const gg = G({ opacity: glasses ? 1 : 0 }, hEl), gj = J(gg, 0, 0); ch.glasses = gg; ch.gj = gj;
+  R(-80, -148, 72, 46, '#141322', 16, gg, { stroke: C.gold, 'stroke-width': 4 }); R(8, -148, 72, 46, '#141322', 16, gg, { stroke: C.gold, 'stroke-width': 4 });
+  LN('M -8 -130 L 8 -130', C.gold, 5, gg); LN('M -70 -138 L -50 -116', '#FFFFFF', 4, gg, { opacity: .5 }); LN('M 18 -138 L 38 -116', '#FFFFFF', 4, gg, { opacity: .5 });
+  ch.crack = LN('M 30 -148 L 42 -130 L 30 -122 L 46 -104', '#FFFFFF', 3, gg, { opacity: 0 });
+  F.apply = () => {
+    for (const e of ch.eyes) {
+      const sq = e.k === 1 ? F.twitch : 0, lid = Math.min(1, Math.max(F.lid + sq, F.blink));
+      e.ej.sx = e.ej.sy = F.eyeS; e.ej.apply(); e.pj.x = F.lx; e.pj.y = 4 + F.ly; e.pj.sx = e.pj.sy = F.pupS; e.pj.apply();
+      e.lid.setAttribute('height', 64 * lid); e.pupils.setAttribute('opacity', 1 - F.dollar); e.hl.setAttribute('opacity', 1 - F.dollar); e.dol.setAttribute('opacity', F.dollar);
+    }
+    browL.r = F.bA; browL.y = F.by; browL.apply(); browR.r = -F.bA; browR.y = F.by + F.bq; browR.apply();
+  };
+  F.apply();
+  return ch;
+}
+const PRE = {
+  smile: { lid: 0, eyeS: 1, pupS: 1, lx: 0, ly: 0, bA: 0, by: 0, bq: 0, dollar: 0, m: 'smile' },
+  smug: { lid: .38, eyeS: 1, pupS: 1, lx: 9, ly: 0, bA: 4, by: 2, bq: -14, dollar: 0, m: 'smirk' },
+  shock: { lid: 0, eyeS: 1.34, pupS: .45, lx: 0, ly: 0, bA: -8, by: -28, bq: 0, dollar: 0, m: 'O' },
+  panic: { lid: 0, eyeS: 1.2, pupS: .55, lx: 0, ly: 0, bA: -16, by: -16, bq: 0, dollar: 0, m: 'wobble' },
+  sad: { lid: .36, eyeS: .96, pupS: 1, lx: 0, ly: 7, bA: -18, by: -4, bq: 0, dollar: 0, m: 'frown' },
+  angry: { lid: .3, eyeS: 1, pupS: .85, lx: 0, ly: 0, bA: 20, by: 8, bq: 0, dollar: 0, m: 'grit' },
+  ecstatic: { lid: 0, eyeS: 1.16, pupS: 1.15, lx: 0, ly: 0, bA: -8, by: -22, bq: 0, dollar: 1, m: 'grin' },
+  deadpan: { lid: .56, eyeS: 1, pupS: .9, lx: 0, ly: 0, bA: 0, by: 6, bq: 0, dollar: 0, m: 'flat' },
+  sly: { lid: .28, eyeS: 1, pupS: 1.05, lx: -12, ly: 6, bA: 8, by: 0, bq: -16, dollar: 1, m: 'smirk' },
+};
+function expr(ch, at, name, dur = .16) { const p = PRE[name], { m, ...f } = p;
+  tl.to(ch.F, { ...f, duration: dur, ease: 'power2.out', onUpdate: ch.F.apply }, at);
+  for (const k in ch.mouths) tl.set(ch.mouths[k], { opacity: k === m ? 1 : 0 }, at);
+  tl.fromTo(ch.mj, { sx: 1.25, sy: 1.25 }, { sx: 1, sy: 1, duration: .22, ease: 'back.out(3)', onUpdate: ch.mj.apply, immediateRender: false }, at); }
+const mouth = (ch, at, m) => { for (const k in ch.mouths) tl.set(ch.mouths[k], { opacity: k === m ? 1 : 0 }, at); };
+function blink(ch, at) { tl.to(ch.F, { keyframes: [{ blink: 1, duration: .06 }, { blink: 1, duration: .05 }, { blink: 0, duration: .07 }], onUpdate: ch.F.apply }, at); }
+const pose = (ch, at, P, dur = .35, ease = 'power2.inOut') => { for (const k in P) BM.rot(ch[k], at, P[k], dur, ease); };
+
+/* ================= STAGE 1: the room, laid out for 9:16 (S1 bull, S2 crash, S3 despair, S7 reality) =================
+   Big wall TV with the live chart ABOVE Dave, so every reaction shot holds the chart and his face together. */
+const ROOM = BM.scene('room'), rp = ROOM.g;
+const roomSky = lg('rsky', [[0, '#101231'], [1, '#2B2F63']]);
+R(-300, -400, 1680, 2600, C.wall, 0, rp); R(-300, 1700, 1680, 800, C.floor, 0, rp); R(-300, 1700, 1680, 14, '#14162A', 0, rp);
+for (let i = 0; i < 9; i++) R(-300 + i * 220, -400, 4, 2100, C.wall2, 0, rp);   // wallpaper stripes
+// small window (left) with skyline
+const win = G({ transform: 'translate(-10,250)' }, rp); R(-14, -14, 238, 418, '#3C4170', 14, win); R(0, 0, 210, 390, roomSky, 6, win);
+CI(150, 70, 30, '#F4E9C1', win);
+const winLights = [];
+[[0, 230, 60, 160], [64, 190, 50, 200], [118, 250, 50, 140], [170, 210, 40, 180]].forEach(([bx, by, bw, bh], b) => {
+  R(bx, by, bw, bh, b % 2 ? '#1A1C3A' : '#21244A', 0, win);
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 2; c++) if (by + 18 + r * 28 < 380) winLights.push(R(bx + 8 + c * 18, by + 16 + r * 28, 10, 14, '#FFD36E', 2, win, { opacity: hash(b * 31 + r * 7 + c) > .45 ? .9 : .15 }));
+});
+R(100, 0, 8, 390, '#3C4170', 0, win);
+// poster (right)
+const poster = G({ transform: 'translate(868,250)' }, rp); R(0, 0, 200, 290, '#F25F5C', 10, poster); R(10, 10, 180, 270, '#FFE066', 6, poster);
+PA('M 100 46 C 128 88 134 140 120 192 L 80 192 C 66 140 72 88 100 46 Z', '#FFFFFF', poster); CI(100, 116, 15, '#4C7DFF', poster);
+PA('M 80 168 L 58 210 L 82 198 Z', '#F25F5C', poster); PA('M 120 168 L 142 210 L 118 198 Z', '#F25F5C', poster);
+const flame = PA('M 86 194 C 90 226 100 240 100 248 C 100 240 110 226 114 194 Z', '#FF8A3D', poster);
+TX(100, 262, 'TO THE MOON', 25, '#2A2D4F', poster, { 'font-family': 'Bangers', 'letter-spacing': 2 });
+// clock above the TV
+const clock = G({ transform: 'translate(540,170)' }, rp); CI(0, 0, 50, '#F2EEE3', clock, { stroke: '#3C4170', 'stroke-width': 8 });
+const hMin = J(G({}, clock)); LN('M 0 0 L 0 -36', C.ink, 5, hMin.el); const hHr = J(G({}, clock)); LN('M 0 0 L 0 -24', C.ink, 7, hHr.el); CI(0, 0, 6, C.ink, clock);
+// shelf + plant (left, under the window)
+R(10, 760, 190, 14, C.wood2, 4, rp); const plant = G({ transform: 'translate(100,760)' }, rp); R(-30, -54, 60, 54, '#D9734E', 8, plant);
+const leaves = [-30, -8, 12, 32].map((dx, i) => { const lg2 = G({ transform: `translate(${dx / 2},-52)` }, plant), j = J(G({}, lg2)); PA(`M 0 0 C ${dx - 20} -36 ${dx} -80 ${dx * 1.4} -100 C ${dx + 20} -72 ${dx / 2 + 10} -36 0 0 Z`, i % 2 ? '#3FA66B' : '#2F8F5B', j.el); return j; });
+// room tint (green glow / red alarm / blue gloom), over the background, under the character
+const tintBack = R(-300, -400, 1680, 2600, '#000000', 0, rp, { opacity: 0 });
+// wall TV with the live chart
+const mon = G({ transform: 'translate(210,300)' }, rp); R(-6, -6, 672, 452, '#14161F', 22, mon); R(0, 0, 660, 440, '#20232E', 18, mon);
+const scr = R(18, 18, 624, 404, '#0B1020', 8, mon); const scrGlow = R(18, 18, 624, 404, C.green, 8, mon, { opacity: 0 });
+for (let i = 1; i < 5; i++) R(18, 150 + i * 50, 624, 2, '#1B2440', 0, mon);
+TX(44, 62, 'PORTFOLIO', 24, '#7C86A8', mon, { 'text-anchor': 'start', 'letter-spacing': 3 });
+const monVal = TX(44, 132, '$12,480', 72, C.green, mon, { 'text-anchor': 'start' }); const monPct = TX(616, 132, '+0%', 44, C.green, mon, { 'text-anchor': 'end' });
+const chartArea = PA('', lg('cfill', [[0, C.green, .35], [1, C.green, 0]]), mon), chartLine = LN('', C.green, 7, mon);
+const stopA = BM.defs.querySelector('#cfill').children[0], stopB = BM.defs.querySelector('#cfill').children[1];
+const tvGlow = EL(540, 760, 520, 120, C.green, rp, { opacity: .08 });   // light the TV throws on the wall below it
+// giant green candle (S4): bursts up through the desk, right of Dave
+const candle = G({}, rp); const candleBody = R(700, 1420, 230, 0, C.green, 12, candle); const wick = R(810, 1420, 10, 0, '#1E9E5E', 4, candle);
+const candleGlow = R(-300, -400, 1680, 2600, lg('cglow', [[0, C.green, .0], [1, C.green, .5]]), 0, rp, { opacity: 0 });
+// rain cloud (S3)
+const cloud = G({ transform: 'translate(540,800)', opacity: 0 }, rp); [[-60, 10, 52], [0, -10, 66], [60, 10, 52], [0, 26, 58]].forEach(([cx, cy, r]) => CI(cx, cy, r, '#7F8AA8', cloud));
+const drops = Array.from({ length: 12 }, (_, i) => LN(`M ${-80 + i * 15} 70 L ${-84 + i * 15} 96`, '#7FD3FF', 5, cloud, { opacity: 0 }));
+// DAVE in the room (pelvis hidden behind the desk)
+const D1 = dave(rp, 540, 1667, 1.3);
+// desk (in front of Dave) with drawers, sticker, bin
+R(-40, 1396, 1160, 46, C.wood, 8, rp); R(-20, 1442, 1120, 280, C.wood2, 0, rp); R(-20, 1442, 1120, 16, shade(C.wood2, .8), 0, rp);
+for (const dx of [60, 760]) { R(dx, 1490, 260, 90, shade(C.wood2, 1.12), 8, rp); R(dx + 100, 1528, 60, 12, '#E8D2B5', 6, rp); R(dx, 1600, 260, 90, shade(C.wood2, 1.12), 8, rp); R(dx + 100, 1638, 60, 12, '#E8D2B5', 6, rp); }
+const sticker = G({ transform: 'translate(540,1580) rotate(-6)' }, rp); R(-110, -34, 220, 68, '#FFE066', 12, sticker); TX(0, 14, 'WAGMI', 44, '#2A2D4F', sticker, { 'font-family': 'Bangers', 'letter-spacing': 4 });
+const bin = G({ transform: 'translate(960,1740)' }, rp); PA('M -60 -110 L 60 -110 L 48 0 L -48 0 Z', '#3C4170', bin); CI(-20, -118, 22, C.paper, bin); CI(18, -124, 18, C.paper, bin);
+// lamp (left, on the desk)
+const lamp = G({ transform: 'translate(100,1396)' }, rp); R(-40, -14, 80, 14, '#2B2B3F', 6, lamp); LN('M 0 -14 L 26 -170 L 80 -226', '#2B2B3F', 10, lamp);
+PA('M 52 -256 L 140 -214 L 110 -176 Z', '#FFC83D', lamp); const lampCone = PA('M 112 -196 L 40 40 L 320 40 Z', '#FFE9A8', lamp, { opacity: .16 });
+// laptop (right, lid facing us)
+const laptop = G({ transform: 'translate(860,1396)' }, rp); PA('M -110 0 L 110 0 L 96 -150 L -96 -150 Z', '#C9CED8', laptop); CI(0, -78, 20, '#E9ECF2', laptop); R(-130, -6, 260, 10, '#9AA1AE', 4, laptop);
+// keyboard, phone, desk mug, toy car
+R(380, 1384, 280, 20, '#2F3345', 6, rp); for (let i = 0; i < 11; i++) R(390 + i * 24, 1388, 18, 8, '#4A4F68', 2, rp);
+const phone = G({ transform: 'translate(250,1388)' }, rp), phoneJ = J(G({}, phone)); R(-46, -20, 92, 24, '#151826', 8, phoneJ.el); const phoneScr = R(-40, -17, 80, 16, '#2A3050', 5, phoneJ.el);
+const deskMug = G({ transform: 'translate(700,1396)', opacity: 0 }, rp); R(-26, -60, 52, 60, '#F2EEE3', 10, deskMug); LN('M 26 -46 C 46 -46 46 -18 26 -18', '#F2EEE3', 8, deskMug);
+const toyCar = G({ transform: 'translate(660,1398) scale(1.25)', opacity: 0 }, rp), toyJ = J(G({}, toyCar));
+PA('M -64 -10 C -64 -22 -56 -26 -44 -26 L -26 -28 C -16 -44 14 -46 26 -34 L 52 -32 C 62 -30 66 -22 66 -12 L 66 -6 L -64 -6 Z', '#E63946', toyJ.el); PA('M -18 -30 C -10 -40 12 -40 20 -32 Z', '#9FD8FF', toyJ.el);
+CI(-38, -6, 12, '#1C1A28', toyJ.el); CI(40, -6, 12, '#1C1A28', toyJ.el); CI(-38, -6, 5, '#D9DEE7', toyJ.el); CI(40, -6, 5, '#D9DEE7', toyJ.el);
+// coffee mug in Dave's front hand
+const mug = G({ transform: 'translate(-6,10)' }, D1.LhandEl); R(-24, -30, 48, 58, '#F2EEE3', 10, mug); LN('M 24 -18 C 44 -18 44 10 24 10', '#F2EEE3', 8, mug); TX(0, 6, '₿', 26, '#F7931A', mug, { 'font-family': 'Fredoka' });
+const steam = [0, 1, 2].map(i => LN(`M ${-10 + i * 10} -40 C ${-20 + i * 10} -60 ${i * 10} -70 ${-10 + i * 10} -92`, '#FFFFFF', 4, mug, { opacity: 0 }));
+// wallet in the back hand (S3 gag)
+const wallet = G({ transform: 'translate(0,6) scale(1.45)', opacity: 0 }, D1.LhandEl);; R(-40, -26, 80, 52, '#7A4A2A', 8, wallet); const flapJ = J(G({}, wallet), 0, -26); R(-40, 0, 80, 26, '#94603A', 8, flapJ.el);   // front arm: drawn over the body
+// bills that rain down (S3)
+const BILLS = ['RENT DUE', 'OVERDUE', 'ELECTRIC', 'LATE FEE', 'CARD BILL', 'FINAL NOTICE', 'WATER', 'RENT DUE', 'OVERDUE', 'PHONE', 'INTERNET', 'LATE FEE'];
+const bills = BILLS.map((t, i) => { const g = G({ opacity: 0 }, rp), j = J(g, 0, 0); R(-70, -44, 140, 88, C.paper, 6, g, { stroke: '#D8CFBE', 'stroke-width': 2 });
+  for (let k = 0; k < 3; k++) R(-56, -24 + k * 14, 70 + (k * 13) % 40, 6, '#D8CFBE', 3, g);
+  R(-62, 8, 124, 30, 'none', 4, g, { stroke: C.red, 'stroke-width': 4, transform: 'rotate(-6)' }); TX(0, 31, t, t.length > 9 ? 17 : 21, C.red, g, { 'font-family': 'Bangers', 'letter-spacing': 1, transform: 'rotate(-6)' }); return j; });
+// coffee spit droplets (S2)
+const spit = Array.from({ length: 22 }, (_, i) => CI(0, 0, 5 + (i % 4) * 2.5, '#8A5A3A', rp, { opacity: 0 }));
+// moth (S3)
+const moth = G({ opacity: 0 }, rp), mothJ = J(moth); mothJ.sx = mothJ.sy = 1.7; const wingL = J(G({}, moth)), wingR = J(G({}, moth));
+EL(-16, 0, 18, 11, '#C9C2B2', wingL.el); EL(16, 0, 18, 11, '#C9C2B2', wingR.el); EL(0, 0, 6, 13, '#6E675A', moth);
+rp.appendChild(deskMug); rp.appendChild(toyCar);   // keep them above the fallen bills
+const tintFront = R(-300, -400, 1680, 2600, '#000000', 0, rp, { opacity: 0, 'pointer-events': 'none' });
+
+/* ================= STAGE 2: the fantasy (S5) ================= */
+const FAN = BM.scene('fantasy'), fp = FAN.g;
+R(-300, -1600, 1680, 3600, lg('fsky', [[0, '#7B5CFF'], [.35, '#FF6FA8'], [.7, '#FFB86B'], [1, '#FFE29A']]), 0, fp);
+const sun = G({ transform: 'translate(760,620)' }, fp), sunJ = J(G({}, sun)); for (let i = 0; i < 12; i++) PA('M -18 -150 L 18 -150 L 0 -330 Z', '#FFF1B8', sunJ.el, { transform: `rotate(${i * 30})`, opacity: .55 }); CI(0, 0, 130, '#FFF6CF', sun);
+const clouds = [[150, 380, 1], [880, 300, .8], [520, 200, .6]].map(([cx, cy, s]) => { const g = G({ transform: `translate(${cx},${cy}) scale(${s})` }, fp), j = J(G({}, g)); [[-50, 0, 44], [0, -20, 56], [56, 0, 44]].forEach(([x, y, r]) => CI(x, y, r, '#FFFFFF', j.el, { opacity: .85 })); return j; });
+// plane + banner
+const plane = G({}, fp), planeJ = J(plane, 1300, 520); PA('M 0 0 L 90 -12 L 120 0 L 90 12 Z', '#FFFFFF', plane); PA('M 40 -6 L 60 -40 L 70 -6 Z', '#FFFFFF', plane);
+LN('M 120 0 L 170 0', '#FFFFFF', 3, plane); R(170, -36, 300, 72, '#FFFFFF', 6, plane); TX(320, 18, 'WAGMI', 54, '#7B5CFF', plane, { 'font-family': 'Bangers', 'letter-spacing': 6 });
+// mansion (slow parallax layer)
+const back = G({}, fp), backJ = J(back);
+const mansion = G({ transform: 'translate(80,860)' }, back); R(0, 0, 620, 300, '#FFF7EC', 4, mansion); PA('M -30 0 L 310 -150 L 650 0 Z', '#E8B04A', mansion);
+R(250, -110, 120, 110, '#FFF7EC', 0, mansion); PA('M 230 -110 L 310 -170 L 390 -110 Z', '#E8B04A', mansion);
+for (let r = 0; r < 2; r++) for (let c = 0; c < 6; c++) R(30 + c * 98, 40 + r * 130, 60, 90, '#FFD36E', 6, mansion, { opacity: .95 });
+R(260, 180, 100, 120, '#C98A2E', 6, mansion); R(-40, 300, 700, 40, '#41D3E8', 18, mansion);
+// palms (front parallax layer)
+const mid = G({}, fp), midJ = J(mid); const palms = [];
+for (let k = 0; k < 5; k++) { const pg = G({ transform: `translate(${-80 + k * 380},1360)` }, mid); PA('M -14 0 C -24 -200 10 -400 0 -520 L 18 -520 C 26 -400 6 -200 14 0 Z', '#8A5A3B', pg);
+  const crown = J(G({}, pg), 8, -520); palms.push(crown); for (let i = 0; i < 6; i++) PA('M 0 0 C 60 -40 140 -20 190 40 C 130 0 70 -6 0 10 Z', i % 2 ? '#2FAE72' : '#26995F', crown.el, { transform: `rotate(${i * 60 - 30})` }); }
+// road
+R(-300, 1400, 1680, 240, '#3B3550', 0, fp); R(-300, 1400, 1680, 12, '#2C2840', 0, fp); R(-300, 1640, 1680, 400, '#5BC98A', 0, fp);
+const stripes = Array.from({ length: 8 }, (_, i) => R(-300 + i * 260, 1512, 140, 16, '#FFE29A', 6, fp));
+// Dave in the car (same rig, fantasy outfit)
+const D2 = dave(fp, 520, 1560, 1.15, { glasses: true, chain: true, legs: false });
+// car (side view convertible), drawn after Dave so only his chest up shows
+const car = G({}, fp), carJ = J(car, 540, 1360);
+PA('M -470 40 C -470 -30 -430 -60 -340 -64 L -200 -70 C -120 -140 60 -150 150 -96 L 380 -80 C 450 -74 480 -40 480 10 L 480 50 C 480 70 460 80 440 80 L -450 80 C -466 80 -470 66 -470 40 Z', '#E63946', car);
+PA('M -470 30 L 480 30 L 480 50 C 480 70 460 80 440 80 L -450 80 C -466 80 -470 66 -470 40 Z', '#B92335', car);
+PA('M -130 -86 C -90 -150 30 -158 110 -110 L 100 -96 C 30 -134 -80 -128 -112 -82 Z', '#9FD8FF', car, { opacity: .9 });
+R(-470, -10, 950, 8, '#FFFFFF', 4, car, { opacity: .5 }); R(390, -40, 60, 20, '#FFF3B0', 8, car); R(-470, -30, 30, 26, '#FF4B5C', 6, car);
+PA('M -470 -60 L -520 -100 L -380 -100 L -400 -60 Z', '#B92335', car);
+const wheels = [-280, 300].map(wx => { const w = G({ transform: `translate(${wx},80)` }, car); CI(0, 0, 78, '#1C1A28', w); CI(0, 0, 50, '#D9DEE7', w); const sp = J(G({}, w)); for (let i = 0; i < 5; i++) R(-6, -46, 12, 46, '#9AA3B5', 4, sp.el, { transform: `rotate(${i * 72})` }); CI(0, 0, 12, '#1C1A28', w); return sp; });
+// money rain + coins + champagne
+const money = Array.from({ length: 26 }, (_, i) => { const g = G({ opacity: 0 }, fp), j = J(g); R(-46, -24, 92, 48, '#7ED38B', 6, g, { stroke: '#3E9A57', 'stroke-width': 3 }); CI(0, 0, 14, '#3E9A57', g); TX(0, 9, '$', 24, '#E9FFE9', g, { 'font-family': 'Bangers' }); return j; });
+const coins = Array.from({ length: 10 }, (_, i) => { const g = G({ opacity: 0 }, fp), j = J(g); CI(0, 0, 22, C.gold, g, { stroke: '#E29A00', 'stroke-width': 4 }); TX(0, 9, '$', 24, '#B87400', g, { 'font-family': 'Bangers' }); return j; });
+const bottle = G({ transform: 'translate(6,0)' }, D2.RhandEl), bottleJ = J(G({}, bottle), 0, 0); R(-14, -110, 28, 90, '#1F6B45', 8, bottleJ.el); R(-8, -140, 16, 34, '#1F6B45', 4, bottleJ.el); R(-14, -80, 28, 30, '#FFE29A', 3, bottleJ.el);
+const cork = G({ opacity: 1 }, bottleJ.el), corkJ = J(cork, 0, -146); R(-7, -14, 14, 16, '#C49A6C', 3, cork);
+const foam = Array.from({ length: 18 }, () => CI(0, 0, 9, '#FFFBEA', fp, { opacity: 0 }));
+const cash = G({ transform: 'translate(0,-10)' }, D2.LhandEl); for (let i = 0; i < 5; i++) R(-10, -70, 46, 80, '#7ED38B', 5, cash, { stroke: '#3E9A57', 'stroke-width': 3, transform: `rotate(${-40 + i * 18} 0 0)` });
+// red candle that ends the dream (S6)
+const redC = G({ opacity: 0 }, fp), redJ = J(redC, 540, -900); R(-120, -800, 240, 800, C.red, 12, redC); R(-6, -900, 12, 1000, '#B91C2E', 4, redC);
+const cracks = LN('M 200 0 L 330 300 L 260 520 L 420 880 L 360 1180 L 520 1500 M 330 300 L 620 420 L 900 380 M 420 880 L 760 1010 L 1080 980', '#FFFFFF', 7, fp, { opacity: 0, 'stroke-dasharray': 3000, 'stroke-dashoffset': 3000 });
+const flashW = R(-300, -1600, 1680, 3600, '#FFFFFF', 0, fp, { opacity: 0 });
+
+/* ================= overlays (screen space): comic bursts + end card ================= */
+const OV = G({});
+function burst(x, y, text, fill, rot = -8) { const g = G({ transform: `translate(${x},${y}) rotate(${rot})`, opacity: 0 }, OV), j = J(G({}, g));
+  let d = ''; for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2, r = i % 2 ? 150 : 210; d += `${i ? 'L' : 'M'} ${Math.cos(a) * r * 1.25} ${Math.sin(a) * r * .8} `; }
+  PA(d + 'Z', '#FFFFFF', j.el); PA(d + 'Z', fill, j.el, { transform: 'scale(.9)' }); TX(0, 34, text, 104, '#FFFFFF', j.el, { 'font-family': 'Bangers', 'letter-spacing': 4, stroke: '#1E1B2E', 'stroke-width': 6, 'paint-order': 'stroke' });
+  return { g, j }; }
+const bCrash = burst(560, 330, 'CRASH!', C.red), bPump = burst(560, 360, 'PUMP!', '#16A34A', 7), bBonk = burst(540, 760, 'BONK!', '#FF8A3D', -5);
+const notif = G({ opacity: 0 }, rp), notifJ = J(notif, 290, 1200); R(-150, -62, 300, 108, '#FFFFFF', 22, notif); PA('M -20 46 L 0 74 L 20 46 Z', '#FFFFFF', notif);
+TX(0, -12, 'ALTSEASON SOON', 27, '#1E1B2E', notif, { 'font-family': 'Bangers', 'letter-spacing': 2 }); TX(0, 26, '↗ +1,000%', 28, '#16A34A', notif);
+const endCard = G({ opacity: 0 }, OV); R(-100, -100, 1280, 2200, '#0E0F1F', 0, endCard, { opacity: .82 });
+const diamond = G({ transform: 'translate(540,780)' }, endCard), dJ = J(G({}, diamond)); PA('M -110 -40 L -60 -100 L 60 -100 L 110 -40 L 0 110 Z', '#7FE7FF', dJ.el); PA('M -110 -40 L 110 -40 M -60 -100 L -24 -40 L 0 110 L 24 -40 L 60 -100', 'none', dJ.el, { stroke: '#FFFFFF', 'stroke-width': 5, opacity: .7 });
+const dCrack = LN('M 8 -100 L -12 -60 L 14 -30 L -10 10 L 12 50', '#0E0F1F', 7, dJ.el, { opacity: 0 });
+TX(540, 1010, 'DIAMOND HANDS', 108, '#FFFFFF', endCard, { 'font-family': 'Bangers', 'letter-spacing': 6 }); TX(540, 1080, '(mostly)', 46, '#7FE7FF', endCard, { 'font-family': 'Bangers', 'letter-spacing': 3 });
+TX(540, 1500, 'not financial advice · a Motion Studio short', 26, '#8A8FB5', endCard, { 'font-family': 'Fredoka' });
+
+/* ================= PRICE (closed form, drives the live chart) ================= */
+const sm = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const noise = t => Math.sin(t * 17.3) * .5 + Math.sin(t * 7.1 + 1) * .35 + Math.sin(t * 31.7 + 2) * .15;
+function price(t) {
+  if (t < 3.62) return 9800 + 2680 * sm(t / 3.6) + noise(t) * 70;
+  if (t < 4.6) { const q = (t - 3.62) / .98; return 12480 - 11240 * Math.pow(q, 2.2) + noise(t) * 260 * (1 - q); }
+  if (t < 12.9) return 1240 - 260 * sm((t - 4.6) / 8) + noise(t) * 40;
+  if (t < 14.7) return 980 + 47000 * Math.pow(sm((t - 12.9) / 1.6), 2.4) + noise(t) * 300;
+  if (t < 22.2) return 48000;
+  if (t < 23) return 48000 - 47988 * Math.pow((t - 22.2) / .8, .5);
+  return 12 + noise(t) * .6;
+}
+const fmt = v => '$' + Math.max(0, Math.round(v)).toLocaleString('en-US');
+BM.everyFrame(t => {
+  const pts = [], N0 = 70, win0 = 4; let mn = 1e12, mx = -1;
+  for (let i = 0; i <= N0; i++) { const tt = Math.max(0, t - win0 + i / N0 * win0), v = price(tt); pts.push(v); mn = Math.min(mn, v); mx = Math.max(mx, v); }
+  const pad = (mx - mn) * .12 + 1, y0 = 402, y1 = 170, x0 = 30, x1 = 630;
+  const P = pts.map((v, i) => [x0 + (x1 - x0) * i / N0, y0 - (v - mn + pad) / (mx - mn + 2 * pad) * (y0 - y1)]);
+  const d = P.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+  chartLine.setAttribute('d', d); chartArea.setAttribute('d', `${d} L${x1} ${y0} L${x0} ${y0} Z`);
+  const v = price(t), up = price(t) >= price(Math.max(0, t - .4)), col = up ? C.green : C.red;
+  chartLine.setAttribute('stroke', col); stopA.setAttribute('stop-color', col); stopB.setAttribute('stop-color', col); tvGlow.setAttribute('fill', col);
+  monVal.textContent = fmt(v); monVal.setAttribute('fill', col);
+  const pct = (v / 9800 - 1) * 100; monPct.textContent = (pct >= 0 ? '+' : '') + (Math.abs(pct) < 10 || Math.abs(pct) > 99 ? pct.toFixed(1) : Math.round(pct)) + '%'; monPct.setAttribute('fill', col);
+  // ambient life: clock, plant, poster flame, city lights, steam, wheels, palms
+  hMin.r = t * 36; hMin.apply(); hHr.r = t * 3; hHr.apply();
+  leaves.forEach((l, i) => { l.r = Math.sin(t * 1.6 + i) * 4; l.apply(); });
+  flame.setAttribute('transform', `scale(1,${1 + Math.sin(t * 22) * .12})`); flame.setAttribute('transform-origin', '125 232');
+  winLights.forEach((w, i) => { const k = Math.floor(t * 1.3 + hash(i) * 9); if (hash(i * 13 + k) > .93) w.setAttribute('opacity', hash(i + k) > .5 ? .9 : .15); });
+  wheels.forEach(w => { w.r = t * 900; w.apply(); }); sunJ.r = t * 6; sunJ.apply();
+  palms.forEach((p, i) => { p.r = Math.sin(t * 2 + i) * 5; p.apply(); }); clouds.forEach((c, i) => { c.x = (t * (14 + i * 6)) % 260; c.apply(); });
+  stripes.forEach((s, i) => s.setAttribute('x', ((-300 + i * 260 - t * 1100) % 2080 + 2080) % 2080 - 300));
+  midJ.x = -((t * 420) % 380); midJ.apply(); backJ.x = -Math.min(160, Math.max(0, t - 15) * 16); backJ.apply();
+  steam.forEach((s, i) => s.setAttribute('transform', `translate(0,${-((t * 30 + i * 12) % 36)})`));
+});
+
+/* ================= CHOREOGRAPHY =================
+   Dave (room): head centre ~(540,1012), eyes y~1004, mouth (540,1090), shoulders y~1225, desk top y 1396. TV: (210..870, 300..740). */
+const T = { crash: 3.62, despair: 7.6, wallet: 10.2, pump: 12.9, fantasy: 15.0, smash: 22.15, reality: 24.4, notif: 26.7, end: 28.6 };
+// --- S1 · bull run: smug, sipping, leaning back (0 – 3.6)
+BM.cut(0, null, ROOM); Object.assign(ROOM.cam, { x: 540, y: 1020, z: 1.3 }); ROOM.apply();
+BM.cam(ROOM, 0, 540, 1000, 1.38, 3.4, 'sine.inOut');
+expr(D1, 0, 'smug', .01); pose(D1, 0, { Larm: 132, Lfore: -46, Rarm: 18, torso: -3, head: -4 }, .01);
+tl.set(steam, { opacity: .7 }, 0); tl.to(tintBack, { fill: C.green, opacity: .08, duration: .4 }, 0);
+pose(D1, .5, { Larm: 150, Lfore: -58, head: 6 }, .45); mouth(D1, .7, 'slurp'); BM.sfx(.75, 'slurp', .7); mouth(D1, 1.25, 'smirk');
+pose(D1, 1.3, { Larm: 120, Lfore: -40, head: -6, torso: -6 }, .5); blink(D1, 1.9);
+BM.jto(D1.root, 2.1, { r: -4, y: -8 }, .5); pose(D1, 2.2, { Rarm: 150, Rfore: 40 }, .45);     // hand behind the head, leaning back
+tl.to(D1.F, { bq: -20, duration: .15, yoyo: true, repeat: 3, onUpdate: D1.F.apply }, 2.6); BM.sfx(2.6, 'boing', .25);
+BM.music(0, 3.55, 'lofi', .8);
+// --- S2 · the crash (3.6 – 7.6)
+BM.sfx(T.crash - .06, 'scratch', 1); BM.sfx(T.crash + .05, 'crash', 1);
+BM.cam(ROOM, T.crash, 540, 560, 1.5, .32, 'power3.in');                                          // whip up to the TV
+tl.to(scrGlow, { fill: C.red, opacity: .22, duration: .2 }, T.crash);
+BM.pop(bCrash.g, T.crash + .2, .3); tl.to(bCrash.j, { keyframes: [{ sx: 1.08, sy: 1.08, duration: .1 }, { sx: 1, sy: 1, duration: .1 }], repeat: 3, onUpdate: bCrash.j.apply }, T.crash + .5); BM.hide(bCrash.g, T.crash + 1.25, .2);
+BM.cam(ROOM, T.crash + 1.15, 540, 1060, 1.72, .35, 'power3.out');                               // down to Dave's face
+expr(D1, T.crash + 1.2, 'shock', .1); BM.sfx(T.crash + 1.2, 'gasp', .8); BM.shake(ROOM, T.crash + 1.2, 18, .45);
+pose(D1, T.crash + 1.2, { Larm: 125, Lfore: -30, head: 0 }, .15); BM.jto(D1.root, T.crash + 1.2, { r: 0, y: 0 }, .2); pose(D1, T.crash + 1.2, { Rarm: 30, Rfore: 0 }, .2);
+// coffee spit, straight at the camera's right
+const SP = T.crash + 1.55; mouth(D1, SP, 'O'); BM.sfx(SP, 'spit', 1);
+spit.forEach((s, i) => { const a = -.55 + hash(i) * 1.1, v = 360 + hash(i + 9) * 420, sx = 552, sy = 1092;
+  tl.fromTo(s, { attr: { cx: sx, cy: sy }, opacity: 1 }, { attr: { cx: sx + Math.cos(a) * v, cy: sy + Math.sin(a) * v * .45 + 220 }, opacity: 0, duration: .7 + hash(i * 3) * .3, ease: 'power1.out', immediateRender: false }, SP); });
+// alarm + panic
+expr(D1, T.crash + 2.3, 'panic', .12); BM.sfx(T.crash + 2.3, 'alarm', .7, 1.6);
+tl.to(tintBack, { fill: C.red, opacity: .28, duration: .18, yoyo: true, repeat: 5 }, T.crash + 2.3);
+tl.to(D1.sweat, { opacity: 1, duration: .1 }, T.crash + 2.3); tl.fromTo(D1.sweat, { y: 0 }, { y: 40, duration: .8, repeat: 1, ease: 'power1.in', immediateRender: false }, T.crash + 2.3);
+pose(D1, T.crash + 2.3, { Rarm: 160, Rfore: 50, Larm: -10, Lfore: 0 }, .2);                       // hand on the head
+tl.to(D1.head, { r: 8, duration: .12, yoyo: true, repeat: 5, onUpdate: D1.head.apply, ease: 'sine.inOut' }, T.crash + 2.4);
+BM.cam(ROOM, T.crash + 2.3, 540, 900, 1.3, 1.4, 'power2.inOut');                                  // TV + Dave in one frame
+BM.music(3.62, 7.5, 'tension', .7);
+// --- S3 · despair: bills rain, rain cloud, empty wallet with a moth (7.6 – 12.8)
+const S3 = T.despair; BM.sfx(S3, 'trombone', 1);
+BM.cam(ROOM, S3, 540, 1000, 1.1, 1.1, 'power2.inOut');
+tl.to(tintBack, { fill: '#2A4BFF', opacity: .2, duration: .8 }, S3); tl.to(scrGlow, { opacity: 0, duration: .4 }, S3);
+expr(D1, S3 + .1, 'sad', .3); pose(D1, S3 + .1, { Rarm: 8, Rfore: 6, Larm: -6, Lfore: 4, head: 8, torso: 4 }, .5);
+tl.set(steam, { opacity: 0 }, S3); tl.set(mug, { opacity: 0 }, S3 + .1); tl.set(deskMug, { opacity: 1 }, S3 + .1);
+bills.forEach((b, i) => { const lx = 70 + hash(i * 5) * 940, ly = i % 3 ? 1380 - hash(i) * 26 : 1760 + hash(i * 2) * 120, at = S3 + .2 + i * .17;
+  b.tx = lx + (hash(i + 3) - .5) * 300; b.ty = -250; b.r = hash(i) * 180 - 90; b.apply();
+  tl.set(b.el, { opacity: 1 }, at); tl.to(b, { tx: lx, ty: ly, r: (hash(i * 7) - .5) * 60, duration: 1.1 + hash(i) * .4, ease: 'power2.in', onUpdate: b.apply }, at);
+  if (i % 3 === 0) BM.sfx(at + .2, 'paper', .5); });
+BM.show(cloud, S3 + 1.2, .4); drops.forEach((d, i) => { tl.fromTo(d, { y: 0, opacity: 0 }, { y: 120, opacity: .9, duration: .45, ease: 'none', repeat: 7, immediateRender: false }, S3 + 1.4 + (i % 4) * .11); });
+BM.sfx(S3 + 1.3, 'rain', .5, 3.4);
+D1.tears.forEach((tr, i) => { tl.set(tr, { opacity: 1 }, S3 + 1.0 + i * .2); tl.fromTo(tr, { y: 0 }, { y: 70, duration: .7, ease: 'power1.in', repeat: 4, immediateRender: false }, S3 + 1.0 + i * .2); });
+// the wallet gag
+const WL = T.wallet;
+BM.cam(ROOM, WL - .2, 500, 1100, 1.5, .6, 'power2.inOut');
+tl.set(wallet, { opacity: 1 }, WL); pose(D1, WL, { Larm: 38, Lfore: 88, head: -4 }, .45);            // wallet up in front of the chest (~486,1248)
+BM.jto(flapJ, WL + .6, { r: -160 }, .25, 'back.out(2)'); BM.sfx(WL + .6, 'creak', .7);
+const MO = WL + .8; tl.set(moth, { opacity: 1 }, MO); mothJ.tx = 486; mothJ.ty = 1222; mothJ.apply();
+tl.to(mothJ, { tx: 330, ty: 800, duration: 1.6, ease: 'sine.inOut', onUpdate: mothJ.apply }, MO);
+tl.to(mothJ, { keyframes: [{ x: 40, duration: .4 }, { x: -30, duration: .4 }, { x: 30, duration: .4 }, { x: 0, duration: .4 }], onUpdate: mothJ.apply }, MO);
+tl.fromTo([wingL, wingR], { sy: 1 }, { sy: .2, duration: .06, yoyo: true, repeat: 26, onUpdate() { wingL.apply(); wingR.apply(); }, immediateRender: false }, MO);
+BM.sfx(MO, 'flutter', .6, 1.6); expr(D1, MO + .2, 'deadpan', .15); tl.to(D1.F, { ly: -10, lx: 8, duration: .8, onUpdate: D1.F.apply }, MO + .4); blink(D1, MO + 1.4);
+BM.music(S3, 12.7, 'sad', .8);
+// --- S4 · reversal: ding, green flood, the giant candle (12.8 – 15)
+const PU = T.pump; BM.sfx(PU - .1, 'ding', 1);
+tl.set(wallet, { opacity: 0 }, PU - .1); pose(D1, PU - .1, { Larm: -10, Lfore: 0, head: 0 }, .2);
+BM.cam(ROOM, PU - .05, 540, 560, 1.5, .3, 'power3.out');
+tl.to(scrGlow, { fill: C.green, opacity: .35, duration: .2 }, PU); BM.hide(cloud, PU, .2); tl.to(D1.tears, { opacity: 0, duration: .1 }, PU);
+tl.to(tintBack, { fill: C.green, opacity: .2, duration: .3 }, PU + .2);
+BM.pop(bPump.g, PU + .35, .3); BM.hide(bPump.g, PU + 1.0, .2); BM.sfx(PU + .35, 'riser', 1, 2.1);
+BM.cam(ROOM, PU + .9, 640, 1000, 1.15, .45, 'power3.inOut');
+expr(D1, PU + 1.0, 'ecstatic', .14); pose(D1, PU + 1.0, { Rarm: 170, Rfore: 10, Larm: -170, Lfore: -10, head: 0 }, .3, 'back.out(1.6)');
+const cg = { h: 0 }; tl.to(cg, { h: 3200, duration: .8, ease: 'power2.out', onUpdate() { candleBody.setAttribute('y', 1420 - cg.h); candleBody.setAttribute('height', cg.h); wick.setAttribute('y', 1420 - cg.h - 90); wick.setAttribute('height', cg.h + 90); } }, PU + 1.0);
+BM.sfx(PU + 1.0, 'impact', .7); tl.to(candleGlow, { opacity: 1, duration: .6 }, PU + 1.1); BM.shake(ROOM, PU + 1.0, 16, .9, 30);
+BM.cam(ROOM, PU + 1.55, 760, -700, 1.2, .55, 'power3.in');                                          // ride the candle up
+// --- S5 · the fantasy (15 – 22.15)
+const FA = T.fantasy; BM.cut(FA, ROOM, FAN); BM.sfx(FA, 'whoosh', 1); BM.sfx(FA + .1, 'register', .9);
+Object.assign(FAN.cam, { x: 540, y: 300, z: 1.1 }); FAN.apply(); tl.set(FAN.cam, { x: 540, y: 300, z: 1.1, onUpdate: FAN.apply }, FA);
+BM.cam(FAN, FA, 540, 1100, 1.2, 1.3, 'power3.out');
+expr(D2, FA, 'ecstatic', .01); pose(D2, FA, { Larm: -120, Lfore: -40, Rarm: 60, Rfore: -20 }, .01);
+tl.fromTo(planeJ, { tx: 1300 }, { tx: -700, duration: 6.5, ease: 'none', onUpdate: planeJ.apply, immediateRender: false }, FA + .4);
+money.forEach((m, i) => { const at = FA + .3 + (i % 13) * .42 + Math.floor(i / 13) * .2, x0 = hash(i) * 1080;
+  m.tx = x0; m.ty = -120; m.apply(); tl.set(m.el, { opacity: 1 }, at);
+  tl.to(m, { ty: 1700, tx: x0 + (hash(i + 5) - .5) * 300, duration: 2.6 + hash(i) * 1.2, ease: 'none', onUpdate: m.apply }, at);
+  tl.fromTo(m, { r: -30, sx: 1 }, { r: 40, sx: -1, duration: .5, yoyo: true, repeat: 7, ease: 'sine.inOut', onUpdate: m.apply, immediateRender: false }, at); });
+coins.forEach((c, i) => { const at = FA + 1 + i * .5; c.tx = 150 + hash(i * 3) * 780; c.ty = 1250; c.apply(); tl.set(c.el, { opacity: 1 }, at);
+  tl.to(c, { keyframes: [{ ty: 900 - hash(i) * 200, duration: .45, ease: 'power2.out' }, { ty: 1500, duration: .55, ease: 'power2.in' }], onUpdate: c.apply }, at);
+  tl.fromTo(c, { sx: 1 }, { sx: .1, duration: .12, yoyo: true, repeat: 7, onUpdate: c.apply, immediateRender: false }, at); BM.sfx(at, 'coin', .45); });
+tl.fromTo(carJ, { y: 0 }, { y: -6, duration: .18, yoyo: true, repeat: 38, ease: 'sine.inOut', onUpdate: carJ.apply, immediateRender: false }, FA);
+BM.sway(D2.Larm, FA + .6, 14, .35, T.smash - .2);                                                    // waving the cash fan
+BM.cam(FAN, FA + 2.2, 520, 1080, 1.36, 2.4, 'sine.inOut');
+// the sunglasses slide down to show $ eyes, brow wiggle
+BM.jto(D2.gj, FA + 2.4, { y: 34 }, .35, 'back.out(2)'); BM.sfx(FA + 2.4, 'boing', .5);
+tl.to(D2.F, { bq: -18, duration: .12, yoyo: true, repeat: 5, onUpdate: D2.F.apply }, FA + 2.8); BM.jto(D2.gj, FA + 3.8, { y: 0 }, .25);
+// champagne pop
+const CH = FA + 4.4; pose(D2, CH - .4, { Rarm: 150, Rfore: 20 }, .35); BM.sfx(CH, 'pop', 1);
+tl.to(corkJ, { ty: -900, tx: 120, r: 720, duration: .9, ease: 'power2.out', onUpdate: corkJ.apply }, CH);
+foam.forEach((f, i) => { const a = -Math.PI / 2 + (hash(i) - .5) * 1.2, v = 300 + hash(i + 4) * 320;
+  tl.fromTo(f, { attr: { cx: 315, cy: 760 }, opacity: 1 }, { attr: { cx: 315 + Math.cos(a) * v, cy: 760 + Math.sin(a) * v + 260 }, opacity: 0, duration: 1.0, ease: 'power1.out', immediateRender: false }, CH + i * .02); });
+BM.cam(FAN, CH, 560, 1060, 1.22, 1.4, 'sine.inOut'); blink(D2, CH + 1.5);
+BM.music(FA, T.smash, 'hype', .85); BM.sfx(FA + 5.6, 'horn', .6);
+// --- S6 · the red candle smashes it (22.15 – 24.4)
+const SM = T.smash; BM.sfx(SM - .5, 'fall', .9); expr(D2, SM - .45, 'shock', .1); tl.to(D2.F, { ly: -14, duration: .2, onUpdate: D2.F.apply }, SM - .45);
+tl.set(redC, { opacity: 1 }, SM - .5); tl.to(redJ, { ty: 1290, duration: .5, ease: 'power3.in', onUpdate: redJ.apply }, SM - .5);
+BM.sfx(SM, 'impact', 1); BM.sfx(SM + .05, 'shatter', .9); BM.shake(FAN, SM, 40, .7);
+tl.to(flashW, { opacity: .9, duration: .04 }, SM); tl.to(flashW, { opacity: 0, duration: .3 }, SM + .06);
+BM.pop(bBonk.g, SM + .08, .25); BM.hide(bBonk.g, SM + .9, .2);
+tl.to(carJ, { sx: .22, sy: .22, duration: .35, ease: 'back.in(2)', onUpdate: carJ.apply }, SM + .15); BM.sfx(SM + .2, 'boing', .8);
+tl.to(cracks, { opacity: 1, attr: { 'stroke-dashoffset': 0 }, duration: .4, ease: 'power2.out' }, SM + .3);
+tl.to(fp, { filter: 'saturate(0) brightness(.85)', duration: .5 }, SM + .3);
+BM.sfx(SM + 1.25, 'whoosh', .8);
+tl.to(FAN.cam, { oy: -2600, r: -6, duration: .7, ease: 'power3.in', onUpdate: FAN.apply }, SM + 1.25);
+// --- S7 · reality, and the twitch (24.4 – 30)
+const RE = T.reality; BM.cut(RE, FAN, ROOM); BM.sfx(RE, 'thud', .8);
+tl.set(fp, { filter: 'none' }, RE);
+tl.set(ROOM.cam, { x: 540, y: 1040, z: 1.3, onUpdate: ROOM.apply }, RE);
+tl.set([candleGlow], { opacity: 0 }, RE); tl.set(candleBody, { attr: { height: 0 } }, RE); tl.set(wick, { attr: { height: 0 } }, RE);
+tl.set(tintBack, { fill: '#2A4BFF', opacity: .24 }, RE); tl.set(scrGlow, { fill: C.red, opacity: .18 }, RE);
+tl.set(toyCar, { opacity: 1 }, RE); tl.set(D1.glasses, { opacity: 1 }, RE); tl.set(D1.crack, { opacity: 1 }, RE); BM.jto(D1.gj, RE, { y: -70, r: -8 }, .01);
+pose(D1, RE, { Rarm: 8, Rfore: 4, Larm: 125, Lfore: -36, head: 0, torso: 0 }, .01); tl.set(mug, { opacity: 1 }, RE); tl.set(deskMug, { opacity: 0 }, RE);
+expr(D1, RE, 'deadpan', .01); BM.cam(ROOM, RE + .2, 540, 1000, 1.44, 1.6, 'sine.inOut');
+pose(D1, RE + 1.0, { Larm: 150, Lfore: -58 }, .45); mouth(D1, RE + 1.3, 'slurp'); BM.sfx(RE + 1.35, 'slurp_empty', .9);
+pose(D1, RE + 2.0, { Larm: 125, Lfore: -36 }, .4); mouth(D1, RE + 2.0, 'flat'); blink(D1, RE + 2.2);
+// phone buzz + notification
+const NO = T.notif; tl.to(phoneJ, { keyframes: [{ x: -6, duration: .04 }, { x: 6, duration: .04 }], repeat: 6, onUpdate: phoneJ.apply }, NO); BM.sfx(NO, 'buzz', .8);
+tl.to(phoneScr, { fill: '#3E7BFF', duration: .1 }, NO); BM.pop(notif, NO + .25, .35); BM.sfx(NO + .25, 'ding', .7);
+tl.to(D1.F, { lx: -16, ly: 10, duration: .25, onUpdate: D1.F.apply }, NO + .5);
+tl.to(D1.F, { keyframes: [{ twitch: .55, duration: .05 }, { twitch: 0, duration: .07 }, { twitch: .6, duration: .05 }, { twitch: 0, duration: .07 }, { twitch: .5, duration: .05 }, { twitch: 0, duration: .08 }], onUpdate: D1.F.apply }, NO + .8);
+BM.sfx(NO + .8, 'twitch', .7); BM.cam(ROOM, NO + .5, 470, 1080, 1.36, .6, 'power2.inOut'); BM.cam(ROOM, NO + 1.25, 530, 1030, 1.85, .9, 'power2.inOut');
+expr(D1, NO + 1.4, 'sly', .4); BM.sfx(NO + 1.5, 'cash_tiny', .6); tl.to(D1.blush, { opacity: .7, duration: .3 }, NO + 1.5);
+tl.to(D1.F, { bq: -20, duration: .12, yoyo: true, repeat: 3, onUpdate: D1.F.apply }, NO + 1.6);
+BM.music(RE, T.end, 'lofi_broke', .7);
+// end card
+const EN = T.end; BM.show(endCard, EN, .35); BM.hide(notif, EN, .2); BM.sfx(EN, 'sting', 1);
+tl.fromTo(dJ, { sx: .2, sy: .2, r: -20 }, { sx: 1, sy: 1, r: 0, duration: .5, ease: 'back.out(2)', onUpdate: dJ.apply, immediateRender: false }, EN + .1);
+tl.set(dCrack, { opacity: 1 }, EN + .95); BM.sfx(EN + .95, 'crack', .8); tl.to(dJ, { keyframes: [{ x: -6, duration: .04 }, { x: 6, duration: .04 }, { x: 0, duration: .04 }], onUpdate: dJ.apply }, EN + .95);
+// idle life: breathing + blinks
+BM.sway(D1.torso, 0, 1.2, 1.7, T.crash); blink(D1, 3.0); blink(D1, 9.1); blink(D1, 25.2);
+BM.sway(D2.torso, FA, 2, .9, T.smash);
+BM.finish();
+}
+</script>
+</body>
+</html>

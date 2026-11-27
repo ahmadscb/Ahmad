@@ -1,0 +1,4 @@
+spec: h264|1080|1920|yuv420p|30/1|900 30.000000 
+black stretches (>0.15 s): 0
+frozen stretches (>1.2 s) start at: none
+loudness: -13.9 LUFS, true peak -1.5 dBTP

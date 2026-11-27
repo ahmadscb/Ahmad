@@ -1,0 +1,18 @@
+{
+  "_doc": "Machine-readable creative brief. An agent (Claude Code, Hermes, ...) fills this, then authors projects/<name>/index.html and runs bin/bm-render.",
+  "name": "my-video",
+  "prompt": "One-paragraph natural-language request, as the person wrote it.",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "duration_s": 20, "platforms": ["instagram-reels", "tiktok"] },
+  "type": "product-ad | cartoon-comedy | explainer | kinetic-type | brand-opener",
+  "brand": { "name": "", "palette": ["#000000"], "fonts": { "display": "", "body": "" }, "logo": "assets/logo.svg", "website": "" },
+  "language": { "primary": "en", "rtl": false },
+  "message": { "hook": "", "key_points": [], "cta": "" },
+  "style_brief": "Bang Motion SKILL.md: feeling, palette from the brand, display font with character, motion signature, background motion, transitions.",
+  "storyboard": [
+    { "t0": 0, "t1": 3, "shot": "hook", "visual": "", "camera": "", "text": "", "sfx": [], "music": "" }
+  ],
+  "narration": { "enabled": false, "provider": "piper | elevenlabs", "voice": "", "script": [], "allow_paid": false },
+  "music": { "style": "lofi | tension | sad | hype | cinematic | pulse", "gain": 0.8 },
+  "qc": { "times": [], "checks": ["no clipped text", "no overlap", "character on model", "no frozen > 1.2 s", "loudness -14 LUFS"] },
+  "publish": { "enabled": false, "_note": "Publishing is intentionally not wired. Human review first." }
+}

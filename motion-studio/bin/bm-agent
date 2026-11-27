@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Natural-language prompt -> finished video, by a headless Claude Code session using the motion-studio skill.
+#   bin/bm-agent "<prompt>" [--name my-video] [--run]
+# Default is a DRY RUN: prints the exact command and allowed tools, so a human (or Hermes) can approve it.
+# With --run it starts `claude -p` (uses the operator's Claude plan; no other paid API is called).
+# The session may only edit inside motion-studio/ and run the studio's own scripts. It never publishes.
+set -euo pipefail
+HERE=$(cd "$(dirname "$0")/.." && pwd)
+PROMPT=${1:?usage: bm-agent "<prompt>" [--name NAME] [--run]}; shift
+NAME="video-$(date +%Y%m%d-%H%M%S)"; RUN=0
+while (( $# )); do case $1 in --name) NAME=$2; shift 2;; --run) RUN=1; shift;; *) echo "unknown $1"; exit 2;; esac; done
+TASK="Use the motion-studio skill. Project name: $NAME. Request: $PROMPT
+Follow the workflow in $HERE/workflow/PIPELINE.md end to end: brief.json -> storyboard -> bin/bm-new -> build the scenes
+(Bang Motion rules) -> key-frame check with tools/snap.mjs and fix what you see -> bin/bm-render -> inspect frames from the MP4
+-> repair and re-render until QC passes. Do not publish, do not call paid APIs. Report the MP4 path and render metrics."
+ALLOWED='Read,Write,Edit,Glob,Grep,Bash(node:*),Bash(python3:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(bin/bm-new:*),Bash(bin/bm-render:*),Bash(tools/qc.sh:*),Bash(ls:*)'
+echo "claude -p <task> --allowedTools '$ALLOWED'   (cwd: $HERE)"
+(( RUN )) || { echo "--- task ---"; echo "$TASK"; echo "(dry run: add --run to execute)"; exit 0; }
+cd "$HERE" && exec claude -p "$TASK" --allowedTools "$ALLOWED"

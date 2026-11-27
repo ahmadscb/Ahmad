@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Run a render job without starving other services on the VPS, and measure it.
+#   bm-safe [--metrics out.json] -- <command ...>
+# Limits (env): BM_MEM_MAX=6G  BM_CORES=<nproc-1>  BM_TIMEOUT=3600
+#  - with a working systemd: a transient scope with MemoryMax + CPUQuota (hard caps)
+#  - otherwise: low priority (nice 15, idle IO), pinned to BM_CORES cores, timeout,
+#    and a watchdog that kills the job's process group above BM_MEM_MAX.
+# Prints and writes wall time, peak RAM (whole process tree) and CPU use.
+set -euo pipefail
+METRICS=""
+[[ "${1:-}" == "--metrics" ]] && { METRICS="$2"; shift 2; }
+[[ "${1:-}" == "--" ]] && shift
+(( $# )) || { echo "usage: bm-safe [--metrics f.json] -- cmd ..." >&2; exit 2; }
+
+NPROC=$(nproc); CORES=${BM_CORES:-$(( NPROC > 1 ? NPROC - 1 : 1 ))}
+MEM=${BM_MEM_MAX:-6G}; TMO=${BM_TIMEOUT:-3600}
+to_kb() { local v=${1^^}; case $v in *G) echo $(( ${v%G} * 1048576 ));; *M) echo $(( ${v%M} * 1024 ));; *) echo "$v";; esac; }
+MEM_KB=$(to_kb "$MEM")
+
+MODE=watchdog
+if systemd-run --scope --quiet -p MemoryMax=64M true >/dev/null 2>&1; then MODE=systemd; fi
+start=$(date +%s.%N)
+if [[ $MODE == systemd ]]; then
+  setsid systemd-run --scope --quiet -p MemoryMax="$MEM" -p CPUQuota="$(( CORES * 100 ))%" \
+    nice -n 15 ionice -c3 timeout "$TMO" "$@" & pid=$!
+else
+  setsid taskset -c "0-$(( CORES - 1 ))" nice -n 15 ionice -c3 timeout "$TMO" "$@" & pid=$!
+fi
+pgid=$pid; peak_kb=0; peak_cpu=0; prev_t=0; prev_ts=$start; killed=0
+# sum of RSS (kB) and CPU seconds over the job's process group
+sample() { ps -o rss=,times= -g "$pgid" 2>/dev/null | awk '{r+=$1; t+=$2} END {printf "%d %d\n", r, t}'; }
+while kill -0 "$pid" 2>/dev/null; do
+  read -r rss cpu_s < <(sample); now=$(date +%s.%N)
+  (( rss > peak_kb )) && peak_kb=$rss
+  pct=$(awk -v a="$cpu_s" -v b="$prev_t" -v x="$now" -v y="$prev_ts" 'BEGIN{d=x-y; if(d>0 && a>=b) printf "%d", (a-b)/d*100; else print 0}')
+  (( pct > peak_cpu )) && peak_cpu=$pct; prev_t=$cpu_s; prev_ts=$now
+  if [[ $MODE == watchdog ]] && (( rss > MEM_KB )); then
+    echo "bm-safe: memory ${rss} kB > ${MEM} - stopping job" >&2; kill -TERM -- "-$pgid" 2>/dev/null; killed=1; break
+  fi
+  sleep 1
+done
+set +e; wait "$pid"; rc=$?; set -e
+end=$(date +%s.%N); wall=$(awk -v a="$end" -v b="$start" 'BEGIN{printf "%.1f", a-b}')
+(( killed )) && rc=137
+summary=$(printf '{"mode":"%s","cores_allowed":%d,"mem_cap":"%s","wall_s":%s,"peak_rss_mb":%d,"peak_cpu_pct":%d,"exit":%d}' \
+  "$MODE" "$CORES" "$MEM" "$wall" $(( peak_kb / 1024 )) "$peak_cpu" "$rc")
+echo "bm-safe: $summary" >&2
+[[ -n $METRICS ]] && echo "$summary" > "$METRICS"
+exit "$rc"

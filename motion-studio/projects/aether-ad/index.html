@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AETHER ONE Ad</title>
+<!-- Premium product ad for a FICTIONAL smart ring (Motion Studio test #2): 1080x1920, 30 fps, 18 s.
+     Real-time 3D (three.js, PBR titanium, studio reflections) on CPU via SwiftShader; HTML kinetic type on top.
+     Every frame is a function of time (seek-safe). ?clean=1 = export mode. -->
+<style>
+@font-face{font-family:Inter;font-weight:200;src:url(../../vendor/fonts/inter-latin-200-normal.woff2)}
+@font-face{font-family:Inter;font-weight:300;src:url(../../vendor/fonts/inter-latin-300-normal.woff2)}
+@font-face{font-family:Inter;font-weight:500;src:url(../../vendor/fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(../../vendor/fonts/inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#050506;font-family:Inter,sans-serif;color:#F3F1EC}
+#bg{position:absolute;inset:0;background:radial-gradient(60% 34% at 50% 46%,#1b1c22 0,#0a0a0d 60%,#040405 100%)}
+#halo{position:absolute;left:50%;top:44%;width:1300px;height:1300px;margin:-650px 0 0 -650px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,150,.20),rgba(255,214,150,.05) 55%,transparent 72%);opacity:0}
+#gl{position:absolute;inset:0;width:1080px;height:1920px}
+#grain{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+#vig{position:absolute;inset:0;background:radial-gradient(75% 60% at 50% 48%,transparent 55%,rgba(0,0,0,.65) 100%)}
+.ov{position:absolute;left:0;right:0;text-align:center;opacity:0}
+.eyebrow{font-weight:500;font-size:34px;letter-spacing:.5em;text-transform:uppercase;color:#C9C3B8}
+.big{font-weight:200;font-size:112px;letter-spacing:-.02em;line-height:1.04}
+.big b{font-weight:800}
+.ch{display:inline-block;will-change:transform,filter,opacity}
+#sweep{position:absolute;left:0;top:50%;width:1080px;height:2px;margin-top:-1px;background:linear-gradient(90deg,transparent,#FFE7BF 30%,#FFFFFF 50%,#FFE7BF 70%,transparent);transform:scaleX(0);box-shadow:0 0 30px 6px rgba(255,220,160,.5)}
+.call{position:absolute;opacity:0;font-weight:300;font-size:30px;letter-spacing:.18em;text-transform:uppercase;white-space:nowrap}
+.call .k{display:block;font-weight:800;font-size:110px;letter-spacing:-.03em;text-transform:none;line-height:1}
+#lines{position:absolute;inset:0;overflow:visible}
+#mark{position:absolute;left:0;right:0;top:1270px;text-align:center;opacity:0;font-weight:800;font-size:128px;letter-spacing:.12em}
+#mark small{display:block;font-weight:300;font-size:34px;letter-spacing:.34em;margin-top:22px;color:#C9C3B8}
+#cta{position:absolute;left:50%;top:1640px;transform:translateX(-50%);opacity:0;border:1.5px solid rgba(243,241,236,.55);border-radius:999px;padding:22px 44px;font-weight:500;font-size:28px;letter-spacing:.3em;white-space:nowrap}
+#variants{position:absolute;left:0;right:0;top:1500px;display:flex;justify-content:center;gap:58px;font-weight:500;font-size:26px;letter-spacing:.34em;opacity:0}
+#variants span{opacity:.4}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div><div id="halo"></div>
+  <canvas id="gl" width="1080" height="1920"></canvas>
+  <div id="sweep"></div>
+  <svg id="lines" width="1080" height="1920"></svg>
+  <div class="ov eyebrow" id="t1" style="top:560px">Some things</div>
+  <div class="ov big" id="t2" style="top:300px">You don't<br><b>wear.</b></div>
+  <div class="ov big" id="t3" style="top:300px">You <b>feel.</b></div>
+  <div class="call" id="c1"><span class="k">24/7</span>Heart · Sleep · Stress</div>
+  <div class="call" id="c2"><span class="k" id="grams">0.0 g</span>Aerospace titanium</div>
+  <div class="call" id="c3"><span class="k" id="days">0 days</span>On one charge</div>
+  <div id="variants"><span id="v0">MIDNIGHT</span><span id="v1">LUNAR</span><span id="v2">SOLAR</span></div>
+  <div id="mark">ÆTHER ONE<small>Health, in a circle.</small></div>
+  <div id="cta">PRE-ORDER · 2027</div>
+  <div id="grain"></div><div id="vig"></div>
+</div>
+<script type="importmap">{ "imports": { "three": "../../vendor/three/three.module.js", "three/addons/": "../../vendor/three/addons/" } }</script>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+await document.fonts.load('200 60px Inter'); await document.fonts.load('800 60px Inter');
+const DUR = 18, $ = s => document.querySelector(s);
+BM.init({ W: 1080, H: 1920, DUR, svg: $('#lines') });
+const tl = BM.tl;
+
+/* ---------- 3D: the ring ---------- */
+const renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(1080, 1920, false);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05; renderer.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer); scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+const camera = new THREE.PerspectiveCamera(28, 1080 / 1920, .05, 100);
+// comfort-fit profile (rounded band) turned on a lathe
+const prof = []; const Rin = 1.0, Rout = 1.16, Hh = .19;
+for (let i = 0; i <= 40; i++) { const a = -Math.PI / 2 + i / 40 * Math.PI; prof.push(new THREE.Vector2(Rout - .06 + Math.cos(a) * .06, Math.sin(a) * Hh)); }
+for (let i = 0; i <= 40; i++) { const a = Math.PI / 2 + i / 40 * Math.PI; prof.push(new THREE.Vector2(Rin + .03 + Math.cos(a) * .03 * -1, Math.sin(a) * Hh * .92)); }
+const ringGeo = new THREE.LatheGeometry(prof, 256);
+const FINISH = { midnight: [0x2b2b31, .26], lunar: [0xd9dbe0, .16], solar: [0xe2bf7e, .18] };
+function makeRing(finish) {
+  const g = new THREE.Group(), [col, rough] = FINISH[finish];
+  const metal = new THREE.MeshPhysicalMaterial({ color: col, metalness: 1, roughness: rough, clearcoat: .6, clearcoatRoughness: .2, envMapIntensity: 1.25 });
+  const band = new THREE.Mesh(ringGeo, metal); g.add(band);
+  // inner sensors: three domes + green LEDs
+  const dome = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0e, metalness: .2, roughness: .25, clearcoat: 1 });
+  const leds = [];
+  for (const a of [-.35, 0, .35]) {
+    const d = new THREE.Mesh(new THREE.SphereGeometry(.07, 32, 16), dome); d.scale.set(1, .5, 1); d.position.set(Math.sin(a) * (Rin + .005), 0, Math.cos(a) * (Rin + .005)); d.lookAt(0, 0, 0); g.add(d);
+    const led = new THREE.Mesh(new THREE.SphereGeometry(.022, 16, 8), new THREE.MeshBasicMaterial({ color: 0x29ff9a, transparent: true, opacity: 0 })); led.position.copy(d.position).multiplyScalar(.985); g.add(led); leds.push(led);
+  }
+  g.userData = { band, leds, metal }; return g;
+}
+const hero = makeRing('midnight'), pivot = new THREE.Group(); pivot.add(hero); scene.add(pivot);
+const vars = ['midnight', 'lunar', 'solar'].map(f => { const r = makeRing(f); r.visible = false; scene.add(r); return r; });
+const key = new THREE.DirectionalLight(0xfff1dd, 2.2); key.position.set(3, 4, 5); scene.add(key);
+const rim = new THREE.DirectionalLight(0xbcd6ff, 2.4); rim.position.set(-4, 1, -3); scene.add(rim);
+const sweepL = new THREE.PointLight(0xffe2b0, 0, 8); scene.add(sweepL);
+
+/* ---------- animated state (tweened by GSAP, read every frame) ----------
+   The lathe ring lies in XZ; rx = PI/2 faces the camera, rx = 0 is edge-on. 9:16 frustum: at fov 26 and z 12.5 the frame is ~3.3 units wide. */
+const S = { camX: 0, camY: 0, camZ: 12.5, lookY: 0, fov: 26, rx: 1.3, rz: .2, ry: 0, spin: 0, py: 0, exp: 0, sweepX: -6, sweepI: 0, led: 0, vars: 0, varSpin: 0 };
+function render3d(t) {
+  camera.fov = S.fov; camera.position.set(S.camX, S.camY, S.camZ); camera.lookAt(0, S.lookY, 0); camera.updateProjectionMatrix();
+  hero.rotation.set(S.rx, 0, S.rz); pivot.rotation.y = S.ry + S.spin; pivot.position.y = S.py;
+  renderer.toneMappingExposure = S.exp;
+  sweepL.position.set(S.sweepX, 1.5, 3); sweepL.intensity = S.sweepI;
+  hero.userData.leds.forEach((l, i) => l.material.opacity = S.led * (.55 + .45 * Math.sin(t * 6 + i * 1.7)));
+  vars.forEach((r, i) => { r.visible = S.vars > .001; const k = Math.min(1, Math.max(0, S.vars * 3 - i));
+    r.position.set((i - 1) * 1.05, .35 - (i - 1) * .55 + (1 - k) * -5, -i * .4); r.rotation.set(1.15 - i * .12, S.varSpin + i * 1.1, .25); r.scale.setScalar(.5 * (.7 + .3 * k)); });
+  renderer.render(scene, camera);
+}
+const proj = (v, obj = hero) => { obj.updateMatrixWorld(true); const p = v.clone().applyMatrix4(obj.matrixWorld).project(camera); return [(p.x + 1) / 2 * 1080, (1 - p.y) / 2 * 1920]; };
+
+/* ---------- kinetic type helpers ---------- */
+function split(el) {   // wrap every visible character of every text node in .ch (tags and <br> untouched)
+  const out = []; const walk = n => { for (const c of [...n.childNodes]) { if (c.nodeType === 3) { const f = document.createDocumentFragment();
+    for (const ch of c.textContent) { if (/\s/.test(ch)) f.append(' '); else { const sp = document.createElement('span'); sp.className = 'ch'; sp.textContent = ch; f.append(sp); out.push(sp); } } c.replaceWith(f); } else walk(c); } };
+  walk(el); return out; }
+function typeIn(el, at, { stagger = .035, blur = 14, y = 0, dur = .7, ease = 'expo.out' } = {}) {
+  tl.set(el, { opacity: 1 }, at);
+  tl.fromTo(split(el), { opacity: 0, filter: `blur(${blur}px)`, y }, { opacity: 1, filter: 'blur(0px)', y: 0, duration: dur, stagger, ease }, at); }
+const out = (el, at, d = .35) => tl.to(el, { opacity: 0, filter: 'blur(10px)', duration: d, ease: 'power2.in' }, at);
+const markChars = split($('#mark'));
+const L = BM.N('line', { stroke: '#F3F1EC', 'stroke-width': 1.5, opacity: 0 }), D = BM.CI(0, 0, 7, '#29ff9a', BM.S, { opacity: 0 });
+
+/* ================= SHOTS ================= */
+const sweep = (at, dur, peak = 40) => { tl.fromTo(S, { sweepX: -6 }, { sweepX: 6, duration: dur, ease: 'power1.inOut', immediateRender: false }, at);
+  tl.fromTo(S, { sweepI: 0 }, { keyframes: [{ sweepI: peak, duration: dur * .5, ease: 'sine.in' }, { sweepI: 0, duration: dur * .5, ease: 'sine.out' }], immediateRender: false }, at); BM.sfx(at + dur * .4, 'glint', .5); };
+// 0 – 2.6 · darkness, a line of light, then a macro of the rim catching it
+tl.fromTo('#sweep', { scaleX: 0, opacity: 1 }, { scaleX: 1, duration: 1.0, ease: 'expo.inOut' }, .1); BM.sfx(.1, 'glint', .8); tl.to('#sweep', { opacity: 0, duration: .5 }, 1.0);
+tl.fromTo(S, { exp: 0, camZ: 4.2, fov: 20, lookY: .95, rx: 1.42, rz: .5, ry: -.3 }, { exp: 1.5, ry: .15, camZ: 4.6, duration: 2.6, ease: 'sine.out', immediateRender: true }, .4);
+sweep(.6, 2.0, 140); tl.to(S, { exp: 1.05, duration: 1.2 }, 2.6);
+typeIn($('#t1'), .8, { stagger: .06, blur: 10 }); out($('#t1'), 2.3);
+BM.music(0, DUR, 'cinematic', .9); BM.sfx(0, 'swell', .6, 2.6);
+// 2.6 – 5 · pull back to the whole ring turning; type swaps
+tl.to(S, { camZ: 13.5, fov: 26, lookY: -.25, rx: 1.22, rz: .18, ry: -.5, duration: 2.2, ease: 'power3.inOut' }, 2.45); BM.sfx(2.45, 'whoosh', .6);
+typeIn($('#t2'), 2.75, { stagger: .03, blur: 16, y: 20 }); out($('#t2'), 3.9, .25);
+typeIn($('#t3'), 4.05, { stagger: .05, blur: 18, y: 20 }); BM.sfx(4.05, 'hit', .7);
+// 5 – 7.6 · hero reveal: a full turn on the turntable, rising into the light; wordmark cascades
+out($('#t3'), 5.0, .3);
+tl.to(S, { ry: 0, rx: 1.3, rz: .12, py: .75, lookY: .1, camZ: 11.3, duration: 1.4, ease: 'expo.inOut' }, 5.0); tl.to(S, { spin: Math.PI * 2, duration: 1.7, ease: 'expo.inOut' }, 5.0);
+sweep(5.6, 1.3, 35); tl.to('#halo', { opacity: 1, duration: 1.2, ease: 'power2.out' }, 5.5); BM.sfx(5.0, 'whoosh', .7); BM.sfx(6.25, 'hit', 1);
+tl.set('#mark', { opacity: 1 }, 6.2);
+tl.fromTo(markChars.filter(c => !c.closest('small')), { opacity: 0, y: 40, filter: 'blur(12px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .9, stagger: .05, ease: 'expo.out' }, 6.25);
+tl.fromTo(markChars.filter(c => c.closest('small')), { opacity: 0 }, { opacity: 1, duration: .5, stagger: .012 }, 6.9);
+tl.to('#mark', { opacity: 0, filter: 'blur(10px)', duration: .35 }, 7.45); tl.to('#halo', { opacity: .35, duration: .6 }, 7.4);
+// 7.6 – 12.6 · features
+// a) the inside: sensors light up; a hairline runs from the LED to its label
+const F1 = 7.6; tl.set(S, { spin: 0 }, F1);
+tl.to(S, { rx: .78, rz: 0, ry: Math.PI, py: 0, camZ: 6.2, camY: .6, lookY: -.35, fov: 24, duration: 1.0, ease: 'power3.inOut' }, F1); BM.sfx(F1, 'whoosh', .5);
+tl.to(S, { led: 1, duration: .5 }, F1 + .7); BM.sfx(F1 + .7, 'glint', .6); BM.music(F1, 15.4, 'pulse', .55);
+const c1 = $('#c1'); tl.set(c1, { left: 110, top: 1420 }, 0);
+tl.fromTo(c1, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out' }, F1 + .9); tl.to(c1, { opacity: 0, duration: .3 }, F1 + 2.05);
+tl.fromTo([L, D], { opacity: 0 }, { opacity: 1, duration: .2 }, F1 + .85); tl.to([L, D], { opacity: 0, duration: .2 }, F1 + 2.05);
+// b) edge-on: how thin it is + weight counter
+const F2 = F1 + 1.7;
+tl.to(S, { rx: .06, rz: 0, ry: .5, py: .25, camZ: 7.5, camY: 0, lookY: .25, fov: 24, duration: .9, ease: 'power3.inOut' }, F2 + .4); tl.to(S, { led: 0, duration: .3 }, F2 + .4); BM.sfx(F2 + .4, 'whoosh', .5);
+sweep(F2 + .9, 1.1, 30);
+const c2 = $('#c2'); tl.set(c2, { left: 0, right: 0, top: 1240, textAlign: 'center' }, 0);
+tl.fromTo(c2, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out' }, F2 + .8); tl.to(c2, { opacity: 0, duration: .3 }, F2 + 2.1);
+const gr = { v: 0 }; tl.to(gr, { v: 2.4, duration: .8, ease: 'power2.out', onUpdate() { $('#grams').textContent = gr.v.toFixed(1) + ' g'; } }, F2 + .8);
+for (let i = 0; i < 6; i++) BM.sfx(F2 + .8 + i * .13, 'tick', .5);
+// c) battery: an arc closes around the ring (placed by projection), days count up
+const F3 = F2 + 2.2;
+tl.to(S, { rx: Math.PI / 2, rz: 0, ry: 0, py: .35, camZ: 12.5, camY: 0, lookY: .1, fov: 26, duration: .9, ease: 'power3.inOut' }, F3); BM.sfx(F3, 'whoosh', .5);
+const arc = BM.CI(540, 760, 380, 'none', BM.S, { stroke: '#29ff9a', 'stroke-width': 5, 'stroke-linecap': 'round', opacity: 0, transform: 'rotate(-90 540 760)' });
+const AR = { k: 0 }; tl.to(arc, { opacity: 1, duration: .2 }, F3 + .5); tl.to(AR, { k: 1, duration: .75, ease: 'power2.inOut' }, F3 + .5); tl.to(arc, { opacity: 0, duration: .3 }, F3 + 1.3);
+const c3 = $('#c3'); tl.set(c3, { left: 0, right: 0, top: 1420, textAlign: 'center' }, 0);
+tl.fromTo(c3, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out' }, F3 + .6); tl.to(c3, { opacity: 0, duration: .3 }, F3 + 1.3);
+const dy = { v: 0 }; tl.to(dy, { v: 7, duration: .75, ease: 'power2.inOut', onUpdate() { $('#days').textContent = Math.round(dy.v) + ' days'; } }, F3 + .5);
+for (let i = 1; i <= 7; i++) BM.sfx(F3 + .5 + i * .1, 'tick', .5);
+// 12.6 – 15.4 · three finishes
+const V = 12.6; BM.sfx(V, 'whoosh', .8);
+tl.to(S, { py: 6, duration: .5, ease: 'power3.in' }, V);
+tl.to(S, { vars: 1, duration: 1.1, ease: 'expo.out' }, V + .3); tl.to(S, { varSpin: Math.PI * 1.2, duration: 2.8, ease: 'sine.inOut' }, V);
+tl.to(S, { camZ: 13, camY: 0, lookY: 0, fov: 26, duration: 1.2, ease: 'power2.out' }, V + .2); sweep(V + 1.0, 1.6, 30);
+tl.fromTo('#variants', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .6, ease: 'expo.out' }, V + .7);
+['#v0', '#v1', '#v2'].forEach((v, i) => { tl.to(v, { opacity: 1, duration: .2 }, V + .9 + i * .55); tl.to(v, { opacity: .4, duration: .2 }, V + 1.4 + i * .55); });
+tl.to('#variants', { opacity: 0, duration: .3 }, 15.2); tl.to(S, { vars: 0, duration: .4, ease: 'power2.in' }, 15.1);
+// 15.4 – 18 · end card
+const E = 15.4; BM.sfx(E, 'sub_drop', .8); BM.sfx(E + .55, 'shimmer', .9);
+tl.fromTo(S, { py: -4 }, { py: .8, rx: 1.28, rz: .14, ry: 0, camZ: 11.3, lookY: .1, duration: 1.2, ease: 'expo.out', immediateRender: false }, E);
+tl.fromTo(S, { spin: 0 }, { spin: .9, duration: 2.6, ease: 'none', immediateRender: false }, E);
+tl.to('#halo', { opacity: 1, duration: .8 }, E + .2); sweep(E + .5, 1.5, 32);
+tl.fromTo('#mark', { opacity: 0, filter: 'blur(14px)', scale: 1.06 }, { opacity: 1, filter: 'blur(0px)', scale: 1, duration: .9, ease: 'expo.out' }, E + .5);
+tl.set(markChars, { opacity: 1, y: 0, filter: 'blur(0px)' }, E);
+tl.fromTo('#cta', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: .7, ease: 'expo.out' }, E + 1.0);
+
+/* per frame: 3D, then overlays that follow the ring's real screen position */
+const ledLocal = hero.userData.leds[1].position.clone();
+BM.everyFrame(t => {
+  render3d(t);
+  if (t > F1 + .7 && t < F1 + 2.3) { const [x, y] = proj(ledLocal);
+    L.setAttribute('x1', x); L.setAttribute('y1', y); L.setAttribute('x2', 130); L.setAttribute('y2', 1400); D.setAttribute('cx', x); D.setAttribute('cy', y); }
+  if (t > F3 + .4 && t < F3 + 2.3) { const [cx, cy] = proj(new THREE.Vector3(0, 0, 0)), [rx, ry] = proj(new THREE.Vector3(Rout, 0, 0)), r = Math.hypot(rx - cx, ry - cy) * 1.13, C = 2 * Math.PI * r;
+    arc.setAttribute('cx', cx); arc.setAttribute('cy', cy); arc.setAttribute('r', r); arc.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+    arc.setAttribute('stroke-dasharray', C); arc.setAttribute('stroke-dashoffset', C * (1 - AR.k)); }
+});
+BM.finish();
+</script>
+</body>
+</html>

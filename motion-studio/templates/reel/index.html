@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<!-- Motion Studio project (scaffolded by bin/bm-new). Rules: Bang Motion SKILL.md (style brief first, anti-PPT,
+     camera moves the world, every frame a function of time). Replace the demo choreography below. ?clean=1 = export. -->
+<style>
+@font-face{font-family:Inter;font-weight:300;src:url(../../vendor/fonts/inter-latin-300-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:__W__px;height:__H__px;overflow:hidden;background:#101014;font-family:Inter,sans-serif}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="__W__" height="__H__" viewBox="0 0 __W__ __H__" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script>
+document.fonts.load('800 40px Inter').then(() => {
+const { G, R, CI, TX, J } = BM, W = __W__, H = __H__, DUR = __DUR__;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+const tl = BM.tl;
+// one stage with its own camera (zoom >= 1.05; the world moves, not the slide)
+const A = BM.scene('a'), p = A.g;
+R(-W, -H, W * 3, H * 3, '#16161D', 0, p);
+const orb = J(G({}, p), W / 2, H / 2); CI(0, 0, Math.min(W, H) * .18, '#FFC83D', orb.el);
+const title = TX(W / 2, H * .72, '__TITLE__', Math.round(W * .085), '#F3F1EC', p, { 'font-weight': 800, opacity: 0 });
+BM.cut(0, null, A); Object.assign(A.cam, { x: W / 2, y: H / 2, z: 1.3 }); A.apply();
+BM.cam(A, 0, W / 2, H * .55, 1.08, DUR * .6, 'power2.inOut');
+tl.fromTo(orb, { sx: 0, sy: 0 }, { sx: 1, sy: 1, duration: .8, ease: 'back.out(2)', onUpdate: orb.apply }, .2); BM.sfx(.2, 'hit', .8);
+BM.pop(title, .9, .5); BM.sfx(.9, 'whoosh', .6);
+BM.music(0, DUR, 'pulse', .8);
+BM.finish();
+});
+</script>
+</body>
+</html>
