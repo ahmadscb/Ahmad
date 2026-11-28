@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fake Rich</title>
+<!-- fake-rich (Sarcastic Grotesque). Marco livestreams his "penthouse" life; reality exposes him three times:
+     the poster peels, his bank balance pops up on his own stream, and his landlady Bev bursts in.
+     Built from lib/grotesque.js (BM.GR cast: marco, bev). Room and livestream UI are custom SVG. -->
+<style>
+@font-face{font-family:Anton;src:url(../../vendor/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#A9A27E}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="../../lib/grotesque.js"></script>
+<script src="voice/dialog.js" onerror="window.DIALOG=null"></script>
+<script>
+Promise.all([document.fonts.load('40px Anton'), document.fonts.load('800 40px Inter')]).then(() => {
+const { GR, G, R, CI, EL, PA, LN, TX, J } = BM, W = 1080, H = 1920, DUR = 22, INK = '#16110E';
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+BM.STYLE.use('grotesque');
+const tl = BM.tl;
+const AN = { 'font-family': 'Anton, Impact, sans-serif' };
+
+/* dialogue timings come from voice/dialog.json (fallbacks only keep the page alive without the voice step) */
+const FALLBACK = [['marco', 'Morning, peasants. Just woke up in my penthouse.', .35, 3.07], ['marco', 'Ocean view, baby.', 5.0, 5.95], ['marco', 'Money is not a problem for me.', 6.7, 8.21],
+  ['marco', "That's... my other account.", 10.1, 11.16], ['bev', 'Marco! Three months rent!', 13.0, 14.75], ['bev', "And that's my phone.", 16.4, 17.55], ['marco', 'Like and subscribe.', 18.3, 19.43]]
+  .map(([who, text, t0, t1]) => ({ who, text, t0, t1 }));
+const L = (window.DIALOG && DIALOG.lines) || FALLBACK;
+const HI = { marco: '#FFD23F', bev: '#7FD3FF' };
+const say = (ch, l) => GR.say(ch, l.t0, l.t1, l.text, { visemes: l.visemes, subStyle: { hi: HI[l.who] } });
+
+/* ================= THE ROOM (back to front) ================= */
+const A = BM.scene('room'), g = A.g;
+R(-1000, -1000, 3200, 4000, '#A9A27E', 0, g);
+for (let i = 0; i < 9; i++) EL(60 + BM.hash(i) * 960, 120 + BM.hash(i + 4) * 1300, 50 + BM.hash(i + 8) * 70, 30 + BM.hash(i + 2) * 50, '#8E8A62', g, { opacity: .55 });
+LN('M 40 120 L 90 210 L 70 290 L 130 380', INK, 5, g); LN('M 1000 140 L 960 230 L 990 300', INK, 5, g);
+R(-1000, 1560, 3200, 1400, '#6E5E4A', 0, g, { stroke: INK, 'stroke-width': 8 });
+for (let i = 0; i < 12; i++) LN(`M ${-40 + i * 100} 1560 L ${-120 + i * 110} 1920`, '#5A4C3B', 5, g);
+/* laundry line + bare bulb */
+LN('M -20 250 Q 540 320 1100 240', INK, 4, g);
+[[150, 268, '#E8E1C8', 'sock'], [330, 288, '#8BA4C8', 'boxers'], [700, 290, '#C8604A', 'sock'], [880, 270, '#E8E1C8', 'boxers']].forEach(([x, y, c, k]) => {
+  if (k === 'sock') PA(`M ${x} ${y} l 26 0 l 0 70 q 0 30 -40 30 l -16 0 q -10 -26 18 -30 Z`, c, g, { stroke: INK, 'stroke-width': 5 });
+  else PA(`M ${x - 50} ${y} L ${x + 50} ${y} L ${x + 56} ${y + 70} L ${x + 10} ${y + 70} L ${x} ${y + 40} L ${x - 10} ${y + 70} L ${x - 56} ${y + 70} Z`, c, g, { stroke: INK, 'stroke-width': 5 });
+  R(x - 6, y - 12, 12, 22, '#D9B13B', 2, g, { stroke: INK, 'stroke-width': 3 }); });
+LN('M 540 -100 L 540 120', INK, 5, g); R(522, 110, 36, 30, '#555', 4, g, { stroke: INK, 'stroke-width': 4 });
+const bulb = CI(540, 168, 34, '#FFF4B0', g, { stroke: INK, 'stroke-width': 5 });
+BM.everyFrame(t => bulb.setAttribute('fill', (Math.floor(t * 9) % 17 === 0) ? '#9A946A' : '#FFF4B0'));
+
+/* wall behind the poster: mould + FINAL NOTICE (revealed when the poster falls) */
+const behind = G({}, g);
+for (let i = 0; i < 7; i++) EL(200 + BM.hash(i * 3) * 520, 480 + BM.hash(i * 5) * 900, 40 + BM.hash(i) * 60, 30 + BM.hash(i + 1) * 40, '#5D6B3A', behind, { opacity: .8 });
+const notice = G({ transform: 'translate(630 470) rotate(6)' }, behind);
+R(-110, -70, 220, 290, '#F6F1DE', 4, notice, { stroke: INK, 'stroke-width': 5 }); R(-110, -70, 220, 60, '#C8202F', 4, notice);
+TX(0, -28, 'FINAL NOTICE', 30, '#FFF', notice, AN); for (let i = 0; i < 6; i++) R(-90, 10 + i * 30, 120 + BM.hash(i) * 60, 10, '#9C9480', 3, notice);
+TX(0, 200, 'RENT: 3 MONTHS', 26, '#C8202F', notice, AN);
+LN('M 420 520 L 470 640 L 440 760 L 500 900', INK, 6, behind);
+
+/* the paradise poster (pivot at the top-left tape so it can fall) */
+const PX0 = 80, PY0 = 360, PX1 = 790, PY1 = 1480;
+const posterJ = J(G({}, g), PX0, PY0), P = posterJ.el;
+const pw = PX1 - PX0, ph = PY1 - PY0;
+R(0, 0, pw, ph, BM.lg('sky', [[0, '#3FB2EA'], [.55, '#BFEAFF'], [.56, '#1E8FC4'], [1, '#0F5E8A']]), 0, P, { stroke: INK, 'stroke-width': 8 });
+CI(520, 230, 90, '#FFE14D', P, { stroke: INK, 'stroke-width': 6 });
+for (let i = 0; i < 6; i++) LN(`M ${60 + i * 110} ${700 + (i % 2) * 40} q 30 -16 60 0`, '#FFFFFF', 5, P, { opacity: .7 });
+/* yacht */
+PA('M 40 820 L 330 820 L 290 880 L 80 880 Z', '#FFFFFF', P, { stroke: INK, 'stroke-width': 6 });
+R(110, 770, 150, 50, '#FFFFFF', 8, P, { stroke: INK, 'stroke-width': 6 }); for (let i = 0; i < 4; i++) R(124 + i * 34, 782, 22, 18, '#2A5E8A', 3, P);
+/* palm */
+LN(`M ${pw - 70} ${ph} Q ${pw - 40} 800 ${pw - 120} 560`, '#7A5230', 26, P); LN(`M ${pw - 70} ${ph} Q ${pw - 40} 800 ${pw - 120} 560`, INK, 4, P, { opacity: .5 });
+[[-160, -40], [-120, -110], [-40, -120], [30, -60], [-200, 30]].forEach(([dx, dy]) => PA(`M ${pw - 120} 560 Q ${pw - 120 + dx * .5} ${560 + dy - 50} ${pw - 120 + dx} ${560 + dy} Q ${pw - 120 + dx * .6} ${560 + dy * .3} ${pw - 120} 560 Z`, '#3FA34D', P, { stroke: INK, 'stroke-width': 5 }));
+TX(pw / 2, 120, 'PARADISE LIVING', 64, '#FFFFFF', P, { ...AN, stroke: INK, 'stroke-width': 9, 'paint-order': 'stroke' });
+/* price sticker + tape */
+const st = G({ transform: 'translate(80 160) rotate(-12)' }, P); CI(0, 0, 58, '#FFE14D', st, { stroke: INK, 'stroke-width': 5 }); TX(0, 14, '$4.99', 34, '#C8202F', st, AN);
+[[0, 0], [pw, 0], [0, ph], [pw, ph]].forEach(([x, y], i) => R(x - 44, y - 16, 88, 32, '#E9DFB0', 2, P, { opacity: .85, transform: `rotate(${i % 2 ? 35 : -35} ${x} ${y})` }));
+/* peeling corner (top-right): revealed mould + folded-over white back */
+const peelJ = J(G({ opacity: 0 }, g), PX1, PY0), peel = peelJ.el;
+PA('M -330 0 L 0 0 L 0 330 Z', '#7E7A52', peel); EL(-70, 90, 50, 34, '#4F5E2E', peel); EL(-40, 170, 26, 20, '#4F5E2E', peel); LN('M -150 10 L -110 90 L -130 150', INK, 5, peel);
+PA('M -330 0 L 0 330 L -330 330 Z', '#EFEBDD', peel, { stroke: INK, 'stroke-width': 7, 'stroke-linejoin': 'round', transform: 'translate(0 0)' });
+PA('M -330 0 L 0 330', 'none', peel, { stroke: '#B8B3A0', 'stroke-width': 10 });
+/* door (right) */
+const DX0 = 805, DX1 = 1075, DY0 = 330, DY1 = 1560;
+R(DX0 - 18, DY0 - 18, DX1 - DX0 + 36, DY1 - DY0 + 18, '#5C4632', 0, g, { stroke: INK, 'stroke-width': 8 });
+R(DX0, DY0, DX1 - DX0, DY1 - DY0, '#1F1A17', 0, g);
+const doorShut = G({}, g); R(DX0, DY0, DX1 - DX0, DY1 - DY0, '#8A6A48', 0, doorShut, { stroke: INK, 'stroke-width': 7 });
+R(DX0 + 30, DY0 + 40, DX1 - DX0 - 60, 420, 'none', 4, doorShut, { stroke: '#6E5338', 'stroke-width': 6 }); R(DX0 + 30, DY0 + 520, DX1 - DX0 - 60, 560, 'none', 4, doorShut, { stroke: '#6E5338', 'stroke-width': 6 });
+CI(DX0 + 34, 980, 14, '#D9B13B', doorShut, { stroke: INK, 'stroke-width': 4 });
+/* clutter */
+for (let i = 0; i < 4; i++) { const x = 70 + (i % 2) * 70, y = 1830 - Math.floor(i / 2) * 90 - (i % 2) * 0; PA(`M ${x - 32} ${y - 80} L ${x + 32} ${y - 80} L ${x + 24} ${y} L ${x - 24} ${y} Z`, '#F3EEE2', g, { stroke: INK, 'stroke-width': 5 }); R(x - 32, y - 62, 64, 18, '#E8202F', 0, g); }
+R(800, 1700, 260, 40, '#C9A06A', 4, g, { stroke: INK, 'stroke-width': 6, transform: 'rotate(-4 930 1720)' }); TX(930, 1732, 'PIZZA', 26, '#C8202F', g, { ...AN, transform: 'rotate(-4 930 1720)' });
+
+/* cast: Bev (back, in the doorway, hidden until reality) then Marco (front) */
+const bev = GR.make(g, 'bev', 905, 770, .8);
+const marco = GR.make(g, 'marco', 470, 940, 1.05);
+tl.set(bev.place, { opacity: 0 }, 0); tl.set(bev.place, { opacity: 1 }, 12.2);
+
+/* ================= LIVESTREAM UI (screen space, above the stage) ================= */
+const UI = G({}); GR._ov = GR._ov || []; GR._ov.push(UI);
+R(40, 64, 132, 60, '#E8202F', 12, UI, { stroke: INK, 'stroke-width': 4 }); CI(68, 94, 9, '#FFFFFF', UI); TX(118, 110, 'LIVE', 40, '#FFFFFF', UI, AN);
+R(186, 64, 158, 60, '#000000', 12, UI, { opacity: .55 }); EL(222, 94, 18, 11, 'none', UI, { stroke: '#FFF', 'stroke-width': 4 }); CI(222, 94, 5, '#FFF', UI);
+const VIEW = ['3', '2', '1', '0'].map(n => TX(290, 110, n, 40, '#FFFFFF', UI, { ...AN, opacity: n === '3' ? 1 : 0 }));
+const viewers = (at, i) => VIEW.forEach((v, k) => tl.set(v, { opacity: k === i ? 1 : 0 }, at));
+TX(44, 178, '@marco.billionaire', 38, '#FFFFFF', UI, { 'text-anchor': 'start', 'font-weight': 800, stroke: INK, 'stroke-width': 6, 'paint-order': 'stroke' });
+const heartP = 'M 0 12 C -30 -10 -22 -34 0 -20 C 22 -34 30 -10 0 12 Z';
+const hearts = Array.from({ length: 6 }, (_, i) => PA(heartP, ['#FF4D7A', '#FFD23F', '#FF4D7A'][i % 3], UI, { stroke: INK, 'stroke-width': 3 }));
+const heartsOn = { k: 1 };
+BM.everyFrame(t => hearts.forEach((h, i) => { const ph2 = ((t * .55 + i / 6) % 1), x = 990 + Math.sin(t * 2 + i * 1.7) * 26, y = 1420 - ph2 * 520;
+  h.setAttribute('transform', `translate(${x} ${y}) scale(${1.1 + ph2 * .5})`); h.setAttribute('opacity', heartsOn.k * (1 - ph2) * (t < 3.8 || (t > 6.1 && t < 8.9) ? 1 : 0)); }));
+/* comments */
+const comment = (at, dur, user, text, y = 1215, col = '#FFFFFF') => { const c = G({ opacity: 0 }, UI), w = Math.max(user.length, text.length) * 21 + 60;
+  R(40, y - 58, w, 104, '#000000', 22, c, { opacity: .55 }); TX(64, y - 18, user, 28, '#FFD23F', c, { 'text-anchor': 'start', 'font-weight': 800 });
+  TX(64, y + 26, text, 36, col, c, { 'text-anchor': 'start', 'font-weight': 800 });
+  tl.fromTo(c, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .15, ease: 'back.out(2)', immediateRender: false }, at); tl.set(c, { opacity: 0 }, at + dur); BM.sfx(at, 'pop', .35); return c; };
+/* bank alert banner */
+const bank = G({ opacity: 0 }, UI); R(40, 220, 1000, 190, '#FFFFFF', 30, bank, { stroke: INK, 'stroke-width': 6 });
+R(70, 252, 90, 90, '#1F7A45', 20, bank); TX(115, 316, '$', 64, '#FFFFFF', bank, AN);
+TX(186, 278, 'BANK ALERT  •  now', 28, '#6B6B6B', bank, { 'text-anchor': 'start', 'font-weight': 800 });
+TX(186, 330, 'Balance: $0.43', 46, INK, bank, { 'text-anchor': 'start', 'font-weight': 800 });
+TX(186, 380, 'Card declined: ROLEX STORE', 32, '#C8202F', bank, { 'text-anchor': 'start', 'font-weight': 800 });
+tl.fromTo(bank, { opacity: 1, y: -320 }, { opacity: 1, y: 0, duration: .22, ease: 'back.out(1.8)', immediateRender: false }, 8.5); tl.set(bank, { opacity: 0 }, 11.3);
+const uiShow = (at, on) => tl.set(UI, { opacity: on ? 1 : 0 }, at);
+/* white flash in screen space */
+const flash = R(0, 0, W, H, '#FFFFFF', 0, BM.S, { opacity: 0 }); GR._ov.push(flash);
+const flashAt = (at, d = .18) => tl.fromTo(flash, { opacity: 1 }, { opacity: 0, duration: d, ease: 'power2.out', immediateRender: false }, at);
+
+BM.cut(0, null, A);
+const MED = { x: 455, y: 1180, z: 1.62 }, MEDHI = { x: 470, y: 1030, z: 1.5 }, WIDE = { x: 540, y: 960, z: 1.05 };
+const cam = (at, c) => BM.setCam(A, at, c.x, c.y, c.z);
+
+/* ===== BEAT 1: the flex (livestream) ===== */
+cam(0, MED); GR.drift(A, 0, 1.6, .06);
+GR.expr(marco, 0, 'overconfident', { dur: .02 }); BM.sfx(.05, 'pop', .5);
+say(marco, L[0]);
+GR.cutTo(A, 1.6, marco, 'close'); GR.expr(marco, 1.6, 'smug'); GR.drift(A, 1.6, 1.6, .08);
+comment(2.1, 1.5, '@kev99', 'bro is that a poster');
+
+/* ===== GAG 1: the poster peels ===== */
+cam(3.2, MEDHI); GR.hold(marco, 3.2, 3.8);
+tl.fromTo(peelJ, { sx: 0, sy: 0 }, { sx: 1, sy: 1, duration: .2, ease: 'back.out(2)', onUpdate: peelJ.apply, immediateRender: false }, 3.25); tl.set(peel, { opacity: 1 }, 3.25);
+BM.sfx(3.25, 'paper', .9); BM.sfx(3.3, 'slide_down', .45);
+GR.react(marco, 3.8, 'caughtLying', { sc: A, shot: 'close', pop: .4 }); GR.backdrop(marco, 3.8, .7, 'speed', { col: '#FFD23F' }); BM.sfx(3.84, 'eyepop', .6);
+GR.hold(marco, 3.95, 4.7); viewers(3.9, 1); comment(4.0, .75, '@kev99', 'THE WALL IS MOLDY', 1215, '#FF8A8A');
+/* slap it back, fake smile */
+tl.set(peel, { opacity: 0 }, 4.75); BM.sfx(4.75, 'punch', .8); GR.jerk(marco, 4.75, 40, -10); BM.shake(A, 4.75, 14, .25);
+GR.expr(marco, 4.78, 'fakeSmile', { dur: .08 }); say(marco, L[1]);
+GR.drift(A, 4.8, 1.3, .07);
+
+/* ===== beat: money flex (calm before the bank) ===== */
+cam(6.1, MED); GR.expr(marco, 6.1, 'overconfident', { dur: .1 });
+say(marco, L[2]);
+comment(6.9, 1.7, '@landlady_bev', 'MARCO.', 1215);
+GR.cutTo(A, 7.5, marco, 'close'); GR.expr(marco, 7.5, 'smug'); GR.drift(A, 7.5, 1.4, .06);
+
+/* ===== GAG 2: bank alert on his own stream ===== */
+BM.sfx(8.5, 'notify', .9); BM.sfx(8.55, 'buzz', .45); GR.hold(marco, 8.3, 8.9);
+GR.react(marco, 8.9, 'panic', { sc: A, shot: 'ecu', pop: .5 }); GR.backdrop(marco, 8.9, 1.0, 'dread'); BM.sfx(8.95, 'eyepop', .7);
+GR.hold(marco, 9.05, 9.9); viewers(9.0, 2); comment(9.15, .8, '@kev99', '$0.43 LMAO', 1215);
+GR.cutTo(A, 9.95, marco, 'close'); GR.expr(marco, 9.95, 'fakeSmile', { dur: .08 }); say(marco, L[3]); GR.tremble(marco, 9.95, 11.3, .6);
+
+/* ===== GAG 3: knock knock -> REALITY ===== */
+[11.3, 11.58, 11.86].forEach(t => { BM.sfx(t, 'thud', 1.0); BM.shake(A, t, 8, .15); });
+GR.hold(marco, 11.3, 12.2); GR.drift(A, 11.3, .9, .18);
+const tR = 12.2;
+uiShow(tR, false); flashAt(tR); BM.sfx(tR, 'door', .9); BM.sfx(tR + .02, 'crash', .7);
+cam(tR, WIDE); tl.set(doorShut, { opacity: 0 }, tR);
+tl.fromTo(bev.root, { x: 260 }, { x: 0, duration: .25, ease: 'back.out(1.6)', onUpdate: bev.root.apply, immediateRender: false }, tR);
+GR.expr(bev, tR, 'judgmental', { dur: .02 });
+GR.expr(marco, tR, 'caughtLying', { dur: .05, hands: 'selfie' });
+GR.label(tR + .05, .85, 'REALITY', { bg: '#E8202F' });
+GR.react(bev, 12.95, 'angryMeltdown', { sc: A, shot: 'close' }); GR.backdrop(bev, 12.95, L[4].t1 - 12.95 + .05, 'rage');
+say(bev, L[4]); GR.tremble(bev, 13.0, L[4].t1, .8);
+/* the poster falls off */
+const tF = 14.8;
+cam(tF, WIDE); GR.expr(bev, tF, 'judgmental', { dur: .05 }); GR.expr(marco, tF, 'whatDidISee', { dur: .06, hands: 'selfie' });
+tl.to(posterJ, { y: 1700, r: 14, duration: .4, ease: 'power2.in', onUpdate: posterJ.apply }, tF + .02);
+BM.sfx(tF, 'paper', .9); BM.sfx(tF + .1, 'fall', .6); BM.sfx(tF + .38, 'crash', .6);
+/* triple escalation (rule of three, biggest faces) */
+const tE = 15.2, esc = ['panic', 'terrified', 'hystericalCry'], shots = ['close', 'ecu', 'close'], bds = ['rage', 'dread', 'burst'];
+GR.escalate(marco, tE, esc, .45);
+esc.forEach((n, i) => { GR.punch(A, tE + i * .45, marco, shots[i], { sfx: null }); GR.backdrop(marco, tE + i * .45, .45, bds[i], i === 2 ? { cols: ['#7FD3FF', '#3FB2EA'] } : {}); });
+GR.tearBurst(marco, tE + .9, 18.1);
+/* Bev: that's my phone */
+GR.cutTo(A, L[5].t0 - .05, bev, 'close'); GR.expr(bev, L[5].t0 - .05, 'judgmental', { hands: 'point' }); say(bev, L[5]); BM.sfx(L[5].t0 - .02, 'dun', .7);
+GR.hold(bev, L[5].t1, 17.65);
+/* Marco pivots back to the stream */
+GR.cutTo(A, 17.65, marco, 'close'); GR.expr(marco, 17.65, 'hystericalCry', { dur: .02 });
+uiShow(18.15, true); viewers(18.15, 3); tl.set(heartsOn, { k: 0 }, 18.15);
+GR.react(marco, 18.15, 'fakeSmile', { sfx: 'boing', antic: .08 });
+say(marco, L[6]); GR.tremble(marco, 18.15, 19.5, .7);
+tl.to(marco.P, { tears: 1, duration: .1 }, 18.2); tl.to(marco.P, { tears: 0, duration: .2 }, 19.5);
+comment(18.6, .85, '@landlady_bev', 'give me my phone', 1215);
+
+/* ===== PUNCHLINE: the face, held ===== */
+const tp = 19.55;
+GR.react(marco, tp, 'deadInside', { sc: A, shot: 'ecu', sfx: 'dun', smear: false }); GR.backdrop(marco, tp, DUR - tp, 'dread', { col: '#2B0F3A' });
+GR.hold(marco, tp + .2, DUR); GR.drift(A, tp + .2, DUR - tp - .2, .25);
+GR.meme(tp + .15, DUR - tp, 'POV: THE PENTHOUSE HAS A LANDLADY', { pos: 'bottom', size: 92, y: 1480 });
+BM.sfx(tp + .4, 'trombone', .85); BM.sfx(tp + 1.5, 'cricket', .45, 1.0);
+
+BM.music(0, 11.3, 'hype', .5);
+BM.music(12.2, 18.15, 'drama', .55);
+BM.music(18.15, DUR, 'sad', .5);
+BM.finish();
+});
+</script>
+</body>
+</html>

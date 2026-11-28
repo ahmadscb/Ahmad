@@ -1,0 +1,29 @@
+{
+ "name": "fake-rich",
+ "status": "ok",
+ "exit": 0,
+ "mp4": "projects/fake-rich/out/fake-rich.mp4",
+ "qc": "spec: h264|1080|1920|yuv420p|30/1|660 22.000000 \nblack stretches (>0.15 s): 0\nfrozen stretches (>1.2 s) start at: none\nloudness: -14.1 LUFS, true peak -1.3 dBTP\n",
+ "render_metrics": {
+  "mode": "watchdog",
+  "cores_allowed": 3,
+  "mem_cap": "6G",
+  "wall_s": 314.8,
+  "peak_rss_mb": 765,
+  "peak_cpu_pct": 296,
+  "exit": 0
+ },
+ "agent": {
+  "turns": 41,
+  "wall_s": 777,
+  "cost_usd_equivalent": 2.6222156,
+  "is_error": false,
+  "tool_calls": {
+   "Bash": 20,
+   "Read": 11,
+   "Write": 3,
+   "Edit": 5
+  },
+  "final_report": "The video is finished, QC passes on the first render, and the frames pulled from the MP4 look right.\n\n**MP4:** `/home/user/Ahmad/motion-studio/projects/fake-rich/out/fake-rich.mp4`\n- **Length and format:** 22.0 s, 1080\u00d71920, 30 fps, H.264/AAC.\n- **QC (`out/qc.txt`):** spec OK, 0 black stretches, no frozen stretches longer than 1.2 s, loudness \u221214.1 LUFS with true peak \u22121.3 dBTP.\n- **Render metrics (`out/render-metrics.json`):** 314.8 s wall time, peak RAM 765 MB, peak CPU 296% on 3 cores (6 GB cap), exit 0.\n- **Sound:** 37 sound effects and 3 music sections (hype \u2192 drama \u2192 sad). Voices are local Piper (CC BY 4.0) with lip-sync.\n\n**Story.** Marco, the broke guy, is livestreaming as `@marco.billionaire` and gets exposed three times, each worse than the last:\n1. **The poster peels.** His \"PARADISE LIVING\" sea-view poster peels at the corner and shows a mouldy wall. He snaps to a caught-lying face, slaps the poster back and says \"Ocean view, baby.\"\n2. **The bank alert.** A bank alert pops up on his own stream: balance $0.43, card declined at the Rolex store. He snaps to a panic face in extreme close-up, then says \"That's... my other account.\"\n3. **The landlady.** After three knocks there's a flash cut to REALITY: a tiny room, a laundry line and noodle cups. His landlady Bev bursts in yelling \"Three months rent!\" The poster falls and shows a FINAL NOTICE behind it. Marco's face escalates panic \u2192 terrified \u2192 hysterical crying. Bev adds \"And that's my phone.\"\n4. **Ending.** Crying, he says \"Like and subscribe\" to 0 viewers. It ends on an extreme close-up of his dead eyes with the caption \"POV: THE PENTHOUSE HAS A LANDLADY\", a trombone and crickets.\n\nViewer comments plant the jokes early (\"bro is that a poster\", \"@landlady_bev: MARCO.\"), and the viewer count drops 3 \u2192 2 \u2192 1 \u2192 0.\n\n**What I fixed during inspection:**\n- Viewer comments overlapped the three-line subtitles, so I moved them up from y\u22481430 to y\u22481215.\n- The $4.99 price sticker covered the \"P\" of PARADISE, and later peeked out next to the LIVE badge in medium shots. I moved it twice until it only shows in the wide reality shots.\n- I removed an emoji from a comment, because it might not render.\n\n**Quality gate (all yes):**\n1. **Readable at phone size within 0.5 s from the face alone?** Yes. Each reaction is a full-face snap with a matching backdrop (speed lines, dread, rage, burst).\n2. **Do the faces actually deform?** Yes. Eyes bulge to different sizes, jaws drop, mouths go to a rectangular grimace or a crooked fake grin, tears pour, and the dead-eyed ending face has heavy eye bags. In the frames I checked, every reaction moved the jaw, eyes and mouth, not just the brows.\n3. **At least half close-ups, at least three snap reactions?** Yes. About 78% of the runtime is close-ups or extreme close-ups. There are 8 snap reactions:\n\n| Time | Who | Reaction |\n|---|---|---|\n| 3.8 s | Marco | caught lying |\n| 8.9 s | Marco | panic (extreme close-up) |\n| 12.95 s | Bev | angry meltdown |\n| 15.2 / 15.65 / 16.1 s | Marco | panic \u2192 terrified \u2192 hysterical crying |\n| 18.15 s | Marco | fake smile |\n| 19.55 s | Marco | dead inside |\n\n   Wide shots last at most 0.75 s.\n4. **A calm normal beat before each absurd face?** Yes:\n   - a smug hold before the poster peels;\n   - a smug close-up before the bank alert;\n   - his fake smile frozen through the three knocks before reality;\n   - Bev's judgmental stare before her meltdown.\n5. **Ends on a face punchline held at least 1 s?** Yes. The dead-eyes extreme close-up holds for 2.45 s with the caption and closing sound.\n6. **Nothing cute or plain on screen?** Yes. Both characters hold strong attitudes the whole time and never sit at a neutral face.\n\nEverything is in `projects/fake-rich/` (`brief.json`, `dialogue.json`, `voice/`, `index.html`, `out/`). The library was not touched and nothing was published."
+ }
+}

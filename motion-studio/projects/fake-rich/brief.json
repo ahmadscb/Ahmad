@@ -1,0 +1,53 @@
+{
+  "name": "fake-rich",
+  "prompt": "Create a 22-second vertical 9:16 comedy video: a broke guy acts luxurious online (fake rich selfie video), then reality exposes him. Expressions are the main source of comedy; include close-up reaction shots.",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "duration_s": 22, "platforms": ["instagram-reels", "tiktok"] },
+  "type": "cartoon-comedy",
+  "style": "grotesque",
+  "template": "grotesque",
+  "language": { "primary": "en", "rtl": false },
+  "message": {
+    "hook": "LIVE selfie stream: 'Morning, peasants. Just woke up in my penthouse.'",
+    "key_points": ["The penthouse is a $4.99 poster taped over a moldy wall", "His bank balance is $0.43", "His landlady wants three months rent, and the phone is hers too"],
+    "cta": "Like and subscribe (through tears)"
+  },
+  "cast": [
+    { "id": "marco", "lib": "BM.GR", "role": "broke guy acting rich (base: overconfident). Streams from a tiny moldy room in front of a sea-view poster." },
+    { "id": "bev", "lib": "BM.GR", "role": "his judgmental landlady in curlers (base: judgmental). Bursts in at the reality switch." }
+  ],
+  "sets": [
+    { "id": "room", "desc": "Custom SVG: tiny dirty room (mouldy olive wall, cracks, bare bulb, laundry line, noodle cups, pizza box, door on the right). A big 'paradise' poster (sky, sea, yacht, palm, sun, $4.99 sticker) taped behind Marco; behind it a FINAL NOTICE eviction letter." },
+    { "id": "live-ui", "desc": "Screen-space phone livestream UI: LIVE pill, viewer count (3 -> 2 -> 1 -> 0), @marco.billionaire handle, floating hearts, viewer comments, bank alert banner. Hidden during the REALITY section." }
+  ],
+  "props": ["sea-view poster (peeling corner, full fall)", "FINAL NOTICE letter", "door", "instant noodle cups", "laundry line", "bare bulb", "selfie phone (GR.hands selfie)", "bank alert banner"],
+  "style_brief": "Sarcastic Grotesque: face-first reaction-meme comedy. Thick #16110E ink outlines, muted dirty colours for the room, saturated fake-luxury poster. Anton meme subtitles with per-speaker highlight. Contrast: glossy fake-rich livestream UI vs ugly reality. Hard cuts, snap zooms, reaction backdrops (speed, dread, rage, burst), flash cut into REALITY.",
+  "storyboard": [
+    { "t0": 0.0, "t1": 1.6, "shot": "SETUP: livestream medium", "visual": "LIVE UI, hearts; Marco overconfident in front of the paradise poster", "camera": "medium, slow creep", "text": "Morning, peasants. Just woke up in my penthouse.", "sfx": ["pop"], "music": "hype" },
+    { "t0": 1.6, "t1": 3.2, "shot": "close", "visual": "Marco smug, finishing the line; comment 'bro is that a poster'", "camera": "hard cut close", "sfx": ["notify"] },
+    { "t0": 3.2, "t1": 3.8, "shot": "medium (calm beat)", "visual": "smug hold; poster top-right corner peels down revealing mould", "camera": "hard cut medium-high", "sfx": ["paper", "slide_down"] },
+    { "t0": 3.8, "t1": 4.75, "shot": "SNAP #1 close", "visual": "caughtLying + eye pop, speed-lines backdrop, viewers 3->2, comment 'THE WALL IS MOLDY'", "camera": "GR.punch close", "sfx": ["boom", "zoom_in"] },
+    { "t0": 4.75, "t1": 6.1, "shot": "close", "visual": "slaps poster back; fakeSmile with twitch: 'Ocean view, baby.'", "camera": "close", "sfx": ["punch"] },
+    { "t0": 6.1, "t1": 7.5, "shot": "medium", "visual": "overconfident thumbs up: 'Money is not a problem for me.'; comment '@landlady_bev: MARCO.' (setup for the payoff)", "camera": "medium", "sfx": ["notify"] },
+    { "t0": 7.5, "t1": 8.9, "shot": "close (calm)", "visual": "smug hold; bank alert drops in: Balance $0.43, Declined: ROLEX STORE", "camera": "close, frozen face", "sfx": ["notify", "buzz"] },
+    { "t0": 8.9, "t1": 9.95, "shot": "SNAP #2 ECU", "visual": "panic eye pop, dread backdrop, viewers 2->1, comment '$0.43 LMAO'", "camera": "GR.punch ecu", "sfx": ["boom", "eyepop"] },
+    { "t0": 9.95, "t1": 11.3, "shot": "close", "visual": "fakeSmile, trembling, sweating: 'That's... my other account.'", "camera": "close", "sfx": [] },
+    { "t0": 11.3, "t1": 12.2, "shot": "close comedic hold", "visual": "three knocks; the fake smile freezes", "camera": "creep-in drift", "sfx": ["thud x3"], "music": "silence" },
+    { "t0": 12.2, "t1": 12.95, "shot": "REALITY wide", "visual": "flash, UI gone, label REALITY: tiny moldy room, Marco holding phone, Bev bursts through the door", "camera": "wide", "sfx": ["door", "crash"], "music": "drama" },
+    { "t0": 12.95, "t1": 14.8, "shot": "SNAP #3 Bev close", "visual": "Bev angryMeltdown, rage backdrop: 'Marco! Three months rent!'", "camera": "GR.punch close", "sfx": ["boom"] },
+    { "t0": 14.8, "t1": 15.2, "shot": "wide", "visual": "the poster falls off the wall, FINAL NOTICE revealed", "camera": "wide", "sfx": ["paper", "fall", "crash"] },
+    { "t0": 15.2, "t1": 16.4, "shot": "SNAP #4-6 escalation", "visual": "Marco panic -> terrified -> hystericalCry (rule of three, biggest faces), tear fountains", "camera": "close / ecu / close punches, rage/dread/burst backdrops", "sfx": ["boom", "punch", "boom", "gasp"] },
+    { "t0": 16.4, "t1": 17.6, "shot": "Bev close", "visual": "judgmental pucker, pointing: 'And that's my phone.'", "camera": "hard cut close", "sfx": ["dun"] },
+    { "t0": 17.6, "t1": 19.5, "shot": "close", "visual": "Marco crying; SNAP to a desperate fakeSmile, LIVE UI back with 0 viewers: 'Like and subscribe.'", "camera": "close", "sfx": ["boing"], "music": "sad" },
+    { "t0": 19.5, "t1": 22.0, "shot": "PUNCHLINE ECU", "visual": "deadInside eyes, held, meme caption POV: THE PENTHOUSE HAS A LANDLADY", "camera": "GR.punch ecu + drift", "text": "POV: THE PENTHOUSE HAS A LANDLADY", "sfx": ["dun", "trombone", "cricket"] }
+  ],
+  "gags": [
+    { "t": 3.25, "gag": "poster corner peels: setup -> peel -> snap caughtLying -> hold -> slap it back + fake smile" },
+    { "t": 8.5, "gag": "bank alert $0.43 on his own livestream: calm hold -> snap ECU panic -> 'my other account'" },
+    { "t": 12.2, "gag": "knock knock -> flash to REALITY -> landlady, poster falls, triple escalation, 'that's my phone'" },
+    { "t": 19.5, "gag": "punchline face: dead eyes after 'like and subscribe', 0 viewers, meme caption" }
+  ],
+  "narration": { "enabled": true, "provider": "piper", "voice": "tools/voice.py cast voices (marco, bev)", "script": "dialogue.json", "allow_paid": false },
+  "music": { "sections": [{ "t0": 0, "t1": 11.3, "style": "hype", "gain": 0.5 }, { "t0": 12.2, "t1": 18.15, "style": "drama", "gain": 0.55 }, { "t0": 18.15, "t1": 22, "style": "sad", "gain": 0.5 }] },
+  "qc": { "times": [0.8, 2.4, 3.5, 4.2, 5.4, 6.9, 8.6, 9.3, 10.6, 11.8, 12.6, 13.6, 14.95, 15.9, 16.9, 18.8, 20.5, 21.7], "checks": ["no clipped text", "no overlap", "character on model", "no frozen > 1.2 s", "loudness -14 LUFS", ">=50% close-ups", ">=3 snap reactions"] },
+  "publish": { "enabled": false, "_note": "Publishing is intentionally not wired. Human review first." }
+}
