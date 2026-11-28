@@ -1,0 +1,29 @@
+{
+ "name": "employee-pretends",
+ "status": "ok",
+ "exit": 0,
+ "mp4": "projects/employee-pretends/out/employee-pretends.mp4",
+ "qc": "spec: h264|1080|1920|yuv420p|30/1|900 30.000000 \nblack stretches (>0.15 s): 0\nfrozen stretches (>1.2 s) start at: none\nloudness: -15.0 LUFS, true peak -1.3 dBTP\n",
+ "render_metrics": {
+  "mode": "watchdog",
+  "cores_allowed": 3,
+  "mem_cap": "6G",
+  "wall_s": 68.6,
+  "peak_rss_mb": 787,
+  "peak_cpu_pct": 198,
+  "exit": 0
+ },
+ "agent": {
+  "turns": 50,
+  "wall_s": 779,
+  "cost_usd_equivalent": 3.0333152000000005,
+  "is_error": false,
+  "tool_calls": {
+   "Bash": 25,
+   "Read": 8,
+   "Write": 3,
+   "Edit": 12
+  },
+  "final_report": "The 30-second video is finished and passes QC.\n\n**MP4:** `projects/employee-pretends/out/employee-pretends.mp4`\n- 1080\u00d71920, 30 fps, H.264, yuv420p, 30.0 s (900 frames). The audio mixes 64 sound effects, the `sneaky` music track and the local voice track.\n\n**The story** (cartoon style; cast: Dave the employee, Omar the manager, Rex the CEO):\n1. **9:00 AM:** Dave is laughing at \"CAT FAILS #47\". He hears footsteps, the screen flips to a spreadsheet and he types frantically, with a snap zoom on his face. Omar: \"Morning, Dave.\" Dave: \"Crunching numbers, boss!\" Omar leaves and the cat video comes back.\n2. **11:00 AM:** Dave is asleep (zzz). Footsteps, a gasp, and he snaps into a thinking pose. Omar: \"Deep in thought?\" Dave, smugly: \"Visualizing synergy.\" Omar gets a \"?\" and shrugs.\n3. **4:59 PM (the third gag breaks the pattern):** Dave slaps the monitor off (\"CLICK!\") and types furiously. Omar, deadpan: \"Dave. Your monitor is off.\" The camera snaps onto the black screen, crickets chirp. Dave: \"It's a power saving spreadsheet.\"\n4. **Twist:** heavy footsteps as Rex walks past. Omar jumps, points at the dead screen and says \"Crunching numbers, sir!\"\n5. **End card:** a comic-panel slam into \"EVERYONE'S BUSY.\", with Omar and Dave laughing at the cat video together, then a rimshot.\n\nThe script, storyboard and shot list are in `projects/employee-pretends/brief.json`, and the dialogue is in `projects/employee-pretends/dialogue.json`. Shot timing follows `voice/dialog.json`, and subtitles highlight each speaker's words in their own colour.\n\n**QC** (`out/qc.txt`):\n- Size, frame rate and codec are all correct.\n- No black stretches and no frozen stretches.\n- Loudness is \u221215.0 LUFS with a true peak of \u22121.3 dBTP. That is 1 LU under the \u221214 target; `qc.sh` doesn't flag it as a failure.\n\n**Render metrics** (`out/render-metrics.json`, final render): 68.6 s wall time, 787 MB peak memory, 198% peak CPU (3 cores allowed), exit 0.\n\n**What I fixed after looking at the frames:**\n- **Wide shot too loose:** I reframed it tighter (zoom 1.12 \u2192 1.24) so the characters read bigger. That clipped Omar at the left edge, so I moved his standing mark 40 px right.\n- **Monitor slap:** Dave used the wrong arm. He now reaches with the arm on the monitor's side and hits the power button.\n- **Omar's pointing:** in the twist he seemed to grab Rex. He now points down at Dave's screen. I also dropped his other arm, which stayed raised after he jumped.\n- **Leftover \"?\":** Omar's confused \"?\" from gag 2 was still showing when he walked into gag 3. It's cleared now.\n- **End card:** the characters sat too low and were hidden. I raised them and replaced the typing with both of them laughing at the cat video.\n- **First render crashed in the sound step:** the cricket effect produces nothing at its default 0.5 s length. I gave it 1.45 s.\n\nI checked frames from the final MP4 at 1.5 s intervals, plus single frames at 18.1 s, 26.4 s and 29.0 s. I made no edits outside `projects/employee-pretends/`, and nothing was published.\n\nOne thing outside my work: during the session I was notified that `lib/characters.js` changed on disk. I didn't touch it, and my request to check it with git was denied, so I don't know what changed. The final render used whatever version is there now.\n\nCredit line for any description: \"Voices: Piper / LibriTTS-R (CC BY 4.0)\"."
+ }
+}

@@ -64,6 +64,6 @@ export function productStage(canvas, o = {}) {
     turntable(at, dur, turns = 1) { tl().to(S, { spin: '+=' + Math.PI * 2 * turns, duration: dur, ease: 'none' }, at); },
     orbit(at, dur, { x = S.camX, y = S.camY, z = S.camZ, lookY = S.lookY, ease = 'power2.inOut' } = {}) { tl().to(S, { camX: x, camY: y, camZ: z, lookY, duration: dur, ease }, at); },
     sweepLight(at, dur = 1.6, I = 40) { tl().to(S, { keyframes: [{ sweepX: -6, sweepI: 0, duration: .001 }, { sweepI: I, duration: dur * .2 }, { sweepX: 6, duration: dur * .6, ease: 'none' }, { sweepI: 0, duration: dur * .2 }] }, at); },
-    reveal(at, dur = 2, exp = 1.05) { tl().fromTo(S, { exp: 0 }, { exp, duration: dur, ease: 'power2.out', immediateRender: false }, at); tl().set(S, { exp: 0 }, 0); } };
+    reveal(at, dur = 2, exp = 1.05, from = 0) { tl().fromTo(S, { exp: from }, { exp, duration: dur, ease: 'power2.out', immediateRender: false }, at); tl().set(S, { exp: from }, 0); } };
   return api;
 }

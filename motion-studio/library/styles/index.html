@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion Studio: six styles</title>
+<!-- Style showcase: the same engine, six artistic identities (4 s each). Not a palette swap: each segment uses its pack's
+     typography, composition, easing/timing, character render mode, components, transition and music. -->
+<style>
+@font-face{font-family:Inter;font-weight:200;src:url(../../vendor/fonts/inter-latin-200-normal.woff2)}
+@font-face{font-family:Inter;font-weight:300;src:url(../../vendor/fonts/inter-latin-300-normal.woff2)}
+@font-face{font-family:Inter;font-weight:500;src:url(../../vendor/fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:Inter;font-weight:600;src:url(../../vendor/fonts/inter-latin-600-normal.woff2)}
+@font-face{font-family:Inter;font-weight:700;src:url(../../vendor/fonts/inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+@font-face{font-family:Fredoka;font-weight:700;src:url(../../vendor/fonts/fredoka-latin-700-normal.woff2)}
+@font-face{font-family:Bangers;src:url(../../vendor/fonts/bangers-latin-400-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#050507;font-family:Inter,sans-serif}
+#gl,#scene{position:absolute;inset:0}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="gl" width="1080" height="1920"></canvas><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/characters.js"></script>
+<script src="../../lib/world.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script type="importmap">{ "imports": { "three": "../../vendor/three/three.module.js", "three/addons/": "../../vendor/three/addons/" } }</script>
+<script type="module">
+import { productStage } from '../../lib/product3d.js';
+await Promise.all(['200 40px Inter', '300 40px Inter', '500 40px Inter', '700 40px Inter', '800 40px Inter', '700 40px Fredoka', '40px Bangers'].map(f => document.fonts.load(f)));
+const { G, R, CI, PA, LN, TX, CH, ENV, PROP, CAM, TR, CAP, STYLE: ST } = BM, W = 1080, H = 1920, DUR = 24;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+const tag = (p, at, text, col, font, o = {}) => { const t = TX(W / 2, 150, text, o.size || 44, col, p, { 'font-family': font, 'font-weight': o.w || 700, 'letter-spacing': o.ls || 0, opacity: 0 }); BM.show(t, at, .3); return t; };
+
+/* ===== 1. CARTOON (0-4): bouncy, character-led, punch zoom, Fredoka ===== */
+let s = ST.use('cartoon');
+const A = BM.scene('cartoon'), a = ENV.park(A.g); Object.assign(A.cam, { x: 540, y: 1130, z: 1.1 }); A.apply(); BM.cut(0, null, A);
+const zara = CH.make(A.g, 'zara', 330, a.floorY, 1.05), leo = CH.make(A.g, 'leo', 760, a.floorY, 1.1);
+CH.idle(zara, 0, 4); CH.idle(leo, 0, 4); CH.expr(leo, .5, 'ecstatic'); CH.celebrate(leo, .6); BM.sfx(.72, 'boing', .7); BM.sfx(1.45, 'boing', .5);
+BM.say(zara, 1.2, 2.6, 'Did you just win?!', { bubble: true }); CH.expr(zara, 1.2, 'shock'); CH.pose(zara, 1.2, 'point', .3);
+CAM.punch(A, 2.7, 330, 900, 1.5, .6, { x: 540, y: 1130, z: 1.1 }); CH.expr(zara, 2.7, 'starstruck'); BM.sfx(2.7, 'pop', .8);
+tag(A.g, .2, '1 · FUNNY 2D CARTOON', '#1E1B2E', s.font);
+BM.music(0, 4, 'cartoon', .7);
+
+/* ===== 2. PREMIUM (4-8): dark void, mask-reveal kinetic type, glass card, expo easing ===== */
+const B = BM.scene('premium'); s = ST.premium; Object.assign(B.cam, { x: 540, y: 960, z: 1.05 }); B.apply();
+R(-200, -200, W + 400, H + 400, s.pal.bg, 0, B.g); s.glow(B.g, 860, 520, 520, s.pal.b); s.glow(B.g, 160, 1500, 460, s.pal.a);
+for (let i = 0; i < 7; i++) LN(`M ${120 + i * 140} 0 L ${120 + i * 140} 1920`, '#FFFFFF', 1, B.g, { opacity: .05 });
+s.headline(B.g, 4.4, 540, 820, 'Make it', 140); s.headline(B.g, 4.6, 540, 970, 'unforgettable.', 118, { color: s.pal.a });
+const card = s.glassCard(B.g, 140, 1180, 800, 300); TX(180, 1290, '+312%', 110, s.pal.ink, card, { 'text-anchor': 'start', 'font-weight': 800, 'letter-spacing': -4 });
+TX(185, 1350, 'average watch time on launch reels', 34, s.pal.ink, card, { 'text-anchor': 'start', 'font-weight': 300, opacity: .7 });
+BM.tl.fromTo(card, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', immediateRender: false }, 5.3); BM.tl.set(card, { opacity: 0 }, 0);
+CAM.push(B, 4, 1.13, 4, 'power1.inOut'); tag(B.g, 4.2, '2 · PREMIUM MOTION GRAPHICS', s.pal.ink, 'Inter', { w: 600, ls: 6, size: 34 });
+TR.cut(3.85, A, B, 'flash', .3); BM.sfx(4.4, 'hit', .7); BM.sfx(5.3, 'swell', .5, 1); BM.music(4, 8, 'pulse', .8);
+
+/* ===== 3. EDU (8-12): paper, line-mode character, diagrams drawn on, calm sine timing ===== */
+const C = BM.scene('edu'); s = ST.use('edu'); Object.assign(C.cam, { x: 540, y: 960, z: 1.05 }); C.apply();
+R(-200, -200, W + 400, H + 400, s.pal.bg, 0, C.g);
+const grace = CH.make(C.g, 'grace', 830, 1700, .9, { mode: 'line' }); CH.idle(grace, 8, 12); CH.pose(grace, 8.4, 'presenter', .6); BM.say(grace, 8.6, 10.4, 'Water moves in a cycle.', {});
+const cx = 640, cy = 820, rr = 260; ['Evaporation', 'Condensation', 'Precipitation'].forEach((lab, i) => { const a0 = -Math.PI / 2 + i * 2 * Math.PI / 3, a1 = a0 + 2 * Math.PI / 3 - .35;
+  s.drawOn(LN(`M ${cx + Math.cos(a0) * rr} ${cy + Math.sin(a0) * rr} A ${rr} ${rr} 0 0 1 ${cx + Math.cos(a1) * rr} ${cy + Math.sin(a1) * rr}`, s.pal.ink, 6, C.g), 8.5 + i * .7, .7);
+  const hx = cx + Math.cos(a1) * rr, hy = cy + Math.sin(a1) * rr, ta = a1 + Math.PI / 2; const head = PA(`M ${hx + Math.cos(ta) * 26} ${hy + Math.sin(ta) * 26} L ${hx + Math.cos(ta + 2.5) * 22} ${hy + Math.sin(ta + 2.5) * 22} L ${hx + Math.cos(ta - 2.5) * 22} ${hy + Math.sin(ta - 2.5) * 22} Z`, s.pal.ink, C.g); BM.show(head, 9.1 + i * .7, .2);
+  s.step(C.g, 9 + i * .7, 150, 1250 + i * 100, i + 1, lab); });
+const sun = CI(cx, cy, 70, 'none', C.g, { stroke: s.pal.c, 'stroke-width': 6 }); s.drawOn(sun, 8.3, .8); TX(cx, cy + 14, 'H₂O', 44, s.pal.a, C.g, { 'font-weight': 500 });
+tag(C.g, 8.2, '3 · MINIMAL EDUCATIONAL', s.pal.ink, 'Inter', { w: 500, ls: 4, size: 34 });
+TR.cut(7.7, B, C, 'dip', .6); BM.sfx(8.5, 'paper', .4); BM.music(8, 12, 'edu', .7);
+
+/* ===== 4. COMIC (12-16): panels, ink outlines, halftone, Bangers, slam + burst ===== */
+const D = BM.scene('comic'); s = ST.use('comic'); Object.assign(D.cam, { x: 540, y: 960, z: 1.05 }); D.apply();
+R(-200, -200, W + 400, H + 400, '#111', 0, D.g);
+const p1 = s.panel(D.g, 40, 120, 1000, 640, 18, { bg: '#FFE7A8' }), p2 = s.panel(D.g, 40, 800, 480, 620, -14, { bg: '#BDE4FF' }), p3 = s.panel(D.g, 560, 800, 480, 620, 14, { bg: '#FFC2C8' });
+s.halftone(p1.content, '#E63946', .25); s.halftone(p2.content, '#1D9BF0', .25); s.halftone(p3.content, '#E63946', .25); s.speedLines(p1.content, 540, 470, 46);
+const rex = CH.make(p1.content, 'rex', 540, 1180, 1.25, { mode: 'ink' }); CH.expr(rex, 12, 'furious'); CH.pose(rex, 12.3, 'point', .2);
+const kenji = CH.make(p2.content, 'kenji', 280, 1500, .95, { mode: 'ink' }); CH.expr(kenji, 13.2, 'scared'); CH.pose(kenji, 13.2, 'hideFace', .2);
+const maya = CH.make(p3.content, 'maya', 800, 1500, .95, { mode: 'ink' }); CH.expr(maya, 14, 'smug'); CH.pose(maya, 14, 'crossArms', .2);
+[p1, p2, p3].forEach((pn, i) => { BM.tl.fromTo(pn.g, { opacity: 0, x: (i % 2 ? 1 : -1) * 200 }, { opacity: 1, x: 0, duration: .2, ease: 'power4.out', immediateRender: false }, 12.1 + i * .8); BM.tl.set(pn.g, { opacity: 0 }, 0); BM.sfx(12.1 + i * .8, 'punch', .7); });
+s.caption(D.g, 12.3, 70, 150, 'Meanwhile, at HQ...'); CAP.burst(D.g, 12.6, 820, 340, 'KAPOW!', { r: 190 }); CAP.sub(13.2, 15.6, 'Who ate my lunch?!');
+{ const t = TX(540, 1560, '4 · COMIC BOOK', 76, '#FFE14D', D.g, { 'font-family': 'Bangers', 'letter-spacing': 3, opacity: 0 }); BM.show(t, 12.4, .2); }
+TR.cut(11.7, C, D, 'slam', .55); CAM.push(D, 12, 1.12, 4, 'none'); CAM.handheld(D, 12, 16, 5); BM.music(12, 16, 'hype', .7);
+
+/* ===== 5. INFOGRAPHIC (16-20): navy grid, counters, bars, donut, pictogram, source ===== */
+const E = BM.scene('infographic'); s = ST.use('infographic'); Object.assign(E.cam, { x: 540, y: 960, z: 1.05 }); E.apply();
+R(-200, -200, W + 400, H + 400, s.pal.bg, 0, E.g); for (let y = 0; y < 1920; y += 96) LN(`M 0 ${y} L 1080 ${y}`, s.pal.grid, 2, E.g);
+TX(540, 330, 'Short video, by the numbers', 46, s.pal.ink, E.g, { 'font-weight': 700 });
+s.counter(E.g, 16.3, 540, 520, 2.4, { dec: 1, suffix: 'M', size: 190, color: s.pal.a }); TX(540, 590, 'reels watched every minute', 34, s.pal.ink, E.g, { opacity: .75, 'font-weight': 400 });
+s.bars(E.g, 16.8, 120, 1080, 480, 360, [38, 61, 74, 92], { labels: ['2023', '2024', '2025', '2026'] });
+s.donut(E.g, 17.3, 820, 900, 150, 68); TX(820, 1110, 'watch with sound', 30, s.pal.ink, E.g, { opacity: .75, 'font-weight': 400 });
+s.pictogram(E.g, 18, 180, 1300, 10, 10, 7, { s: 76 }); TX(540, 1500, '7 in 10 viewers finish a 30-second reel', 36, s.pal.ink, E.g, { 'font-weight': 600 });
+s.source(E.g, 'Illustrative figures for the style demo');
+tag(E.g, 16.1, '5 · ANIMATED INFOGRAPHIC', s.pal.b, 'Inter', { w: 800, ls: 4, size: 34 });
+TR.cut(15.7, D, E, 'wipe', .6); CAM.push(E, 16, 1.12, 4, 'sine.inOut'); BM.sfx(16.3, 'tick', .6); BM.sfx(16.8, 'swoosh', .5); BM.music(16, 20, 'corporate', .7);
+
+/* ===== 6. PRODUCT 3D (20-24): PBR watch, turntable, light sweep, thin wide-tracked type ===== */
+const F = BM.scene('product'); s = ST.use('product3d'); Object.assign(F.cam, { x: 540, y: 960, z: 1.05 }); F.apply();
+const P3 = productStage(document.getElementById('gl'), { shape: 'watch', color: 0xc9a46a, rough: .16, dial: 0x0b1626, showFloor: false });
+Object.assign(P3.S, { camZ: 8, camY: .5, lookY: .1, rx: -.12, spin: -.9 }); P3.reveal(20, 1.5, 1.5, .35); P3.turntable(20, 4, .14); P3.orbit(20, 4, { z: 6.2, y: .2 }); P3.sweepLight(21.2, 1.8, 30);
+BM.everyFrame(t => { if (t >= 19.9) P3.render(t); });
+s.tracking(F.g, 20.8, 540, 1500, 'Chrono One', 58); s.tracking(F.g, 21.6, 540, 1570, 'Time, refined.', 30, { color: s.pal.a, weight: 300 });
+tag(F.g, 20.2, '6 · CINEMATIC 3D PRODUCT AD', s.pal.ink, 'Inter', { w: 300, ls: 10, size: 30 });
+TR.cut(19.7, E, F, 'dip', .5, '#1C2433'); BM.sfx(20.2, 'sub_drop', .8); BM.sfx(21.2, 'glint', .7); BM.music(20, 24, 'product', .8);
+BM.finish();
+</script>
+</body>
+</html>

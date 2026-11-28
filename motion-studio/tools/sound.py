@@ -84,7 +84,7 @@ FX = {
  'door':    lambda d: norm(fit(osc(120 + 30 * np.sin(2 * np.pi * 2 * tt(.6)), .6, 'saw') * env(.6, .05, .2) * .3, .9) + fit(np.concatenate([np.zeros(int(.6 * SR)), sweep(90, 40, .3) * np.exp(-tt(.3) * 12)]), .9), .6),
  'notify':  lambda d: norm(fit(bell(hz(91), .5, 6), .7) + .8 * fit(np.concatenate([np.zeros(int(.12 * SR)), bell(hz(96), .5, 6)]), .7), .35),
  'rimshot': lambda d: norm(fit(np.concatenate([snare() * .8, np.zeros(int(.12 * SR)), snare() * .8, np.zeros(int(.1 * SR)), hp(noise(.8), 5000) * np.exp(-tt(.8) * 4)]), 1.5), .6),
- 'cricket': lambda d: norm(sum(fit(np.concatenate([np.zeros(int(k * .7 * SR)), osc(4600, .2) * (np.sin(2 * np.pi * 30 * tt(.2)) > 0) * env(.2, .01, .05)]), d) for k in range(int(d / .7))), .15),
+ 'cricket': lambda d: (lambda d: norm(sum(fit(np.concatenate([np.zeros(int(k * .7 * SR)), osc(4600, .2) * (np.sin(2 * np.pi * 30 * tt(.2)) > 0) * env(.2, .01, .05)]), d) for k in range(max(1, int(d / .7)))), .15))(max(d, 1.5)),
  'drumroll': lambda d: norm(bp(noise(d), 300, 5000) * (.6 + .4 * np.sin(2 * np.pi * 28 * tt(d))) * (tt(d) / d + .3) * env(d, .05, .05), .45),
  'zip':     lambda d: norm(sweep(300, 2600, .22, 'saw', .5) * env(.22, .005, .05), .25),
  'gulp':    lambda d: norm(sweep(500, 180, .18) * np.exp(-tt(.18) * 12) + fit(np.concatenate([np.zeros(int(.16 * SR)), sweep(380, 160, .14) * np.exp(-tt(.14) * 14)]), .18), .45),

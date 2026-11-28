@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Employee Pretends</title>
+<!-- employee-pretends: Dave pretends to work every time his manager Omar walks past. Rule of three (cat video /
+     nap / monitor off), then the twist: the CEO walks past and Omar does the same thing. Built from the library. -->
+<style>
+@font-face{font-family:Fredoka;font-weight:700;src:url(../../vendor/fonts/fredoka-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+@font-face{font-family:Bangers;src:url(../../vendor/fonts/bangers-latin-400-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#F3E6CF;font-family:Fredoka,Inter,sans-serif}
+svg text{font-family:Fredoka,Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/characters.js"></script>
+<script src="../../lib/world.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="voice/dialog.js" onerror="window.DIALOG=null"></script>
+<script>
+Promise.all([document.fonts.load('700 40px Fredoka'), document.fonts.load('40px Bangers'), document.fonts.load('800 40px Inter')]).then(() => {
+const { CH, ENV, PROP, CAM, TR, CAP, G, R, CI, EL, PA, LN, TX, J } = BM, W = 1080, H = 1920, DUR = 30;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+BM.STYLE.use('cartoon');
+const tl = BM.tl;
+
+/* dialogue: real timings from tools/voice.py (fallbacks keep the page alive without the voice step) */
+const FALLBACK = [['omar', 'Morning, Dave.', 2.7, 3.5], ['dave', 'Crunching numbers, boss!', 4.0, 5.1], ['omar', 'Deep in thought?', 12.6, 13.4],
+  ['dave', 'Visualizing synergy.', 14.0, 15.1], ['omar', 'Dave. Your monitor is off.', 20.8, 22.3], ['dave', "It's a power saving spreadsheet.", 22.9, 24.4], ['omar', 'Crunching numbers, sir!', 26.2, 27.35]]
+  .map(([who, text, t0, t1]) => ({ who, text, t0, t1 }));
+const L = (window.DIALOG && DIALOG.lines) || FALLBACK;
+const HI = { dave: '#7FD3FF', omar: '#FFE14D' };
+const say = (ch, l) => BM.say(ch, l.t0, l.t1, l.text, { visemes: l.visemes, subStyle: { hi: HI[l.who] } });
+const steps = (t0, dur, type = 'step', gain = .55, period = .39) => { for (let t = t0; t < t0 + dur - .05; t += period) BM.sfx(t, type, gain); };
+const bounce = (ch, t0, n, amp = 6) => tl.fromTo(ch.root, { y: 0 }, { y: -amp, duration: .12, ease: 'sine.inOut', yoyo: true, repeat: n * 2 - 1, onUpdate: ch.root.apply, immediateRender: false }, t0);
+
+/* ================= STAGE A: the office ================= */
+const A = BM.scene('office'), a = ENV.office(A.g, { floorY: 1330 });
+const WIDE = { x: 545, y: 1235, z: 1.24 };
+const rex = CH.make(A.g, 'rex', -350, 1345, .93);
+const omar = CH.make(A.g, 'omar', -210, 1385, 1.0);
+const chair = PROP.chair(A.g, 770, 1800, 1.12, { color: '#3B4466' });
+const dave = CH.make(A.g, 'dave', 770, 1765, .95, { legs: false });
+const desk = PROP.desk(A.g, 700, 1560, 1.06);
+const top = desk.top;
+const kb = G({}, A.g); R(650, top - 16, 230, 18, '#2B2E3A', 5, kb); for (let i = 0; i < 9; i++) R(660 + i * 24, top - 13, 18, 6, '#5A6072', 2, kb);
+const mug = PROP.mug(A.g, 935, top, .8, { color: '#FF7A59' });
+const mon = PROP.monitor(A.g, 500, top, 1.12);
+const led = CI(118, -88, 5, '#3BD16F', mon.g);
+
+/* monitor screen states: cat video / spreadsheet / off */
+const scr = mon.screen;
+function catVideo(parent) { const g = G({}, parent); R(-138, -268, 276, 176, '#FFE9A0', 6, g);
+  const cj = J(G({}, g), 0, -176);
+  PA('M -44 -30 L -36 -78 L -8 -44 Z', '#F2A65A', cj.el); PA('M 44 -30 L 36 -78 L 8 -44 Z', '#F2A65A', cj.el);
+  CI(0, -10, 46, '#F2A65A', cj.el); CI(-17, -18, 8, '#1E1B2E', cj.el); CI(17, -18, 8, '#1E1B2E', cj.el); PA('M -6 -2 L 6 -2 L 0 6 Z', '#E35A7A', cj.el);
+  LN('M -22 2 L -56 -4 M -22 8 L -56 12 M 22 2 L 56 -4 M 22 8 L 56 12', '#1E1B2E', 2.5, cj.el); LN('M -10 12 C -4 20 4 20 10 12', '#1E1B2E', 3, cj.el);
+  R(-138, -268, 276, 24, '#1E1B2E', 6, g, { opacity: .82 }); TX(-120, -250, 'CAT FAILS #47', 15, '#FFFFFF', g, { 'text-anchor': 'start', 'font-weight': 700 });
+  CI(108, -256, 6, '#FF3B3B', g);
+  R(-124, -112, 248, 7, '#1E1B2E', 3, g, { opacity: .25 }); const prog = R(-124, -112, 10, 7, '#FF3B3B', 3, g);
+  BM.everyFrame(t => { cj.r = Math.sin(t * 7) * 9; cj.y = Math.abs(Math.sin(t * 3.5)) * -8; cj.apply(); prog.setAttribute('width', 10 + (t * 9) % 238); });
+  return g; }
+const cat = catVideo(scr);
+const sheet = G({ opacity: 0 }, scr); R(-138, -268, 276, 176, '#FFFFFF', 6, sheet); R(-138, -268, 276, 24, '#1E8E4E', 6, sheet);
+TX(-120, -250, 'Q3_numbers_FINAL.xlsx', 15, '#FFFFFF', sheet, { 'text-anchor': 'start', 'font-weight': 700 });
+for (let r = 0; r < 7; r++) LN(`M -138 ${-228 + r * 20} L 138 ${-228 + r * 20}`, '#D5DDE5', 1.5, sheet);
+for (let c = 0; c < 5; c++) LN(`M ${-138 + c * 56} -244 L ${-138 + c * 56} -92`, '#D5DDE5', 1.5, sheet);
+for (let r = 0; r < 6; r++) for (let c = 0; c < 4; c++) if (BM.hash(r * 5 + c) > .35) R(-130 + c * 56, -223 + r * 20, 22 + BM.hash(r + c * 9) * 24, 9, c === 3 ? '#1E8E4E' : '#9AA3B5', 2, sheet);
+const off = G({ opacity: 0 }, scr); R(-138, -268, 276, 176, '#0D0E14', 6, off); PA('M -100 -268 L -40 -268 L -120 -92 L -138 -92 L -138 -200 Z', '#FFFFFF', off, { opacity: .07 });
+const SCREENS = { cat, sheet, off };
+const screen = (at, name) => { for (const k in SCREENS) tl.set(SCREENS[k], { opacity: k === name ? 1 : 0 }, at); tl.set(led, { attr: { fill: name === 'off' ? '#E63946' : '#3BD16F' } }, at); };
+
+Object.assign(A.cam, { x: 640, y: 1330, z: 1.55 }); A.apply(); BM.cut(0, null, A);
+CH.idle(omar, 0, DUR); CH.idle(rex, 0, DUR);
+
+/* ---------- GAG 1 (9:00 AM): cat video -> fake typing ---------- */
+CAM.dolly(A, .25, WIDE.x, WIDE.y, WIDE.z, 1.3);
+CH.idle(dave, 0, 7); CH.expr(dave, 0, 'laugh'); bounce(dave, .05, 6); BM.sfx(.2, 'laugh', .35);
+CH.walk(omar, 1.0, 1.6, 500); steps(1.0, 1.6);
+CH.expr(dave, 1.5, 'neutral'); CH.look(dave, 1.55, -14, 0, .12);
+screen(1.95, 'sheet'); BM.sfx(1.95, 'zip', .7); BM.sfx(1.97, 'boing', .6);
+CH.expr(dave, 1.95, 'nervous', .06); CH.squash(dave, 1.95, .14); CH.typing(dave, 2.0, 3.45); BM.sfx(2.05, 'keys', .6); BM.sfx(2.9, 'keys', .5);
+CH.look(dave, 2.0, 0, 6);
+CAM.punch(A, 1.95, 740, 1290, 1.6, .75, WIDE);
+CH.pose(omar, 2.6, 'wave', .35); CH.expr(omar, 2.6, 'smile'); say(omar, L[0]); CH.pose(omar, 3.6, 'neutral', .35);
+CH.look(dave, 3.55, -14, 0); CH.expr(dave, 3.95, 'happy'); CH.pose(dave, 3.95, 'thumbsUp', .3); say(dave, L[1]);
+CH.nod(omar, 5.15, 1); CH.expr(omar, 5.3, 'smile');
+CH.expr(dave, L[1].t1 + .05, 'nervous'); CH.pose(dave, 5.3, 'neutral', .35);
+CH.walk(omar, 5.6, 2.4, 1250); steps(5.6, 2.4);
+CH.look(dave, 5.9, 14, 0, .4); CH.expr(dave, 6.9, 'sly');
+screen(7.15, 'cat'); BM.sfx(7.15, 'pop', .6); CH.expr(dave, 7.3, 'laugh'); bounce(dave, 7.3, 3); BM.sfx(7.35, 'laugh', .35);
+
+/* ---------- time-skip cards ---------- */
+function card(name, bg, ray, text, clock) {
+  const S = BM.scene(name); R(-300, -300, W + 600, H + 600, bg, 0, S.g);
+  const rays = J(G({}, S.g), 540, 880); for (let i = 0; i < 12; i++) PA('M 0 0 L -120 -1500 L 120 -1500 Z', ray, rays.el, { transform: `rotate(${i * 30})`, opacity: .5 });
+  BM.everyFrame(t => { rays.r = t * 14; rays.apply(); });
+  if (clock) PROP.clock(S.g, 540, 760, 3.4);
+  return S; }
+const C1 = card('card-11am', '#4C7DFF', '#6E96FF', '11:00 AM', true);
+const C2 = card('card-459pm', '#FF7A59', '#FF9A7E', '4:59 PM', true);
+TR.cut(8.1, A, C1, 'iris', .7); CAP.burst(C1.g, 8.55, 540, 1260, '11:00 AM', { r: 300, size: 120, hold: 1.0 }); BM.sfx(8.6, 'tick', .7);
+TR.cut(9.2, C1, A, 'wipe', .6);
+
+/* ---------- GAG 2 (11:00 AM): asleep -> deep in thought ---------- */
+tl.set(omar.root, { x: 0, onUpdate: omar.root.apply, onComplete: omar.root.apply }, 9.0);
+CH.snap(dave, 9.0, 'neutral'); CH.expr(dave, 9.0, 'sleepy'); screen(9.0, 'cat');
+tl.set(dave.head, { r: 16, y: 16, onUpdate: dave.head.apply, onComplete: dave.head.apply }, 9.0);
+tl.fromTo(dave.torso, { r: -1 }, { r: 3, duration: 1.1, ease: 'sine.inOut', yoyo: true, repeat: 1, onUpdate: dave.torso.apply, immediateRender: false }, 9.0);
+BM.setCam(A, 9.0, 720, 1280, 1.38); CAM.push(A, 9.5, 1.48, 1.9);
+BM.sfx(9.7, 'squeak', .25); BM.sfx(10.6, 'squeak', .25);
+CH.walk(omar, 10.9, 1.6, 500); steps(10.9, 1.6);
+BM.jto(dave.head, 11.42, { r: 0, y: 0 }, .1, 'power3.out'); CH.expr(dave, 11.42, 'shock', .05); BM.sfx(11.42, 'gasp', .6); BM.shake(A, 11.42, 10, .3);
+CH.pose(dave, 11.7, 'thinking', .25); screen(11.7, 'sheet'); BM.sfx(11.7, 'boing', .6); CH.expr(dave, 11.72, 'neutral'); CH.look(dave, 11.75, 10, -12);
+CAM.dolly(A, 11.95, WIDE.x, WIDE.y, WIDE.z, .7);
+CH.idle(dave, 12.0, 30);
+CH.pose(omar, 12.45, 'handsHips', .35); CH.expr(omar, 12.45, 'sly'); say(omar, L[2]);
+CH.expr(omar, L[2].t1 + .05, 'smile');
+CH.pose(dave, 13.95, 'pointUp', .3); CH.expr(dave, 13.95, 'smug'); say(dave, L[3]);
+CH.expr(dave, L[3].t1 + .05, 'proud'); BM.sfx(L[3].t1 + .05, 'ding', .6);
+CH.expr(omar, 15.15, 'confused'); CH.pose(omar, 15.25, 'shrug', .35); CH.pose(omar, 15.75, 'neutral', .3);
+CH.walk(omar, 15.75, 2.0, 1100); steps(15.75, 1.5);
+TR.cut(17.2, A, C2, 'iris', .7); CAP.burst(C2.g, 17.65, 540, 1260, '4:59 PM', { r: 300, size: 120, hold: .9 }); BM.sfx(17.7, 'tick', .7);
+TR.cut(18.2, C2, A, 'wipe', .6);
+
+/* ---------- GAG 3 (4:59 PM): monitor off ---------- */
+tl.set(omar.root, { x: 0, onUpdate: omar.root.apply, onComplete: omar.root.apply }, 18.0);
+CH.expr(omar, 18.0, 'neutral'); CH.snap(dave, 18.0, 'neutral'); CH.expr(dave, 18.0, 'laugh'); screen(18.0, 'cat'); CH.look(dave, 18.0, -6, 6);
+BM.setCam(A, 18.0, WIDE.x, WIDE.y, WIDE.z); bounce(dave, 18.45, 2);
+CH.walk(omar, 18.7, 1.6, 500); steps(18.7, 1.6);
+CH.expr(dave, 19.0, 'shock', .05); CH.look(dave, 19.0, -14, 0, .08); BM.sfx(19.0, 'gasp', .5);
+CH.pose(dave, 19.12, { Rarm: 88, Rfore: 4 }, .16, { antic: .2, over: .1 }); CH.pose(dave, 19.42, { Rarm: 6, Rfore: 4 }, .12);
+screen(19.3, 'off'); BM.sfx(19.3, 'hit', .8); CAP.burst(A.g, 19.3, 470, 1180, 'CLICK!', { r: 120, size: 64, hold: .5 }); CAM.punch(A, 19.3, 640, 1300, 1.3, .3, WIDE);
+CH.typing(dave, 19.5, 21.2); CH.expr(dave, 19.5, 'nervous'); CH.look(dave, 19.5, 0, 6);
+tl.fromTo(dave.root, { x: -3 }, { x: 3, duration: .05, ease: 'none', yoyo: true, repeat: 33, onUpdate: dave.root.apply, immediateRender: false }, 19.5);
+tl.set(dave.root, { x: 0, onUpdate: dave.root.apply, onComplete: dave.root.apply }, 21.25);
+[19.5, 19.9, 20.3, 20.7, 21.0].forEach(t => BM.sfx(t, 'keys', .6));
+CH.pose(omar, 20.35, 'crossArms', .35); CH.expr(omar, 20.4, 'deadpan'); say(omar, L[4]); CH.expr(omar, L[4].t1 + .05, 'deadpan');
+CH.look(dave, 21.6, -14, 4, .3); CH.pose(dave, 21.55, 'neutral', .3);
+CAM.punch(A, 22.35, 500, 1340, 1.75, .95, WIDE); BM.sfx(22.4, 'cricket', .8, 1.45);
+CH.expr(dave, 22.85, 'nervous'); CH.pose(dave, 22.95, 'shrug', .35); say(dave, L[5]);
+CH.expr(dave, L[5].t1 + .05, 'nervous'); CH.pose(dave, 24.5, 'neutral', .3);
+
+/* ---------- TWIST: the CEO walks past ---------- */
+CH.expr(rex, 24.8, 'smug'); CH.walk(rex, 24.9, 3.4, 1800); steps(24.9, 3.2, 'thud', .5, .425);
+[24.9, 25.33, 25.75].forEach(t => BM.shake(A, t, 6, .25));
+CH.startle(omar, 25.25); BM.sfx(25.25, 'boing', .7); CAM.punch(A, 25.25, 330, 960, 1.45, .45, WIDE);
+CH.expr(omar, 25.8, 'happy'); CH.pose(omar, 25.85, { Larm: -58, Lfore: -22, Rarm: 8, Rfore: 4 }, .3); say(omar, L[6]); CH.expr(omar, L[6].t1 + .05, 'nervous');
+CH.expr(dave, 25.45, 'happy'); CH.typing(dave, 25.6, 27.6); [25.65, 26.4, 27.15].forEach(t => BM.sfx(t, 'keys', .55));
+CH.look(rex, 26.0, -14, 0); CH.nod(rex, 26.9, 2); CH.look(rex, 27.4, 0, 0);
+BM.music(0, 28.2, 'sneaky', .55);
+
+/* ---------- END CARD ---------- */
+const E = card('end', '#FFC83D', '#FFE07A', '', false);
+const eOmar = CH.make(E.g, 'omar', 250, 1930, .95, { legs: false });
+const eDave = CH.make(E.g, 'dave', 830, 1930, .95, { legs: false });
+R(-100, 1720, 1280, 50, '#8A5A3A', 10, E.g); R(-100, 1770, 1280, 400, '#6B4329', 0, E.g);
+const eMon = PROP.monitor(E.g, 540, 1722, 1.3); catVideo(eMon.screen);
+CH.idle(eOmar, 28, 30); CH.idle(eDave, 28, 30); CH.look(eOmar, 28, 14, 6); CH.look(eDave, 28, -14, 6);
+CH.expr(eOmar, 28.4, 'laugh'); CH.expr(eDave, 28.45, 'laugh'); bounce(eOmar, 28.4, 6, 8); bounce(eDave, 28.45, 6, 8); BM.sfx(28.9, 'laugh', .4);
+TR.cut(27.9, A, E, 'slam', .55);
+CAP.burst(E.g, 28.35, 540, 700, "EVERYONE'S BUSY.", { r: 360, size: 104, hold: 2, rot: -6 }); BM.sfx(28.45, 'rimshot', .85);
+BM.everyFrame(t => { E.cam.oy = Math.sin(t * 2.2) * 6; E.apply(); });
+
+BM.finish();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{"duration": 30, "lines": [
+ {"who": "omar", "text": "Morning, Dave.", "t0": 2.7},
+ {"who": "dave", "text": "Crunching numbers, boss!", "t0": 4.0},
+ {"who": "omar", "text": "Deep in thought?", "t0": 12.6},
+ {"who": "dave", "text": "Visualizing synergy.", "t0": 14.0},
+ {"who": "omar", "text": "Dave. Your monitor is off.", "t0": 20.8},
+ {"who": "dave", "text": "It's a power saving spreadsheet.", "t0": 22.9},
+ {"who": "omar", "text": "Crunching numbers, sir!", "t0": 26.2}
+]}

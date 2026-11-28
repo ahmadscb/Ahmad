@@ -1,0 +1,48 @@
+{
+  "name": "employee-pretends",
+  "prompt": "Create a funny 30-second animated video about an employee who pretends to work whenever his manager walks past.",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "duration_s": 30, "platforms": ["instagram-reels", "tiktok"] },
+  "type": "cartoon-comedy",
+  "style": "cartoon",
+  "brand": { "name": "", "palette": ["#F3E6CF", "#1E1B2E", "#4C7DFF", "#FF7A59", "#FFC83D"], "fonts": { "display": "Bangers", "body": "Fredoka" }, "logo": "", "website": "" },
+  "language": { "primary": "en", "rtl": false },
+  "message": {
+    "hook": "Dave is laughing at a cat video at 9 AM. Footsteps.",
+    "key_points": [
+      "Gag 1 (9:00 AM): cat video -> manager walks past -> instant spreadsheet + fake typing -> 'Crunching numbers, boss!'",
+      "Gag 2 (11:00 AM): asleep at the desk -> footsteps -> snaps into a 'thinking' pose -> 'Visualizing synergy.'",
+      "Gag 3 (4:59 PM, the pattern breaks): Dave slaps the monitor OFF to hide the video and types furiously -> 'Dave. Your monitor is off.'",
+      "Twist: the CEO walks past and the manager does exactly the same thing: 'Crunching numbers, sir!'"
+    ],
+    "cta": "End card: EVERYONE'S BUSY."
+  },
+  "cast": {
+    "dave": "the employee (blue hoodie), seated bust behind his desk, foreground right",
+    "omar": "the manager (navy suit, red tie), walks the corridor behind the desk, back-left plane",
+    "rex": "the CEO (black suit, gold tie), walks past on the far plane in the final beat, no lines"
+  },
+  "sets": ["BM.ENV.office (floorY 1330) as the single comedy stage", "three title cards (11:00 AM, 4:59 PM, end card) on flat colour with a rotating sunburst"],
+  "props": ["desk", "chair", "monitor (screen states: cat video / spreadsheet / off)", "keyboard (drawn)", "mug", "papers", "plant + water cooler + clock from the set"],
+  "style_brief": "Bang Motion cartoon pack: warm cream office, flat characters, Fredoka subtitles with yellow karaoke highlight, Bangers onomatopoeia. Motion signature: fast snaps (0.15-0.25 s) into held reactions (>= 0.6 s), camera punches on every 'caught' moment, a slow handheld drift so no frame is static, iris/wipe time-skip cards, comic slam into the end card. Staging for 9:16: monitor screen and Dave's face share the middle of the frame, the manager's path runs behind them so the audience always sees both the lie (screen) and the liar (face).",
+  "storyboard": [
+    { "t0": 0.0, "t1": 1.0, "shot": "hook", "visual": "Tight on Dave laughing at a cat video on his monitor", "camera": "dolly out from z 1.5 to 1.12", "text": "", "sfx": ["laugh"], "music": "sneaky" },
+    { "t0": 1.0, "t1": 2.6, "shot": "setup 1", "visual": "Omar walks in on the back plane from the left; Dave hears the footsteps, eyes dart, screen flips to a spreadsheet, fake typing", "camera": "punch on Dave's face at 1.95", "text": "", "sfx": ["step x4", "zip", "boing", "keys"], "music": "sneaky" },
+    { "t0": 2.7, "t1": 5.1, "shot": "exchange 1", "visual": "Omar waves; Dave thumbs-up with a nervous grin", "camera": "settle wide", "text": "Morning, Dave. / Crunching numbers, boss!", "sfx": [], "music": "sneaky" },
+    { "t0": 5.6, "t1": 8.1, "shot": "payoff 1", "visual": "Omar walks off right behind the desk; beat; Dave peeks, sly grin, cat video back on", "camera": "hold", "text": "", "sfx": ["step x6", "pop", "laugh"], "music": "sneaky" },
+    { "t0": 8.1, "t1": 9.5, "shot": "time skip", "visual": "Card: 11:00 AM", "camera": "iris in / wipe out", "text": "11:00 AM", "sfx": ["swoosh", "tick", "whoosh"], "music": "sneaky" },
+    { "t0": 9.5, "t1": 12.4, "shot": "setup 2", "visual": "Dave asleep at the desk (zzz). Footsteps. Eyes snap open, instantly into a 'thinking' pose, spreadsheet back", "camera": "slow push on the sleeper, punch at the snap", "text": "", "sfx": ["step x4", "gasp", "boing"], "music": "sneaky" },
+    { "t0": 12.6, "t1": 15.1, "shot": "exchange 2", "visual": "Omar hands on hips: 'Deep in thought?' Dave, smug: 'Visualizing synergy.'", "camera": "wide", "text": "Deep in thought? / Visualizing synergy.", "sfx": [], "music": "sneaky" },
+    { "t0": 15.1, "t1": 17.3, "shot": "payoff 2", "visual": "Omar confused (?), shrugs and leaves; Dave sparkles proudly", "camera": "hold", "text": "", "sfx": ["step x4", "ding"], "music": "sneaky" },
+    { "t0": 17.3, "t1": 18.4, "shot": "time skip", "visual": "Card: 4:59 PM", "camera": "iris in / wipe out", "text": "4:59 PM", "sfx": ["swoosh", "tick", "whoosh"], "music": "sneaky" },
+    { "t0": 18.4, "t1": 20.7, "shot": "setup 3 (pattern break)", "visual": "Cat video again; footsteps; Dave slaps the monitor OFF and types furiously, sweating", "camera": "handheld, punch on the slap", "text": "", "sfx": ["step x4", "hit", "keys x4"], "music": "sneaky" },
+    { "t0": 20.8, "t1": 24.4, "shot": "exchange 3", "visual": "Omar deadpan, arms crossed: 'Dave. Your monitor is off.' Snap zoom on the black screen, crickets. Dave: 'It's a power saving spreadsheet.'", "camera": "punch on the black monitor 22.35, back wide", "text": "Dave. Your monitor is off. / It's a power saving spreadsheet.", "sfx": ["cricket"], "music": "sneaky" },
+    { "t0": 24.5, "t1": 28.0, "shot": "twist", "visual": "Heavy footsteps: Rex the CEO strides past on the far plane. Omar does a full take and points at Dave's dead screen: 'Crunching numbers, sir!' Dave types along. Rex nods and walks on.", "camera": "shake on the thuds, punch on Omar's take", "text": "Crunching numbers, sir!", "sfx": ["thud x5", "boing", "keys"], "music": "sneaky" },
+    { "t0": 28.0, "t1": 30.0, "shot": "end card", "visual": "Comic slam into a yellow card: EVERYONE'S BUSY.", "camera": "slam transition, card bob", "text": "EVERYONE'S BUSY.", "sfx": ["punch", "rimshot"], "music": "cartoon sting" }
+  ],
+  "dialogue": "dialogue.json (tools/voice.py, local Piper/LibriTTS-R)",
+  "narration": { "enabled": false, "provider": "piper", "voice": "", "script": [], "allow_paid": false },
+  "music": { "style": "sneaky", "gain": 0.6 },
+  "qc": { "times": [0.5, 2.2, 3.2, 4.5, 7.6, 8.8, 10.5, 12.0, 14.5, 15.6, 17.9, 19.8, 21.6, 22.6, 23.5, 25.4, 26.8, 29.0], "checks": ["no clipped text", "no overlap", "character on model", "no frozen > 1.2 s", "loudness -14 LUFS"] },
+  "credits": "Voices: Piper / LibriTTS-R (CC BY 4.0)",
+  "publish": { "enabled": false, "_note": "Publishing is intentionally not wired. Human review first." }
+}
