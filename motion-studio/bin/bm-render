@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Render a Motion Studio project to a finished MP4 (video + original music/sfx [+ voice]), with QC.
-#   bin/bm-render <project-dir> [--fps 30] [--voice vo.wav] [--qc-times "1 3 5 ..."]
+#   bin/bm-render <project-dir> [--fps 30] [--voice vo.wav] [--blur N] [--qc-times "1 3 5 ..."]   (--blur: motion blur, N sub-frames)
 # Steps: cue list + key-frame sheet -> frame-exact export (resource-limited, measured)
 #        -> sound design -> mux -> automatic QC. Outputs land in <project>/out/.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 P=$(cd "$1" && pwd); shift
 FPS=30; VOICE=""; QCT=""
-while (( $# )); do case $1 in --fps) FPS=$2; shift 2;; --voice) VOICE=$2; shift 2;; --qc-times) QCT=$2; shift 2;; *) echo "unknown $1"; exit 2;; esac; done
+while (( $# )); do case $1 in --fps) FPS=$2; shift 2;; --voice) VOICE=$2; shift 2;; --qc-times) QCT=$2; shift 2;; --blur) export BM_BLUR=$2; shift 2;; *) echo "unknown $1"; exit 2;; esac; done
 NAME=$(basename "$P"); OUT="$P/out"; mkdir -p "$OUT"
 echo "== 1/5 cues + key frames"
 node "$HERE/tools/snap.mjs" "$P" "$OUT/check" ${QCT:-0.5} >/dev/null

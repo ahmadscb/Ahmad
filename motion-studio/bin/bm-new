@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# Scaffold a new Motion Studio project from the reel template.
-#   bin/bm-new <name> [--size 1080x1920] [--dur 20] [--title "Text"]
+# Scaffold a new Motion Studio project from a template (reel = blank kinetic stage, cartoon = characters/sets/voice demo).
+#   bin/bm-new <name> [--size 1080x1920] [--dur 20] [--title "Text"] [--template reel|cartoon]
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 NAME=${1:?usage: bm-new <name> [--size WxH] [--dur S] [--title T]}; shift
 [[ "$NAME" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "name: lowercase letters, digits, dashes"; exit 2; }
-SIZE=1080x1920; DUR=20; TITLE=$NAME
-while (( $# )); do case $1 in --size) SIZE=$2; shift 2;; --dur) DUR=$2; shift 2;; --title) TITLE=$2; shift 2;; *) echo "unknown $1"; exit 2;; esac; done
+SIZE=1080x1920; DUR=20; TITLE=$NAME; TPL=reel
+while (( $# )); do case $1 in --size) SIZE=$2; shift 2;; --dur) DUR=$2; shift 2;; --title) TITLE=$2; shift 2;; --template) TPL=$2; shift 2;; *) echo "unknown $1"; exit 2;; esac; done
 [[ "$SIZE" =~ ^([0-9]+)x([0-9]+)$ ]] || { echo "size must be WxH"; exit 2; }
 W=${BASH_REMATCH[1]}; H=${BASH_REMATCH[2]}
 [[ "$DUR" =~ ^[0-9]+(\.[0-9]+)?$ ]] || { echo "dur must be seconds"; exit 2; }
 P="$HERE/projects/$NAME"; [[ -e "$P" ]] && { echo "exists: $P"; exit 1; }
+[[ -f "$HERE/templates/$TPL/index.html" ]] || { echo "unknown template $TPL"; exit 2; }
 mkdir -p "$P"
 T=$(printf '%s' "$TITLE" | sed 's/[&/\]/\\&/g; s/</\&lt;/g')
-sed -e "s/__W__/$W/g; s/__H__/$H/g; s/__DUR__/$DUR/g; s/__TITLE__/$T/g" "$HERE/templates/reel/index.html" > "$P/index.html"
+sed -e "s/__W__/$W/g; s/__H__/$H/g; s/__DUR__/$DUR/g; s/__TITLE__/$T/g" "$HERE/templates/$TPL/index.html" > "$P/index.html"
 cp "$HERE/workflow/brief.template.json" "$P/brief.json"
 echo "created $P  (${W}x${H}, ${DUR}s) — edit index.html, then: bin/bm-render projects/$NAME"

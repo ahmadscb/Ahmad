@@ -1,5 +1,5 @@
 // Frame-exact export of a Bang Motion page (window.OPENER contract) to MP4, CPU only.
-//   node tools/export.mjs <project-dir> <out.mp4> [fps=30]
+//   node tools/export.mjs <project-dir> <out.mp4> [fps=30]      env BM_BLUR=N (motion blur: N sub-frames per frame, shutter BM_SHUTTER=0.5)
 // Seeks every frame (no screen recording, no dropped frames), screenshots it and pipes
 // the stills straight into ffmpeg. Size comes from OPENER.W/H (1080x1920 for reels).
 // WebGL runs on SwiftShader, so no GPU is needed.
@@ -10,7 +10,7 @@ import path from 'node:path';
 
 const [dir, out, fpsArg] = process.argv.slice(2);
 if (!dir || !out) { console.error('usage: node tools/export.mjs <project-dir> <out.mp4> [fps]'); process.exit(2); }
-const FPS = Number(fpsArg || 30);
+const FPS = Number(fpsArg || 30), BLUR = Math.max(1, Number(process.env.BM_BLUR || 1)), SHUT = Number(process.env.BM_SHUTTER || .5);
 import { pageUrl } from './serve.mjs';
 const srv = await pageUrl(dir), url = srv.url;
 
@@ -23,16 +23,20 @@ await page.waitForFunction('window.OPENER && window.OPENER.ready', null, { timeo
 const { W, H, D } = await page.evaluate(() => ({ W: OPENER.W, H: OPENER.H, D: OPENER.DURATION }));
 await page.setViewportSize({ width: W, height: H });
 const total = Math.round(D * FPS);
-console.log(`${W}x${H} ${D}s @ ${FPS} fps = ${total} frames -> ${out}`);
+console.log(`${W}x${H} ${D}s @ ${FPS} fps = ${total} frames${BLUR > 1 ? ` x ${BLUR} sub-frames (motion blur, shutter ${SHUT})` : ''} -> ${out}`);
+const vf = BLUR > 1 ? ['-vf', `tmix=frames=${BLUR},select='eq(mod(n\\,${BLUR})\\,${BLUR - 1})',setpts=N/(${FPS}*TB)`] : [];
 
-const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
+const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(FPS * BLUR), '-c:v', 'png', '-i', '-', ...vf,
   '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-pix_fmt', 'yuv420p', '-profile:v', 'high', '-r', String(FPS), '-movflags', '+faststart', out],
   { stdio: ['pipe', 'inherit', 'inherit'] });
 const t0 = Date.now();
 for (let i = 0; i < total; i++) {
-  await page.evaluate(async t => { await (OPENER.seekFrame || OPENER.seek)(t); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); }, i / FPS);
-  const png = await page.screenshot({ type: 'png' });
-  if (!ff.stdin.write(png)) await new Promise(r => ff.stdin.once('drain', r));
+  for (let k = 0; k < BLUR; k++) {   // sub-frames spread over the shutter interval (k=0 is the exact frame time)
+    const t = Math.min(D - 1e-3, i / FPS + k * SHUT / (BLUR * FPS));
+    await page.evaluate(async t => { await (OPENER.seekFrame || OPENER.seek)(t); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); }, t);
+    const png = await page.screenshot({ type: 'png' });
+    if (!ff.stdin.write(png)) await new Promise(r => ff.stdin.once('drain', r));
+  }
   if (i % FPS === 0) process.stdout.write(`\r${i}/${total}`);
 }
 ff.stdin.end();

@@ -1,3 +1,4 @@
 projects/*/out/
 __pycache__/
 projects/*.render.log
+voices/

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<!-- Motion Studio cartoon template (bin/bm-new <name> --template cartoon). Demonstrates the library: cast, sets, props,
+     expressions, poses, gags with squash/anticipation, camera punch, transition, subtitles and voice lip-sync.
+     Replace the SHOTS below with the storyboard. Voice: python3 tools/voice.py dialogue.json voice  (then reload). -->
+<style>
+@font-face{font-family:Fredoka;font-weight:700;src:url(../../vendor/fonts/fredoka-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+@font-face{font-family:Bangers;src:url(../../vendor/fonts/bangers-latin-400-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:__W__px;height:__H__px;overflow:hidden;background:#F3E6CF;font-family:Fredoka,Inter,sans-serif}
+svg text{font-family:Fredoka,Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="__W__" height="__H__" viewBox="0 0 __W__ __H__" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/characters.js"></script>
+<script src="../../lib/world.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="voice/dialog.js" onerror="window.DIALOG=null"></script>
+<script>
+Promise.all([document.fonts.load('700 40px Fredoka'), document.fonts.load('40px Bangers')]).then(() => {
+const { CH, ENV, PROP, CAM, TR, CAP } = BM, W = __W__, H = __H__, DUR = __DUR__;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+BM.STYLE.use('cartoon');
+/* dialogue: real timings from tools/voice.py when present, otherwise these fallbacks (procedural mouth) */
+const LINES = (window.DIALOG && DIALOG.lines) || [{ who: 'omar', text: 'Morning, Dave!', t0: 1.2, t1: 2.4 }, { who: 'dave', text: 'Morning! Working hard!', t0: 2.9, t1: 4.4 }];
+const say = (ch, l, o = {}) => BM.say(ch, l.t0, l.t1, l.text, { visemes: l.visemes, ...o });
+
+/* SHOT 1: office, Dave at desk, boss walks in */
+const A = BM.scene('office'), a = ENV.office(A.g);
+const desk = PROP.desk(A.g, 640, a.floorY, 1), mon = PROP.monitor(A.g, 640, desk.top, .9), mug = PROP.mug(A.g, 820, desk.top, .8);
+const dave = CH.make(A.g, 'dave', 640, a.floorY - 40, 1.05, { legs: false });
+A.g.appendChild(desk.g); A.g.appendChild(mon.g);   // desk in front of Dave's body
+const omar = CH.make(A.g, 'omar', -200, a.floorY, 1.1);
+Object.assign(A.cam, { x: 560, y: 1150, z: 1.12 }); A.apply(); BM.cut(0, null, A);
+CH.idle(dave, 0, DUR); CH.idle(omar, 0, DUR); CH.typing(dave, .2, 1.4);
+CH.walk(omar, .3, 1.0, 380); CH.pose(omar, 1.2, 'wave', .35); BM.sfx(.3, 'step', .6); BM.sfx(.7, 'step', .6);
+say(omar, LINES[0]); CH.expr(dave, LINES[0].t0, 'shock'); CH.startle(dave, LINES[0].t0); BM.sfx(LINES[0].t0, 'boing', .7);
+CAM.punch(A, LINES[0].t0, 640, 1000, 1.45, .7, { x: 560, y: 1150, z: 1.12 });
+say(dave, LINES[1]); CH.expr(dave, LINES[1].t0, 'nervous'); CH.pose(dave, LINES[1].t0, 'thumbsUp', .3);
+CH.expr(omar, LINES[1].t1 + .1, 'sly'); CH.pose(omar, LINES[1].t1, 'crossArms');
+/* SHOT 2: transition to the punchline card */
+const B = BM.scene('card'); BM.R(-100, -100, W + 200, H + 200, '#FFC83D', 0, B.g);
+const t2 = LINES[1].t1 + .9; TR.cut(t2, A, B, 'iris', .7);
+CAP.burst(B.g, t2 + .4, W / 2, H / 2, 'SURE, DAVE.', { r: 300, size: 110 }); BM.sfx(t2 + .5, 'rimshot', .8);
+BM.music(0, DUR, 'sneaky', .7);
+BM.finish();
+});
+</script>
+</body>
+</html>

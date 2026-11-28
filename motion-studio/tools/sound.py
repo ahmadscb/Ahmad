@@ -1,7 +1,7 @@
 """Sound design from a film's own cue list: original music + sound effects, synthesized (no samples, no licences, no API).
   python3 tools/sound.py <cues.json> <out.wav> [--voice vo.wav]
 cues.json = {"duration": s, "sfx": [{t,type,gain,dur}], "music": [{t0,t1,style,gain}]} (written by tools/snap.mjs from OPENER.SFX/MUSIC).
-Music styles: lofi, lofi_broke, tension, sad, hype, cinematic, pulse. A voice track (optional) ducks the music.
+Music styles: lofi, lofi_broke, tension, sad, hype, cinematic, pulse, sneaky, corporate, cartoon, edu, product. A voice track (optional) ducks the music.
 Output is loudness-normalised to -14 LUFS / -1.5 dBTP (Instagram/TikTok/YouTube)."""
 import json, subprocess, sys, tempfile, os
 import numpy as np
@@ -73,6 +73,25 @@ FX = {
  'tick':    lambda d: norm(bp(noise(.03), 3000, 9000) * np.exp(-tt(.03) * 120), .25),
  'swell':   lambda d: norm(lp(sum(osc(hz(n), d, 'saw') for n in (45, 52, 57, 64)), 1200) * (tt(d) / d) ** 2 * env(d, .01, .2), .5),
  'glint':   lambda d: norm(sweep(3000, 7000, .35) * np.exp(-tt(.35) * 9) + .4 * bell(hz(108), .35, 8), .25),
+ # comedy / UI / transition effects (library v2)
+ 'swoosh':  lambda d: norm(bp(noise(.45), 500, 6000) * np.sin(np.linspace(0, np.pi, int(.45 * SR))) ** 3 + .3 * sweep(300, 1200, .45) * env(.45, .1, .2), .5),
+ 'punch':   lambda d: norm(sweep(160, 45, .3) * np.exp(-tt(.3) * 14) + .6 * lp(noise(.3), 2500) * np.exp(-tt(.3) * 30), .95),
+ 'bonk':    lambda d: norm(fit(bell(hz(64), .5, 9), .5) + .6 * fit(sweep(400, 120, .2) * np.exp(-tt(.2) * 20), .5), .6),
+ 'glitch':  lambda d: norm(lp(osc(np.where((tt(.4) * 40).astype(int) % 3, 220, 1760), .4, 'square'), 5000) * (np.sin(2 * np.pi * 23 * tt(.4)) > 0) * env(.4, .002, .05), .3),
+ 'keys':    lambda d: norm(sum(fit(np.concatenate([np.zeros(int((i * .085 + .02 * np.sin(i * 5)) * SR)), bp(noise(.03), 1800, 7000) * np.exp(-tt(.03) * 140)]), d) for i in range(int(d / .085))), .3),
+ 'step':    lambda d: norm(lp(noise(.12), 900) * np.exp(-tt(.12) * 35) + .4 * sweep(120, 60, .12) * np.exp(-tt(.12) * 30), .45),
+ 'tiptoe':  lambda d: norm(bp(noise(.06), 1500, 5000) * np.exp(-tt(.06) * 80), .2),
+ 'door':    lambda d: norm(fit(osc(120 + 30 * np.sin(2 * np.pi * 2 * tt(.6)), .6, 'saw') * env(.6, .05, .2) * .3, .9) + fit(np.concatenate([np.zeros(int(.6 * SR)), sweep(90, 40, .3) * np.exp(-tt(.3) * 12)]), .9), .6),
+ 'notify':  lambda d: norm(fit(bell(hz(91), .5, 6), .7) + .8 * fit(np.concatenate([np.zeros(int(.12 * SR)), bell(hz(96), .5, 6)]), .7), .35),
+ 'rimshot': lambda d: norm(fit(np.concatenate([snare() * .8, np.zeros(int(.12 * SR)), snare() * .8, np.zeros(int(.1 * SR)), hp(noise(.8), 5000) * np.exp(-tt(.8) * 4)]), 1.5), .6),
+ 'cricket': lambda d: norm(sum(fit(np.concatenate([np.zeros(int(k * .7 * SR)), osc(4600, .2) * (np.sin(2 * np.pi * 30 * tt(.2)) > 0) * env(.2, .01, .05)]), d) for k in range(int(d / .7))), .15),
+ 'drumroll': lambda d: norm(bp(noise(d), 300, 5000) * (.6 + .4 * np.sin(2 * np.pi * 28 * tt(d))) * (tt(d) / d + .3) * env(d, .05, .05), .45),
+ 'zip':     lambda d: norm(sweep(300, 2600, .22, 'saw', .5) * env(.22, .005, .05), .25),
+ 'gulp':    lambda d: norm(sweep(500, 180, .18) * np.exp(-tt(.18) * 12) + fit(np.concatenate([np.zeros(int(.16 * SR)), sweep(380, 160, .14) * np.exp(-tt(.14) * 14)]), .18), .45),
+ 'heartbeat': lambda d: norm(sum(fit(np.concatenate([np.zeros(int((k * .8 + o) * SR)), kick(.2, 70)]), d) for k in range(int(d / .8)) for o in (0, .22)), .7),
+ 'shutter': lambda d: norm(fit(np.concatenate([hp(noise(.03), 2000) * np.exp(-tt(.03) * 90), np.zeros(int(.05 * SR)), hp(noise(.04), 1500) * np.exp(-tt(.04) * 70)]), .2), .4),
+ 'squeak':  lambda d: norm(osc(1400 + 500 * np.sin(2 * np.pi * 9 * tt(.25)), .25) * env(.25, .02, .08), .2),
+ 'laugh':   lambda d: norm(sum(fit(np.concatenate([np.zeros(int(k * .16 * SR)), bp(noise(.11), 500, 2200) * osc(1, .11) ** 0 * np.sin(np.linspace(0, np.pi, int(.11 * SR)))]), 1.1) for k in range(6)), .4),
 }
 
 # ---------------- music ----------------
@@ -127,6 +146,40 @@ def music(style, d):
         for k, b0 in enumerate(np.arange(0, d, beat)):
             place(out, kick(.25, 90), b0, .35 if k % 2 == 0 else 0); place(out, hat(), b0 + beat / 2, .3)
             place(out, lp(osc(hz(38), beat * .8, 'saw'), 300) * env(beat * .8, .01, .2), b0, .3)
+    elif style == 'sneaky':   # pizzicato comedy sneak (classic cartoon tiptoe feel, original line)
+        beat = 60 / 112; line = [57, 0, 60, 0, 64, 63, 62, 0, 57, 0, 60, 0, 59, 58, 57, 0]
+        for k, b0 in enumerate(np.arange(0, d, beat / 2)):
+            n = line[k % 16]
+            if n: place(out, ep(hz(n), .25) * np.exp(-tt(.25) * 14), b0, .5)
+            if k % 4 == 0: place(out, lp(osc(hz(33 + (k // 16) % 2 * 2), .3, 'tri'), 400) * np.exp(-tt(.3) * 8), b0, .5)
+            if k % 2: place(out, bp(noise(.02), 3000, 8000) * np.exp(-tt(.02) * 120), b0, .15)
+    elif style == 'corporate':   # bright upbeat: claps, plucks, four-on-floor
+        bpm = 112; beat = 60 / bpm; bar = 4 * beat
+        for k, b0 in enumerate(np.arange(0, d, bar)):
+            ch = CHORDS['hype'][k % 4]
+            for b in range(4): place(out, kick(.25, 110), b0 + b * beat, .55)
+            for b in (1, 3): place(out, bp(noise(.15), 1000, 4000) * np.exp(-tt(.15) * 25), b0 + b * beat, .5)
+            for e in range(8): place(out, ep(hz(ch[e % 4] + 12), .3) * np.exp(-tt(.3) * 8), b0 + e * beat / 2, .25)
+            place(out, lp(osc(hz(ch[0] - 12), bar, 'tri'), 500) * env(bar, .02, .2), b0, .3)
+    elif style == 'cartoon':   # bouncy tuba + xylophone (comic-book)
+        beat = 60 / 132; bass = [45, 52, 45, 52, 43, 50, 43, 50]; mel = [69, 72, 76, 72, 74, 71, 67, 71]
+        for k, b0 in enumerate(np.arange(0, d, beat)):
+            place(out, lp(osc(hz(bass[k % 8] - 12), beat * .8, 'saw'), 500) * env(beat * .8, .01, .1), b0, .45)
+            place(out, bell(hz(mel[k % 8] + 12), .4, 7), b0 + beat / 2, .25)
+            if k % 2: place(out, snare(), b0, .3)
+    elif style == 'edu':   # soft marimba, calm, minimal
+        beat = 60 / 90; arp = [60, 64, 67, 72, 67, 64]
+        for k, b0 in enumerate(np.arange(0, d, beat / 2)):
+            place(out, bell(hz(arp[k % 6] + (5 if (k // 12) % 2 else 0)), .6, 5), b0, .22)
+            if k % 8 == 0: place(out, lp(osc(hz(36 + (5 if (k // 12) % 2 else 0)), beat * 4, 'sine'), 300) * env(beat * 4, .3, 1), b0, .35)
+        out = verb(out, .3)
+    elif style == 'product':   # deep minimal luxury: sub pulse + airy pad
+        beat = 60 / 96
+        for k, b0 in enumerate(np.arange(0, d, beat)):
+            place(out, kick(.4, 70), b0, .5 if k % 2 == 0 else .25)
+            if k % 4 == 2: place(out, hp(noise(.3), 6000) * np.exp(-tt(.3) * 10), b0, .3)
+        place(out, lp(sum(osc(hz(n) * (1 + .003 * i), d, 'saw') for i, n in enumerate((50, 57, 62, 69))), 1400) * .05, 0)
+        out = verb(out, .3)
     return out * env(d, .25, .4)
 
 def main():

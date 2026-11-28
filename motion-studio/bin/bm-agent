@@ -1,19 +1,55 @@
 #!/usr/bin/env bash
-# Natural-language prompt -> finished video, by a headless Claude Code session using the motion-studio skill.
-#   bin/bm-agent "<prompt>" [--name my-video] [--run]
+# Natural-language brief -> finished video, by a headless Claude Code session using the motion-studio skill + asset library.
+#   bin/bm-agent "<brief>" [--name my-video] [--run] [--max-turns 200] [--model M]
 # Default is a DRY RUN: prints the exact command and allowed tools, so a human (or Hermes) can approve it.
-# With --run it starts `claude -p` (uses the operator's Claude plan; no other paid API is called).
-# The session may only edit inside motion-studio/ and run the studio's own scripts. It never publishes.
+# With --run it starts `claude -p` (uses the operator's Claude plan; no other paid API is called) and writes
+#   projects/<name>.agent.jsonl   full event stream (every tool call, for audit)
+#   projects/<name>.agent.json    result: {name, status, mp4, qc, metrics, turns, wall_s, cost_usd_equivalent}
+# The session may only use the studio's own scripts and edit files; it cannot publish, push, delete or reach the network.
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-PROMPT=${1:?usage: bm-agent "<prompt>" [--name NAME] [--run]}; shift
-NAME="video-$(date +%Y%m%d-%H%M%S)"; RUN=0
-while (( $# )); do case $1 in --name) NAME=$2; shift 2;; --run) RUN=1; shift;; *) echo "unknown $1"; exit 2;; esac; done
-TASK="Use the motion-studio skill. Project name: $NAME. Request: $PROMPT
-Follow the workflow in $HERE/workflow/PIPELINE.md end to end: brief.json -> storyboard -> bin/bm-new -> build the scenes
-(Bang Motion rules) -> key-frame check with tools/snap.mjs and fix what you see -> bin/bm-render -> inspect frames from the MP4
--> repair and re-render until QC passes. Do not publish, do not call paid APIs. Report the MP4 path and render metrics."
-ALLOWED='Read,Write,Edit,Glob,Grep,Bash(node:*),Bash(python3:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(bin/bm-new:*),Bash(bin/bm-render:*),Bash(tools/qc.sh:*),Bash(ls:*)'
-echo "claude -p <task> --allowedTools '$ALLOWED'   (cwd: $HERE)"
+PROMPT=${1:?usage: bm-agent "<brief>" [--name NAME] [--run] [--max-turns N] [--model M]}; shift
+NAME="video-$(date +%Y%m%d-%H%M%S)"; RUN=0; TURNS=200; MODEL=()
+while (( $# )); do case $1 in --name) NAME=$2; shift 2;; --run) RUN=1; shift;; --max-turns) TURNS=$2; shift 2;; --model) MODEL=(--model "$2"); shift 2;; *) echo "unknown $1"; exit 2;; esac; done
+[[ "$NAME" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "name: lowercase letters, digits, dashes"; exit 2; }
+TASK="You are the autonomous production engine of Motion Studio (directory: $HERE). Project name: $NAME.
+Creative brief (this is all you get; make every creative decision yourself): $PROMPT
+
+Read skill/SKILL.md, workflow/PIPELINE.md and workflow/LIBRARY.md first, then templates/cartoon/index.html as the worked example.
+Then do the whole job without asking questions:
+1. Write the script, storyboard and shot list into projects/$NAME/brief.json (pick the style pack, cast from the 10 library characters, sets, props, gags with comedic timing, sfx, music).
+2. bin/bm-new $NAME --dur <seconds> --template <cartoon|reel>; write projects/$NAME/dialogue.json and run python3 tools/voice.py projects/$NAME/dialogue.json projects/$NAME/voice ; time shots from voice/dialog.json.
+3. Build projects/$NAME/index.html from the library (characters, expressions, poses, sets, props, camera moves, transitions, BM.say subtitles with visemes, sfx, music).
+4. Visual inspection: node tools/snap.mjs projects/$NAME /tmp/$NAME-check <8-16 times> then Read the sheet.jpg image and the individual PNGs. Fix every problem you see (overlaps, clipping, off-model, hidden props, empty frames, unreadable subtitles). Repeat.
+5. bin/bm-render projects/$NAME --voice projects/$NAME/voice/dialog.wav ; then extract frames from the MP4 (ffmpeg ... tile) and Read them; read out/qc.txt. Repair and re-render until QC passes and the frames look right.
+6. Finish with a short report: MP4 path, duration, QC result, render metrics (out/render-metrics.json), what you fixed.
+Rules: never publish or upload anything; no paid APIs; never edit files outside projects/$NAME (the library is read-only for you); never put a // comment in the middle of a line of code."
+ALLOWED="Read,Write,Edit,Glob,Grep,Skill,Bash(node tools/*),Bash(python3 tools/*),Bash(bin/bm-new:*),Bash(bin/bm-render:*),Bash(tools/qc.sh:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(mkdir:*),Bash(cp:*),Bash(wc:*),Bash(grep:*),Bash(jq:*)"
+DENIED="WebFetch,WebSearch,Bash(git:*),Bash(curl:*),Bash(wget:*),Bash(rm:*),Bash(ssh:*)"
+echo "claude -p <task> --allowedTools '$ALLOWED' --disallowedTools '$DENIED' --max-turns $TURNS   (cwd: $HERE)"
 (( RUN )) || { echo "--- task ---"; echo "$TASK"; echo "(dry run: add --run to execute)"; exit 0; }
-cd "$HERE" && exec claude -p "$TASK" --allowedTools "$ALLOWED"
+cd "$HERE"; LOG="projects/$NAME.agent.jsonl"; T0=$(date +%s)
+set +e
+claude -p "$TASK" --allowedTools "$ALLOWED" --disallowedTools "$DENIED" --max-turns "$TURNS" "${MODEL[@]}" \
+  --output-format stream-json --verbose > "$LOG" 2> "projects/$NAME.agent.err"
+RC=$?; set -e
+python3 - "$LOG" "$NAME" "$RC" "$(( $(date +%s) - T0 ))" > "projects/$NAME.agent.json" <<'EOF'
+import json, os, sys
+log, name, rc, wall = sys.argv[1], sys.argv[2], int(sys.argv[3]), int(sys.argv[4])
+res, tools = {}, {}
+for ln in open(log):
+    try: e = json.loads(ln)
+    except Exception: continue
+    if e.get('type') == 'result': res = e
+    if e.get('type') == 'assistant':
+        for c in e.get('message', {}).get('content', []):
+            if c.get('type') == 'tool_use': tools[c['name']] = tools.get(c['name'], 0) + 1
+p = f'projects/{name}'; mp4 = f'{p}/out/{name}.mp4'
+qc = open(f'{p}/out/qc.txt').read() if os.path.exists(f'{p}/out/qc.txt') else None
+met = json.load(open(f'{p}/out/render-metrics.json')) if os.path.exists(f'{p}/out/render-metrics.json') else None
+ok = rc == 0 and os.path.exists(mp4) and qc is not None and 'FAIL' not in qc
+print(json.dumps({'name': name, 'status': 'ok' if ok else 'failed', 'exit': rc, 'mp4': mp4 if os.path.exists(mp4) else None, 'qc': qc, 'render_metrics': met,
+                  'agent': {'turns': res.get('num_turns'), 'wall_s': wall, 'cost_usd_equivalent': res.get('total_cost_usd'), 'is_error': res.get('is_error'),
+                            'tool_calls': tools, 'final_report': (res.get('result') or '')[-4000:]}}, indent=1))
+EOF
+cat "projects/$NAME.agent.json"

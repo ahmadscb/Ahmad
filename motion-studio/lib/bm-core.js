@@ -70,7 +70,7 @@
     const applyAll = () => BM.scenes.forEach(s => s.apply());
     const q = new URLSearchParams(location.search);
     window.OPENER = { W: BM.W, H: BM.H, DURATION: DUR, tl: T, SFX: BM.SFX, MUSIC: BM.MUSIC, ready: false,
-      seek(t) { T.pause(t, false); applyAll(); BM.hooks.forEach(f => f(t)); } };
+      seek(t) { if (Math.abs(T.time() - t) < 1e-9) T.pause(t + 1e-4, false); T.pause(t, false); applyAll(); BM.hooks.forEach(f => f(t)); } };   /* nudge so a seek to the current time still renders */
     T.eventCallback('onComplete', () => T.play(0));
     document.fonts.ready.then(() => { applyAll(); window.OPENER.seek(0); window.OPENER.ready = true; if (!q.has('clean')) T.play(0); });
   };

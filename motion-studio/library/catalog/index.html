@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Motion Studio asset catalog</title>
+<!-- Asset library catalog: one stage per second. t=0 cast, 1-10 expressions per character, 11 poses, 12 render modes,
+     13-21 environments, 22 props, 23 transitions mid-frame. Snap with: node tools/snap.mjs library/catalog out 0 1 2 ... -->
+<style>
+@font-face{font-family:Inter;font-weight:700;src:url(../../vendor/fonts/inter-latin-700-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+@font-face{font-family:Bangers;src:url(../../vendor/fonts/bangers-latin-400-normal.woff2)}
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#F4F1EA;font-family:Inter,sans-serif}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/characters.js"></script>
+<script src="../../lib/world.js"></script>
+<script src="../../lib/camera.js"></script>
+<script>
+Promise.all([document.fonts.load('800 40px Inter'), document.fonts.load('40px Bangers')]).then(() => {
+const { G, R, TX, CH, ENV, PROP } = BM, W = 1080, H = 1920, DUR = 24;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+const ids = Object.keys(CH.CAST); let prev = null, T = 0;
+const stage = (title, bg = '#F4F1EA') => { const sc = BM.scene(title); Object.assign(sc.cam, { x: W / 2, y: H / 2, z: 1 }); sc.apply();
+  R(-50, -50, W + 100, H + 100, bg, 0, sc.g); BM.cut(T, prev, sc); prev = sc; T += 1; return sc; };
+const label = (p, x, y, t, s = 30, c = '#1E1B2E') => TX(x, y, t, s, c, p, { 'font-weight': 800 });
+// 0: cast line-up
+{ const sc = stage('cast'); label(sc.g, W / 2, 110, 'THE CAST — 10 CHARACTERS', 54);
+  ids.forEach((id, i) => { const x = 110 + (i % 5) * 215, y = i < 5 ? 880 : 1720; CH.make(sc.g, id, x, y, .62); label(sc.g, x, y + 70, CH.CAST[id].name, 34); }); }
+// 1-10: expressions per character
+const ex = Object.keys(CH.EXPR);
+ids.forEach(id => { const sc = stage('expr-' + id); label(sc.g, W / 2, 66, CH.CAST[id].name.toUpperCase() + ' — ' + ex.length + ' EXPRESSIONS', 48);
+  ex.forEach((e, i) => { const c = i % 5, r = Math.floor(i / 5), x = 108 + c * 216, y = 470 + r * 330;
+    const ch = CH.make(sc.g, id, x, y, .66, { legs: false }); CH.expr(ch, 0, e, .01); label(sc.g, x, y + 50, e, 26); }); });
+// 11: poses
+{ const sc = stage('poses'); const P = Object.keys(CH.POSES); label(sc.g, W / 2, 90, P.length + ' POSES / GESTURES', 48);
+  P.forEach((pn, i) => { const c = i % 5, r = Math.floor(i / 5), x = 108 + c * 216, y = 520 + r * 420; const ch = CH.make(sc.g, ids[i % 10], x, y, .48); CH.snap(ch, 0, pn); label(sc.g, x, y + 46, pn, 26); }); }
+// 12: render modes
+{ const sc = stage('modes'); label(sc.g, W / 2, 110, 'SAME RIG, 3 RENDER MODES', 50);
+  ['flat', 'ink', 'line'].forEach((m, i) => { const x = 190 + i * 350; CH.make(sc.g, 'maya', x, 1200, .95, { mode: m }); label(sc.g, x, 1300, m, 40); CH.make(sc.g, 'omar', x, 1800, .7, { mode: m }); }); }
+// 13-21: environments
+ENV.LIST.forEach((e, i) => { const sc = stage('env-' + e); const a = ENV[e](sc.g, {}); CH.make(sc.g, ids[i], 540, a.floorY, 1.05); label(sc.g, W / 2, 1850, 'ENV.' + e, 60, '#FFFFFF'); });
+// 22: props
+{ const sc = stage('props'); label(sc.g, W / 2, 100, PROP.LIST.length + ' PROPS', 54);
+  const L = [['desk', 270, 560, .8], ['monitor', 270, 470, .8], ['laptop', 800, 520, 1.2], ['phone', 120, 860, 1.4], ['mug', 330, 900, 1.4], ['chair', 560, 1000, .8], ['plant', 820, 1000, 1.3],
+    ['clock', 980, 800, 1], ['money', 150, 1120, 1.4], ['coin', 340, 1120, 1.6], ['car', 540, 1450, .7], ['briefcase', 160, 1760, 1.2], ['papers', 380, 1740, 1], ['trophy', 580, 1780, 1], ['waterCooler', 780, 1820, .9], ['lamp', 930, 1180, .8]];
+  L.forEach(([n, x, y, s]) => { PROP[n](sc.g, x, y, s); label(sc.g, x, y + 44, n, 24, '#6B6B7A'); });
+  const b = PROP.bubble(sc.g, 800, 300, 'Hello!'); BM.tl.set(b.g, { opacity: 1 }, 0); }
+// 23: transitions mid-frame (slam) over a stage
+{ const sc = stage('transitions', '#2B2D42'); label(sc.g, W / 2, 200, 'BM.TR.slam', 70, '#fff'); BM.TR.slam(22.9, .55); }
+BM.finish();
+});
+</script>
+</body>
+</html>

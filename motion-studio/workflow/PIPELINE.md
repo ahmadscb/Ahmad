@@ -6,12 +6,12 @@ Each stage has one owner (the agent or a script) and one artefact, so another ag
 |---|---|---|---|
 | 1 | **Creative brief** | agent | `projects/<name>/brief.json` (schema: `workflow/brief.template.json`) |
 | 2 | **Style brief + storyboard** | agent, following the Bang Motion `SKILL.md` | `brief.json` → `style_brief`, `storyboard[]` (t0/t1, shot, camera, text, sfx, music) |
-| 3 | **Scaffold** | `bin/bm-new <name> --size 1080x1920 --dur N` | `projects/<name>/index.html` (bm-core runtime, local GSAP/fonts) |
-| 4 | **Visual assets** | agent | SVG drawn in code (rigs via `BM.J`), 3D via `vendor/three`, brand files in `projects/<name>/assets/` |
+| 3 | **Scaffold** | `bin/bm-new <name> --dur N --template cartoon\|reel` | `projects/<name>/index.html` (bm-core + library, local GSAP/fonts) |
+| 4 | **Visual assets** | agent | asset library first (`workflow/LIBRARY.md`: 10 characters, 9 sets, 17 props, 6 styles); new SVG only when missing; 3D via `lib/product3d.js` |
 | 5 | **Animation** | agent | the GSAP timeline: stages + cameras, `BM.sfx()` and `BM.music()` cues next to the visual they belong to |
-| 6 | **Narration** (optional) | `tools/narration.py brief.json out/` | `voice.wav` + `voice-timings.json` (scene starts = line starts). Piper by default; ElevenLabs only with `--allow-paid` |
+| 6 | **Dialogue / narration** (optional) | `tools/voice.py dialogue.json voice/` (characters, local) or `tools/narration.py` | `dialog.wav` + `dialog.json` (line timings + lip-sync visemes). ElevenLabs only with `--allow-paid` |
 | 7 | **Key-frame QC** | `node tools/snap.mjs projects/<name> out/check t1 t2 …` | `sheet.jpg`. The agent **looks** at it: clipped or overlapping text, off-model character, slide feel, empty frames |
-| 8 | **Render** | `bin/bm-render projects/<name> [--voice vo.wav]` | `out/<name>.mp4`, `render-metrics.json` (resource-limited by `bin/bm-safe`) |
+| 8 | **Render** | `bin/bm-render projects/<name> [--voice vo.wav] [--blur 2]` | `out/<name>.mp4`, `render-metrics.json` (resource-limited by `bin/bm-safe`) |
 | 9 | **Video QC** | `tools/qc.sh` (run by bm-render) + agent inspects frames **from the MP4** | `qc.txt`. Spec, black/frozen frames, loudness (−14 LUFS) |
 | 10 | **Repair loop** | agent | fix → 7 → 8 → 9 until clean |
 | 11 | **Export** | done | MP4 H.264/AAC, yuv420p, +faststart. **Publishing is not wired** (human review first) |
