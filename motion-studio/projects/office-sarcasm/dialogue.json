@@ -1,0 +1,7 @@
+{"duration": 20, "lines": [
+ {"who": "brock", "text": "Busy, Gary?", "t0": 3.5},
+ {"who": "gary", "text": "Crunching numbers, sir.", "t0": 4.55},
+ {"who": "brock", "text": "Napping, Gary?", "t0": 8.0},
+ {"who": "gary", "text": "Visualizing synergy.", "t0": 10.35},
+ {"who": "brock", "text": "Relax. Send me the cat video.", "t0": 16.15}
+]}

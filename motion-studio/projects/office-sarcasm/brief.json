@@ -1,0 +1,55 @@
+{
+  "name": "office-sarcasm",
+  "prompt": "Create a 20-second vertical 9:16 comedy video: an employee pretends to work, then makes absurd reaction faces every time the boss appears. Expressions are the main source of comedy; include close-up reaction shots.",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "duration_s": 20, "platforms": ["instagram-reels", "tiktok"] },
+  "type": "cartoon-comedy",
+  "style": "grotesque",
+  "language": { "primary": "en", "rtl": false },
+  "message": {
+    "hook": "Gary is laughing at cat videos at 9:01 AM. The boss is right behind him.",
+    "key_points": ["Rule of three: the boss appears three times, each reaction face is bigger", "Pretend-work: monitor snaps to a spreadsheet, fake typing, fake professionalism", "Twist: the boss only wanted the cat video"],
+    "cta": "Meme caption punchline: THE BOSS WAS PRETENDING TOO"
+  },
+  "style_brief": "Sarcastic Grotesque (BM.STYLE grotesque). Face-first reaction-meme comedy: dirty sage office, thick ink outlines, Anton meme subtitles. Motion signature: calm medium beat -> snap reaction (GR.react, 0.12 s anticipation, camera punch to close/ECU, smear, eye pop) -> speed/burst/dread backdrop -> comedic freeze hold -> hard cut. >=50% close-ups/ECUs, cuts every 1-2.5 s. Music low (awkward), sfx carry the jokes.",
+  "cast": [
+    { "id": "gary", "lib": "BM.GR", "role": "employee pretending to work", "base": "deadInside", "placement": "front-right bust behind desk (700, 1010, s 1.1)" },
+    { "id": "brock", "lib": "BM.GR", "role": "smug boss who keeps appearing behind him", "base": "smug", "placement": "back-left plane (250, 700, s .95), slides in/out from the left" }
+  ],
+  "sets": ["GR.BG.office (sage wall, flickering light, SYNERGY poster, sticky notes)", "GR.BG.desk with #1 mug", "reaction backdrops: speed, dread, burst, rage"],
+  "props": ["GR.monitor with screens: cat meme (CAT FAILS #47) / spreadsheet (Q3_FINAL_final(2).xlsx)", "GR.label time stamps 9:01 AM / 11:40 AM / 4:59 PM"],
+  "script": [
+    { "who": "brock", "text": "Busy, Gary?" },
+    { "who": "gary", "text": "Crunching numbers, sir." },
+    { "who": "brock", "text": "Napping, Gary?" },
+    { "who": "gary", "text": "Visualizing synergy." },
+    { "who": "brock", "text": "Relax. Send me the cat video." }
+  ],
+  "storyboard": [
+    { "t0": 0.0, "t1": 1.5, "shot": "SETUP medium two-shot", "visual": "9:01 AM label. Gary cackles at CAT FAILS #47; Brock slides in behind him, unseen", "camera": "medium two-shot, slow creep", "text": "9:01 AM", "sfx": ["laugh", "step x2"], "music": "awkward" },
+    { "t0": 1.5, "t1": 2.3, "shot": "boss close", "visual": "Brock suspicious squint, silence", "camera": "hard cut close", "sfx": [], "music": "awkward" },
+    { "t0": 2.3, "t1": 3.25, "shot": "GAG 1 snap reaction", "visual": "Gary still laughing -> SNAP shockScream, eyes pop, speed lines; freeze hold", "camera": "close -> punch ECU", "sfx": ["boom", "zoom_in", "eyepop"] },
+    { "t0": 3.25, "t1": 4.5, "shot": "pretend work + boss line", "visual": "monitor snaps to spreadsheet, frantic fake typing, Brock: Busy, Gary?", "camera": "medium -> boss close", "text": "BUSY, GARY?", "sfx": ["zip", "keys"] },
+    { "t0": 4.5, "t1": 5.6, "shot": "Gary close", "visual": "fakePro, adjusting tie, trembling: Crunching numbers, sir.", "camera": "close", "sfx": [] },
+    { "t0": 5.6, "t1": 6.9, "shot": "boss squint + exit", "visual": "Brock suspicious hold, slides out; Gary deflates", "camera": "boss close -> medium", "sfx": ["cricket", "step"] },
+    { "t0": 6.9, "t1": 8.0, "shot": "SETUP 2 medium", "visual": "11:40 AM label. Gary asleep and drooling, zz; Brock slides back in", "camera": "medium, slow drift", "text": "11:40 AM", "sfx": ["step"] },
+    { "t0": 8.0, "t1": 9.0, "shot": "boss close", "visual": "Brock judgmental: Napping, Gary?", "camera": "close", "text": "NAPPING, GARY?" },
+    { "t0": 9.0, "t1": 10.35, "shot": "GAG 2 double snap", "visual": "terrified ECU on dread backdrop -> snap to giant fakeSmile on burst backdrop; freeze hold", "camera": "punch ECU -> punch close", "sfx": ["boom", "boing"] },
+    { "t0": 10.35, "t1": 11.7, "shot": "Gary close", "visual": "fakeSmile trembling: Visualizing synergy.", "camera": "close, drift in", "text": "VISUALIZING SYNERGY." },
+    { "t0": 11.7, "t1": 13.0, "shot": "boss ECU + exit", "visual": "Brock side-eye ECU, then slides out; Gary done", "camera": "ECU -> medium", "sfx": ["dun", "cricket"] },
+    { "t0": 13.0, "t1": 14.1, "shot": "SETUP 3 medium", "visual": "4:59 PM label. Gary evil grin, rubbing hands, cat video back on; Brock already behind him", "camera": "medium", "text": "4:59 PM", "sfx": ["laugh"] },
+    { "t0": 14.1, "t1": 14.6, "shot": "boss close", "visual": "Brock smug", "camera": "close", "sfx": ["dun"] },
+    { "t0": 14.6, "t1": 16.15, "shot": "GAG 3 escalation", "visual": "panic -> terrified -> hysterical cry, each a snap with rage/burst/speed backdrops", "camera": "alternating close/ECU punches", "sfx": ["boom", "punch", "boom"] },
+    { "t0": 16.15, "t1": 18.3, "shot": "twist", "visual": "Brock smug then greedy: Relax. Send me the cat video. Cut to Gary frozen mid-sob", "camera": "boss close -> Gary close", "text": "RELAX. SEND ME THE CAT VIDEO." },
+    { "t0": 18.3, "t1": 20.0, "shot": "PUNCHLINE face", "visual": "Gary whatDidISee ECU, held 1.7 s, meme caption THE BOSS WAS PRETENDING TOO", "camera": "punch ECU + slow creep", "text": "THE BOSS WAS PRETENDING TOO", "sfx": ["boom", "rimshot", "cricket"] }
+  ],
+  "gags": [
+    { "t": 2.6, "name": "caught laughing", "timing": "0.8 s silent boss close -> snap shockScream + eye pop -> 0.6 s freeze hold" },
+    { "t": 9.05, "name": "caught napping", "timing": "double snap terrified -> fakeSmile, 0.7 s hold on the grin" },
+    { "t": 14.6, "name": "caught a third time", "timing": "escalation panic/terrified/hystericalCry every 0.5 s (rule of three, biggest last)" },
+    { "t": 18.3, "name": "twist punchline", "timing": "boss asks for the cat video -> whatDidISee ECU held to the end with rimshot" }
+  ],
+  "narration": { "enabled": true, "provider": "piper", "voice": "tools/voice.py fixed cast voices (gary, brock)", "script": "dialogue.json", "allow_paid": false },
+  "music": { "style": "awkward", "gain": 0.55 },
+  "qc": { "times": [0.6, 1.8, 2.8, 3.9, 5.0, 6.5, 7.4, 8.4, 9.3, 10.0, 11.0, 12.0, 13.5, 15.1, 16.8, 19.2], "checks": ["no clipped text", "no overlap", "character on model", "no frozen > 1.2 s", "loudness -14 LUFS", "grotesque 6-point gate"] },
+  "publish": { "enabled": false, "_note": "Publishing is intentionally not wired. Human review first." }
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>office-sarcasm</title>
+<!-- office-sarcasm: Sarcastic Grotesque reaction comedy (20 s, 9:16). Gary pretends to work; every time boss Brock appears
+     his face explodes, three times, bigger each time. Twist: the boss only wanted the cat video. See brief.json. -->
+<style>
+@font-face{font-family:Anton;src:url(../../vendor/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#B8C4B0}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="../../lib/grotesque.js"></script>
+<script src="voice/dialog.js" onerror="window.DIALOG=null"></script>
+<script>
+Promise.all([document.fonts.load('40px Anton'), document.fonts.load('800 40px Inter')]).then(() => {
+const { GR } = BM, W = 1080, H = 1920, DUR = 20;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+BM.STYLE.use('grotesque');
+
+/* dialogue timings come from voice/dialog.json (fallbacks only keep the page alive without the voice step) */
+const FALLBACK = [['brock', 'Busy, Gary?', 3.5, 4.45], ['gary', 'Crunching numbers, sir.', 4.55, 5.49], ['brock', 'Napping, Gary?', 8.0, 8.94],
+  ['gary', 'Visualizing synergy.', 10.35, 11.61], ['brock', 'Relax. Send me the cat video.', 16.15, 18.25]].map(([who, text, t0, t1]) => ({ who, text, t0, t1 }));
+const L = (window.DIALOG && DIALOG.lines) || FALLBACK;
+const say = (ch, l) => GR.say(ch, l.t0, l.t1, l.text, { visemes: l.visemes });
+
+/* ONE office stage, back to front: office -> boss (back plane, off-screen left) -> Gary bust -> desk -> monitor */
+const A = BM.scene('office'); GR.BG.office(A.g);
+const BS = .95, BX0 = -330, BX = 250, IN = (BX - BX0) / BS;
+const boss = GR.make(A.g, 'brock', BX0, 700, BS);
+const gary = GR.make(A.g, 'gary', 700, 1010, 1.1);
+GR.BG.desk(A.g, W / 2 + 60, 1560);
+const mon = GR.monitor(A.g, 270, 1390, .85, { meme: GR.SCREENS.meme, sheet: GR.SCREENS.spreadsheet });
+BM.cut(0, null, A);
+const TWO = { x: 520, y: 1130, z: 1.12 };
+const two = at => BM.setCam(A, at, TWO.x, TWO.y, TWO.z);
+const keys = (t0, t1) => { for (let t = t0; t < t1; t += .32) { BM.sfx(t, 'keys', .55); GR.jerk(gary, t, 0, -8); } };
+const steps = (t0, n) => { for (let i = 0; i < n; i++) BM.sfx(t0 + i * .3, 'step', .5); };
+
+/* ===== GAG 1 (9:01 AM): caught laughing at cat videos ===== */
+two(0); GR.drift(A, 0, 1.5, .05);
+mon.flip(0, 'meme'); GR.expr(boss, 0, 'smug', { dur: .02 }); GR.laugh(gary, .15, 2.55);
+GR.label(.15, 1.3, '9:01 AM');
+GR.slide(boss, .7, IN, .7); steps(.7, 3); GR.expr(boss, 1.2, 'suspicious');
+/* silent boss close: calm before the boom */
+GR.cutTo(A, 1.5, boss, 'close'); GR.hold(boss, 1.5, 2.3);
+GR.cutTo(A, 2.3, gary, 'close');
+GR.react(gary, 2.62, 'shockScream', { sc: A, shot: 'close', pop: .45 }); GR.backdrop(gary, 2.62, .66, 'speed', { col: '#FFD23F' }); BM.sfx(2.66, 'eyepop', .7);
+GR.hold(gary, 2.75, 3.25);
+/* pretend work: monitor snaps to the spreadsheet, frantic fake typing */
+mon.flip(3.25, 'sheet'); BM.sfx(3.25, 'zip', .7); two(3.25); GR.expr(gary, 3.25, 'fakePro', { dur: .08 }); keys(3.3, 3.5);
+GR.cutTo(A, L[0].t0 - .05, boss, 'close'); GR.expr(boss, L[0].t0 - .05, 'judgmental'); say(boss, L[0]); keys(L[0].t0, L[0].t1);
+GR.cutTo(A, L[1].t0 - .05, gary, 'close'); GR.expr(gary, L[1].t0 - .05, 'fakePro'); say(gary, L[1]); GR.tremble(gary, L[1].t0, L[1].t1 + .2, .4);
+const g1 = L[1].t1 + .1;
+GR.cutTo(A, g1, boss, 'close'); GR.expr(boss, g1, 'suspicious'); GR.hold(boss, g1, g1 + .7); BM.sfx(g1 + .1, 'cricket', .45, .7);
+/* boss leaves, Gary deflates */
+two(g1 + .75); GR.slide(boss, g1 + .8, -IN, .5); steps(g1 + .8, 2); GR.expr(gary, g1 + .85, 'done');
+
+/* ===== GAG 2 (11:40 AM): caught napping ===== */
+const s2 = 6.9;
+BM.setCam(A, s2, 640, 1150, 1.32); GR.drift(A, s2, 1.05, .08); mon.flip(s2, 'meme');
+GR.expr(gary, s2, 'sleepyBroken', { dur: .02 }); GR.label(s2, 1.05, '11:40 AM'); BM.sfx(s2 + .1, 'cricket', .4, .9);
+GR.slide(boss, s2 + .1, IN, .6); BM.sfx(s2 + .2, 'tiptoe', .5); BM.sfx(s2 + .45, 'tiptoe', .5);
+GR.cutTo(A, L[2].t0 - .05, boss, 'close'); GR.expr(boss, L[2].t0 - .05, 'judgmental'); say(boss, L[2]);
+const r2 = L[2].t1 + .1;
+GR.cutTo(A, r2 - .02, gary, 'close');
+GR.react(gary, r2 + .02, 'terrified', { sc: A, shot: 'ecu', pop: .35 }); GR.backdrop(gary, r2 + .02, .6, 'dread');
+const r2b = r2 + .65;
+GR.react(gary, r2b, 'fakeSmile', { sc: A, shot: 'close', sfx: 'boing', antic: .08 }); GR.backdrop(gary, r2b, .55, 'burst'); BM.sfx(r2b, 'boom', .6);
+mon.flip(r2b, 'sheet'); GR.hold(gary, r2b + .2, L[3].t0);
+say(gary, L[3]); GR.tremble(gary, L[3].t0, L[3].t1 + .1, .5); GR.drift(A, L[3].t0, L[3].t1 - L[3].t0, .1);
+const g2 = L[3].t1 + .1;
+GR.cutTo(A, g2, boss, 'close'); GR.expr(boss, g2, 'sideEye', { dur: .02 }); GR.drift(A, g2, .75, .12); BM.sfx(g2, 'dun', .7); GR.hold(boss, g2, g2 + .75);
+two(g2 + .8); GR.slide(boss, g2 + .85, -IN, .38); steps(g2 + .85, 2); GR.expr(gary, g2 + .85, 'done');
+
+/* ===== GAG 3 (4:59 PM): caught again, biggest face ===== */
+const s3 = 13.0;
+BM.setCam(A, s3, 600, 1150, 1.22); mon.flip(s3, 'meme'); GR.expr(gary, s3, 'greedy', { dur: .02 }); GR.label(s3, 1.0, '4:59 PM');
+BM.sfx(s3 + .15, 'laugh', .35); GR.slide(boss, s3 + .02, IN, .01, 0); GR.expr(boss, s3, 'smug', { dur: .02 }); GR.hold(boss, s3, s3 + 1.6);
+GR.cutTo(A, 14.05, boss, 'close'); BM.sfx(14.05, 'dun', .7);
+GR.cutTo(A, 14.55, gary, 'close');
+const r3 = 14.62, esc = ['panic', 'terrified', 'hystericalCry'], shots = ['close', 'ecu', 'close'], bds = ['rage', 'dread', 'burst'];
+GR.escalate(gary, r3, esc, .5);
+esc.forEach((n, i) => { GR.punch(A, r3 + i * .5, gary, shots[i], { sfx: null }); GR.backdrop(gary, r3 + i * .5, .5, bds[i]); });
+GR.tearBurst(gary, r3 + 1.0, L[4].t0 + 1.0);
+GR.cutTo(A, L[4].t0 - .05, boss, 'close'); GR.expr(boss, L[4].t0 - .05, 'smug'); say(boss, L[4]); GR.expr(boss, L[4].t0 + 1.1, 'greedy');
+GR.cutTo(A, L[4].t0 + 1.05, gary, 'close'); GR.expr(gary, L[4].t0 + 1.05, 'done', { dur: .05 }); GR.hold(gary, L[4].t0 + 1.1, L[4].t1 + .05);
+/* PUNCHLINE: the face, held */
+const tp = L[4].t1 + .08;
+const fp = GR.frame(gary, 'close');
+GR.react(gary, tp, 'whatDidISee', { pop: .5 }); GR.backdrop(gary, tp, DUR - tp, 'burst'); GR.hold(gary, tp + .3, DUR);
+BM.tl.to(A.cam, { x: fp.x - 95, y: fp.y - 10, z: fp.z * .86, duration: .12, ease: 'back.out(2.2)', onUpdate: A.apply }, tp); BM.sfx(tp, 'zoom_in', .6);
+GR.drift(A, tp + .3, DUR - tp - .3, .18);
+GR.meme(tp + .15, DUR - tp, 'THE BOSS WAS PRETENDING TOO', { pos: 'bottom', size: 92 }); BM.sfx(tp + .45, 'rimshot', .85); BM.sfx(tp + 1.1, 'cricket', .45, .8);
+
+BM.music(0, DUR, 'awkward', .55);
+BM.finish();
+});
+</script>
+</body>
+</html>
