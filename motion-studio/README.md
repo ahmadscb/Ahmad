@@ -24,6 +24,7 @@ Design rules come from **Bang Motion** (an installed Claude Code plugin). This f
 | `bin/bm-agent` | brief → video through headless Claude Code (`--run`) |
 | `bin/bm` | queue CLI: submit, status, result, worker, health, cleanup (JSON in and out) |
 | `deploy/` | `install.sh`, `uninstall.sh`, pinned `package.json` + lock, `requirements.txt`, `DEPLOY.md` |
+| `REPORT.md` | autonomous test, measured performance, 3D estimate reconciliation, limitations |
 
 ## 1. Installed component
 
