@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "motion-studio/job.schema.json",
+  "title": "Motion Studio job (input to `bm submit`)",
+  "oneOf": [
+    {
+      "type": "object",
+      "description": "Autonomous production from a creative brief (runs bin/bm-agent: script, storyboard, cast, sets, animation, voice, sound, render, inspection, repair).",
+      "required": ["type", "brief"],
+      "properties": {
+        "type": { "const": "brief" },
+        "brief": { "type": "string", "minLength": 10, "maxLength": 4000, "examples": ["Create a funny 30-second animated video about an employee who pretends to work whenever his manager walks past."] },
+        "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,59}$" },
+        "max_turns": { "type": "integer", "minimum": 20, "maximum": 400, "default": 200 }
+      },
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "description": "Render an existing project (no agent): export -> sound -> mux -> QC.",
+      "required": ["type", "project"],
+      "properties": {
+        "type": { "const": "render" },
+        "project": { "type": "string", "pattern": "^projects/[a-z0-9][a-z0-9-]*/?$" },
+        "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,59}$" },
+        "voice": { "type": "string", "description": "path (relative to the studio) of a voice/dialogue WAV to mix in" },
+        "blur": { "type": "integer", "minimum": 1, "maximum": 8, "description": "motion-blur sub-frames per frame (render time x N)" }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

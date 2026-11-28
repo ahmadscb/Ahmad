@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "motion-studio/status.schema.json",
+  "title": "Motion Studio job status (output of `bm status <job_id>` / `bm list`)",
+  "type": "object",
+  "required": ["job_id", "state"],
+  "properties": {
+    "job_id": { "type": "string" },
+    "state": { "enum": ["queued", "running", "done", "failed", "cancelled"] },
+    "attempts": { "type": "integer" },
+    "started": { "type": "string" }, "finished": { "type": "string" }, "updated": { "type": "string" },
+    "last_error": { "type": "string" }, "pid": { "type": "integer" }, "child_pid": { "type": "integer" }
+  }
+}

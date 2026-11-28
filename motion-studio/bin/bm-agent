@@ -24,7 +24,7 @@ Then do the whole job without asking questions:
 5. bin/bm-render projects/$NAME --voice projects/$NAME/voice/dialog.wav ; then extract frames from the MP4 (ffmpeg ... tile) and Read them; read out/qc.txt. Repair and re-render until QC passes and the frames look right.
 6. Finish with a short report: MP4 path, duration, QC result, render metrics (out/render-metrics.json), what you fixed.
 Rules: never publish or upload anything; no paid APIs; never edit files outside projects/$NAME (the library is read-only for you); never put a // comment in the middle of a line of code."
-ALLOWED="Read,Write,Edit,Glob,Grep,Skill,Bash(node tools/*),Bash(python3 tools/*),Bash(bin/bm-new:*),Bash(bin/bm-render:*),Bash(tools/qc.sh:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(mkdir:*),Bash(cp:*),Bash(wc:*),Bash(grep:*),Bash(jq:*)"
+ALLOWED="Read,Write,Edit,Glob,Grep,Skill,Bash(node:*),Bash(python3:*),Bash(bin/bm-new:*),Bash(bin/bm-render:*),Bash(tools/qc.sh:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(mkdir:*),Bash(cp:*),Bash(wc:*),Bash(grep:*),Bash(jq:*)"
 DENIED="WebFetch,WebSearch,Bash(git:*),Bash(curl:*),Bash(wget:*),Bash(rm:*),Bash(ssh:*)"
 echo "claude -p <task> --allowedTools '$ALLOWED' --disallowedTools '$DENIED' --max-turns $TURNS   (cwd: $HERE)"
 (( RUN )) || { echo "--- task ---"; echo "$TASK"; echo "(dry run: add --run to execute)"; exit 0; }

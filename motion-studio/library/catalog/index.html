@@ -35,8 +35,8 @@ const label = (p, x, y, t, s = 30, c = '#1E1B2E') => TX(x, y, t, s, c, p, { 'fon
 // 1-10: expressions per character
 const ex = Object.keys(CH.EXPR);
 ids.forEach(id => { const sc = stage('expr-' + id); label(sc.g, W / 2, 66, CH.CAST[id].name.toUpperCase() + ' — ' + ex.length + ' EXPRESSIONS', 48);
-  ex.forEach((e, i) => { const c = i % 5, r = Math.floor(i / 5), x = 108 + c * 216, y = 470 + r * 330;
-    const ch = CH.make(sc.g, id, x, y, .66, { legs: false }); CH.expr(ch, 0, e, .01); label(sc.g, x, y + 50, e, 26); }); });
+  ex.forEach((e, i) => { const c = i % 5, r = Math.floor(i / 5), x = 108 + c * 216, y = 440 + r * 335;
+    const ch = CH.make(sc.g, id, x, y, .5, { legs: false }); CH.expr(ch, 0, e, .01); label(sc.g, x, y - 18, e, 26); }); });
 // 11: poses
 { const sc = stage('poses'); const P = Object.keys(CH.POSES); label(sc.g, W / 2, 90, P.length + ' POSES / GESTURES', 48);
   P.forEach((pn, i) => { const c = i % 5, r = Math.floor(i / 5), x = 108 + c * 216, y = 520 + r * 420; const ch = CH.make(sc.g, ids[i % 10], x, y, .48); CH.snap(ch, 0, pn); label(sc.g, x, y + 46, pn, 26); }); }

@@ -1,0 +1,8 @@
+{
+  "name": "motion-studio-runtime",
+  "private": true,
+  "description": "Pinned Node runtime for Motion Studio (headless Chromium driver). Installed by deploy/install.sh.",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=18" },
+  "dependencies": { "playwright": "1.63.0" }
+}

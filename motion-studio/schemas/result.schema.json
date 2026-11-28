@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "motion-studio/result.schema.json",
+  "title": "Motion Studio job result (output of `bm result <job_id>`)",
+  "type": "object",
+  "required": ["job_id", "name", "exit", "mp4", "qc_pass"],
+  "properties": {
+    "job_id": { "type": "string" },
+    "name": { "type": "string" },
+    "exit": { "type": "integer", "description": "0 = success; 124 = job timeout" },
+    "wall_s": { "type": "number" },
+    "mp4": { "type": ["string", "null"], "description": "absolute path of the finished H.264/AAC MP4 (null if none)" },
+    "qc": { "type": ["string", "null"], "description": "tools/qc.sh report: spec, black/frozen frames, loudness" },
+    "qc_pass": { "type": "boolean" },
+    "render_metrics": {
+      "type": ["object", "null"],
+      "properties": { "mode": { "type": "string" }, "cores_allowed": { "type": "integer" }, "mem_cap": { "type": "string" },
+        "wall_s": { "type": "number" }, "peak_rss_mb": { "type": "number" }, "peak_cpu_pct": { "type": "number" }, "exit": { "type": "integer" } }
+    },
+    "agent": {
+      "type": ["object", "null"],
+      "description": "brief jobs only: headless Claude Code session summary",
+      "properties": { "turns": { "type": ["integer", "null"] }, "wall_s": { "type": "number" }, "cost_usd_equivalent": { "type": ["number", "null"] },
+        "is_error": { "type": ["boolean", "null"] }, "tool_calls": { "type": "object" }, "final_report": { "type": "string" } }
+    }
+  }
+}

@@ -183,7 +183,7 @@
     thinking: { Larm: 26, Lfore: 140, head: 8, Rarm: 30, Rfore: -110 }, facepalm: { Larm: 28, Lfore: 150, head: 14 }, shrug: { Rarm: 50, Rfore: -110, Larm: -50, Lfore: 110, head: -6 },
     thumbsUp: { Larm: -60, Lfore: -80 }, typing: { Rarm: -32, Rfore: -60, Larm: 32, Lfore: 60 }, phone: { Larm: 20, Lfore: 130, head: 10 },
     clap: { Rarm: -20, Rfore: -100, Larm: 20, Lfore: 100 }, hideFace: { Rarm: -10, Rfore: -150, Larm: 10, Lfore: 150, head: 6 }, presenter: { Larm: -70, Lfore: -40, Rarm: 10, Rfore: 0 },
-    sip: { Larm: 150, Lfore: -58, head: 6 }, stretch: { Rarm: 170, Rfore: 10, Larm: -170, Lfore: -10, torso: 0, head: -8 }, sneak: { Rarm: 40, Rfore: -60, Larm: -40, Lfore: 60, torso: 10 },
+    sip: { Larm: 150, Lfore: -58, head: 6 }, stretch: { Rarm: 170, Rfore: 10, Larm: -170, Lfore: -10, torso: 0, head: -8 }, sneak: { Rarm: 40, Rfore: -60, Larm: -40, Lfore: 60, torso: 10 }, dab: { Rarm: 125, Rfore: 35, Larm: -100, Lfore: -125, head: 22, torso: -6 },
   };
   /* pose with anticipation (small move the other way) and follow-through (overshoot, settle) */
   CH.pose = (ch, at, name, dur = .38, { antic = .12, over = .12 } = {}) => { const P = typeof name === 'string' ? CH.POSES[name] : name;

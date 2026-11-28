@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+"""bm — Motion Studio job CLI (Hermes-compatible: JSON in, JSON out, exit code 0 = ok).
+
+  bm submit [job.json | -]      enqueue a job (JSON on stdin or file)          -> {"job_id", "status": "queued"}
+  bm status <job_id>            current state                                  -> job record
+  bm result <job_id>            final output (mp4, qc, metrics, agent report)  -> result record
+  bm list [--state S]           all jobs (newest first)
+  bm cancel <job_id>            cancel a queued job (running jobs: SIGTERM to their process group)
+  bm worker [--once]            process the queue, one job at a time (flock: a second worker exits)
+  bm health                     dependency + resource check
+  bm cleanup                    delete temp files and jobs older than BM_RETENTION_DAYS
+
+Job JSON (schemas/job.schema.json):
+  {"type": "brief",  "brief": "Create a funny 30-second ...", "name": "optional-slug", "max_turns": 200}
+  {"type": "render", "project": "projects/crypto-crash", "voice": "optional.wav", "blur": 1}
+State lives in $BM_HOME/var (default: <studio>/var): queue/*.json, jobs/<id>/{job,status,result}.json + logs.
+No network, no publishing: results stay on disk for a human (or Hermes) to review."""
+import fcntl, json, os, shutil, signal, subprocess, sys, time, uuid, glob
+
+STUDIO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+VAR = os.environ.get('BM_VAR', os.path.join(os.environ.get('BM_HOME', STUDIO), 'var'))
+Q, JOBS = os.path.join(VAR, 'queue'), os.path.join(VAR, 'jobs')
+MAX_RETRIES = int(os.environ.get('BM_RETRIES', 1)); JOB_TIMEOUT = int(os.environ.get('BM_JOB_TIMEOUT', 7200))
+RETENTION = float(os.environ.get('BM_RETENTION_DAYS', 14))
+for d in (Q, JOBS): os.makedirs(d, exist_ok=True)
+
+def out(obj, code=0): print(json.dumps(obj, indent=1)); sys.exit(code)
+def now(): return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+def jdir(i): return os.path.join(JOBS, i)
+def rd(p, d=None):
+    try: return json.load(open(p))
+    except Exception: return d
+def wr(p, obj):   # atomic write
+    tmp = p + '.tmp'; json.dump(obj, open(tmp, 'w'), indent=1); os.replace(tmp, p)
+def status(i, **kw):
+    s = rd(os.path.join(jdir(i), 'status.json'), {}); s.update(kw, job_id=i, updated=now()); wr(os.path.join(jdir(i), 'status.json'), s); return s
+
+def validate(job):
+    t = job.get('type')
+    if t == 'brief':
+        if not isinstance(job.get('brief'), str) or not 10 <= len(job['brief']) <= 4000: return 'brief: string, 10-4000 chars'
+    elif t == 'render':
+        p = os.path.realpath(os.path.join(STUDIO, job.get('project', '')))
+        if not p.startswith(os.path.join(STUDIO, 'projects') + os.sep) or not os.path.isfile(os.path.join(p, 'index.html')): return 'project: must be an existing projects/<name> with index.html'
+    else: return 'type must be "brief" or "render"'
+    n = job.get('name')
+    if n is not None and (not isinstance(n, str) or not n.replace('-', '').isalnum() or n != n.lower() or len(n) > 60): return 'name: lowercase slug'
+    return None
+
+def submit(arg):
+    raw = sys.stdin.read() if arg in (None, '-') else open(arg).read()
+    try: job = json.loads(raw)
+    except Exception as e: out({'error': f'invalid JSON: {e}'}, 2)
+    err = validate(job)
+    if err: out({'error': err}, 2)
+    i = time.strftime('%Y%m%d-%H%M%S-') + uuid.uuid4().hex[:6]
+    job.setdefault('name', (job.get('name') or ('reel-' + i.lower()))[:60]); job['job_id'] = i; job['submitted'] = now()
+    os.makedirs(jdir(i)); wr(os.path.join(jdir(i), 'job.json'), job); status(i, state='queued', attempts=0)
+    wr(os.path.join(Q, i + '.json'), {'job_id': i}); out({'job_id': i, 'status': 'queued'})
+
+def run_job(i):
+    job = rd(os.path.join(jdir(i), 'job.json')); s = rd(os.path.join(jdir(i), 'status.json'), {})
+    att = s.get('attempts', 0) + 1; status(i, state='running', attempts=att, started=now(), pid=os.getpid())
+    if job['type'] == 'brief':
+        cmd = [os.path.join(STUDIO, 'bin', 'bm-agent'), job['brief'], '--name', job['name'], '--run', '--max-turns', str(job.get('max_turns', 200))]
+    else:
+        cmd = [os.path.join(STUDIO, 'bin', 'bm-render'), os.path.join(STUDIO, job['project'])]
+        if job.get('voice'): cmd += ['--voice', os.path.join(STUDIO, job['voice'])]
+        if job.get('blur'): cmd += ['--blur', str(int(job['blur']))]
+    log = open(os.path.join(jdir(i), f'attempt-{att}.log'), 'w'); t0 = time.time()
+    tmp = os.path.join(VAR, 'tmp', i); os.makedirs(tmp, exist_ok=True)
+    env = {**os.environ, 'TMPDIR': tmp}
+    p = subprocess.Popen(cmd, cwd=STUDIO, stdout=log, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+    status(i, child_pid=p.pid)
+    try: rc = p.wait(timeout=JOB_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        os.killpg(p.pid, signal.SIGKILL); rc = 124
+    shutil.rmtree(tmp, ignore_errors=True)   # automatic temp cleanup
+    name = job['name'] if job['type'] == 'brief' else os.path.basename(job['project'].rstrip('/'))
+    pdir = os.path.join(STUDIO, 'projects', name); mp4 = os.path.join(pdir, 'out', name + '.mp4')
+    qc = open(os.path.join(pdir, 'out', 'qc.txt')).read() if os.path.exists(os.path.join(pdir, 'out', 'qc.txt')) else None
+    res = {'job_id': i, 'name': name, 'exit': rc, 'wall_s': round(time.time() - t0, 1), 'mp4': mp4 if os.path.exists(mp4) else None, 'qc': qc,
+           'qc_pass': bool(qc) and 'FAIL' not in qc, 'render_metrics': rd(os.path.join(pdir, 'out', 'render-metrics.json')),
+           'agent': rd(os.path.join(STUDIO, 'projects', name + '.agent.json'), {}).get('agent') if job['type'] == 'brief' else None}
+    ok = rc == 0 and res['mp4'] and res['qc_pass']
+    wr(os.path.join(jdir(i), 'result.json'), res)
+    if ok: status(i, state='done', finished=now())
+    elif att <= MAX_RETRIES and rc != 130: status(i, state='queued', last_error=f'exit {rc}'); wr(os.path.join(Q, i + '.json'), {'job_id': i})   # retry
+    else: status(i, state='failed', finished=now(), last_error=f'exit {rc}')
+
+def worker(once=False):
+    lock = open(os.path.join(VAR, 'worker.lock'), 'w')
+    try: fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError: out({'error': 'another worker is running (concurrent-job protection)'}, 3)
+    for sp in glob.glob(os.path.join(JOBS, '*', 'status.json')):   # error recovery: jobs left "running" by a crashed worker
+        s = rd(sp, {})
+        if s.get('state') == 'running': status(s['job_id'], state='queued', last_error='worker restarted'); wr(os.path.join(Q, s['job_id'] + '.json'), {'job_id': s['job_id']})
+    stop = {'v': False}; signal.signal(signal.SIGTERM, lambda *_: stop.update(v=True))
+    while not stop['v']:
+        items = sorted(glob.glob(os.path.join(Q, '*.json')))
+        if not items:
+            if once: break
+            time.sleep(5); continue
+        i = os.path.basename(items[0])[:-5]; os.remove(items[0])
+        if rd(os.path.join(jdir(i), 'status.json'), {}).get('state') == 'cancelled': continue
+        run_job(i)
+        if once and not glob.glob(os.path.join(Q, '*.json')): break
+    out({'worker': 'stopped'})
+
+def health():
+    chk = {}
+    for b in ('ffmpeg', 'ffprobe', 'node', 'python3', 'claude'): chk[b] = bool(shutil.which(b))
+    try: subprocess.run(['node', '-e', "require(process.env.BM_PLAYWRIGHT||'playwright')"], check=True, capture_output=True, cwd=STUDIO); chk['playwright'] = True
+    except Exception: chk['playwright'] = False
+    for m in ('numpy', 'scipy', 'sherpa_onnx'):
+        chk['py:' + m] = subprocess.run([sys.executable, '-c', f'import {m}'], capture_output=True).returncode == 0
+    chk['voices'] = os.path.exists(os.path.join(STUDIO, 'voices', 'vits-piper-en_US-libritts_r-medium', 'tokens.txt'))
+    du = shutil.disk_usage(VAR); chk['disk_free_gb'] = round(du.free / 1e9, 1); chk['load1'] = os.getloadavg()[0]; chk['cpus'] = os.cpu_count()
+    chk['queued'] = len(glob.glob(os.path.join(Q, '*.json')))
+    ok = all(v for k, v in chk.items() if isinstance(v, bool) and k != 'claude') and chk['disk_free_gb'] > 2
+    out({'ok': ok, 'checks': chk, 'note': 'claude CLI is only needed for type=brief jobs'}, 0 if ok else 1)
+
+def cleanup():
+    cut = time.time() - RETENTION * 86400; removed = []
+    for d in glob.glob(os.path.join(JOBS, '*')):
+        s = rd(os.path.join(d, 'status.json'), {})
+        if s.get('state') in ('done', 'failed', 'cancelled') and os.path.getmtime(d) < cut: shutil.rmtree(d, ignore_errors=True); removed.append(os.path.basename(d))
+    shutil.rmtree(os.path.join(VAR, 'tmp'), ignore_errors=True)
+    for c in glob.glob(os.path.join(STUDIO, 'projects', '*', 'out', 'check')) + glob.glob(os.path.join(STUDIO, 'projects', '*', 'out', 'video-only.mp4')):
+        if os.path.getmtime(c) < cut: shutil.rmtree(c, ignore_errors=True) if os.path.isdir(c) else os.remove(c)
+    out({'removed_jobs': removed})
+
+def main():
+    a = sys.argv[1:]
+    if not a or a[0] in ('-h', '--help'): print(__doc__); sys.exit(0)
+    c = a[0]
+    if c == 'submit': submit(a[1] if len(a) > 1 else None)
+    if c in ('status', 'result', 'cancel'):
+        if len(a) < 2 or not os.path.isdir(jdir(a[1])) or '/' in a[1]: out({'error': 'unknown job'}, 2)
+        i = a[1]
+        if c == 'status': out(rd(os.path.join(jdir(i), 'status.json')))
+        if c == 'result':
+            r = rd(os.path.join(jdir(i), 'result.json'))
+            out(r if r else {'job_id': i, 'state': rd(os.path.join(jdir(i), 'status.json'), {}).get('state'), 'result': None}, 0 if r else 1)
+        s = rd(os.path.join(jdir(i), 'status.json'), {})
+        if s.get('state') == 'queued':
+            try: os.remove(os.path.join(Q, i + '.json'))
+            except FileNotFoundError: pass
+            out(status(i, state='cancelled'))
+        if s.get('state') == 'running' and s.get('child_pid'):
+            try: os.killpg(s['child_pid'], signal.SIGTERM)
+            except ProcessLookupError: pass
+            out(status(i, state='cancelled'))
+        out({'error': f"cannot cancel a {s.get('state')} job"}, 1)
+    if c == 'list':
+        st = a[a.index('--state') + 1] if '--state' in a else None
+        rows = [rd(p, {}) for p in sorted(glob.glob(os.path.join(JOBS, '*', 'status.json')), reverse=True)]
+        out([r for r in rows if not st or r.get('state') == st])
+    if c == 'worker': worker('--once' in a)
+    if c == 'health': health()
+    if c == 'cleanup': cleanup()
+    out({'error': f'unknown command {c}'}, 2)
+
+if __name__ == '__main__': main()

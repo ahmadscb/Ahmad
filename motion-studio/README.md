@@ -1,6 +1,29 @@
-# Motion Studio: Bang Motion production setup
+# Motion Studio: an autonomous animation production engine
 
-Natural-language prompt → storyboard → animation → sound → MP4, CPU-only, with zero paid services. Design rules come from **Bang Motion** (an installed Claude Code plugin); this folder adds the production layer: rendering, sound, QC and resource limits.
+A creative brief goes in and an inspected MP4 comes out. It runs CPU-only, with zero paid services and no auto-publishing.
+
+Design rules come from **Bang Motion** (an installed Claude Code plugin). This folder adds everything else:
+
+- a reusable **asset library**:
+  - 10 consistent characters with 23 expressions and 20 poses;
+  - 9 sets and 17 props;
+  - camera moves and transitions;
+  - 53 sound effects and 12 music styles;
+- **six style packs**;
+- free local **voices with audio-driven lip-sync**;
+- automatic subtitles;
+- rendering with optional motion blur, QC and resource limits;
+- a **job queue CLI** for Hermes;
+- a reproducible **VPS install** (`deploy/`).
+
+| Where | What |
+|---|---|
+| `lib/characters.js`, `lib/world.js`, `lib/camera.js`, `lib/styles.js`, `lib/product3d.js` | the library (API reference: `workflow/LIBRARY.md`) |
+| `library/catalog/sheets/*.jpg` | visual catalog: cast, 23 expressions × 10 characters, poses, render modes, 9 sets, props |
+| `library/styles/out/styles.mp4` | the six styles, 4 s each |
+| `bin/bm-agent` | brief → video through headless Claude Code (`--run`) |
+| `bin/bm` | queue CLI: submit, status, result, worker, health, cleanup (JSON in and out) |
+| `deploy/` | `install.sh`, `uninstall.sh`, pinned `package.json` + lock, `requirements.txt`, `DEPLOY.md` |
 
 ## 1. Installed component
 
@@ -49,9 +72,11 @@ The repository has 45 files: Markdown rules, 7 starter HTML pages, 7 scripts and
 ## 4. Commands
 
 ```bash
-bin/bm-new <name> --size 1080x1920 --dur 20         # scaffold
+bin/bm-new <name> --dur 20 --template cartoon|reel # scaffold
 node tools/snap.mjs projects/<name> /tmp/c 1 3 5    # key-frame contact sheet + cue list
-bin/bm-render projects/<name> [--voice vo.wav]      # export (limited) → sound → mux → QC
+bin/bm-render projects/<name> [--voice vo.wav] [--blur 2]   # export (limited) → sound → mux → QC
+python3 tools/voice.py dialogue.json voice/           # character voices (local) + lip-sync visemes
+echo '{"type":"brief","brief":"..."}' | bin/bm submit && bin/bm worker --once   # queued, JSON result
 bin/bm-agent "<prompt>" --name x [--run]            # headless Claude Code end-to-end (dry run by default)
 python3 tools/narration.py brief.json out/          # optional voice (Piper; ElevenLabs needs --allow-paid)
 ```
@@ -60,14 +85,7 @@ Limits: `BM_MEM_MAX` (default 6G), `BM_CORES` (default nproc−1), `BM_TIMEOUT`.
 
 ## 5. Install on the VPS
 
-```bash
-git clone <this repo> && cd ahmad/motion-studio
-claude plugin marketplace add bangtutorial/bang-motion && claude plugin install bang-motion@bang-motion --scope user
-ln -sfn "$PWD/skill" ~/.claude/skills/motion-studio
-sudo apt-get install -y ffmpeg && npm i -g playwright@1.63.0 && npx playwright install --with-deps chromium
-pip install numpy scipy
-BM_MEM_MAX=4G BM_CORES=2 bin/bm-render projects/crypto-crash     # verify on the VPS
-```
+See **`deploy/DEPLOY.md`**: `sudo deploy/install.sh --cpus 3 --mem 4G` gives pinned dependencies, a systemd worker with hard limits, the queue, cleanup, and uninstall. It was tested in a sandbox. Nothing is deployed remotely.
 
 ## 6. Using it in a future conversation
 
