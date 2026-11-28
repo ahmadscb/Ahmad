@@ -1,0 +1,50 @@
+{
+  "name": "crypto-meltdown",
+  "prompt": "Create a 20-second vertical 9:16 comedy video: a crypto trader watches the market dump live and cycles through increasingly insane reaction faces. Expressions are the main source of comedy; include close-up reaction shots.",
+  "format": { "width": 1080, "height": 1920, "fps": 30, "duration_s": 20, "platforms": ["instagram-reels", "tiktok"] },
+  "type": "cartoon-comedy",
+  "style": "grotesque",
+  "language": { "primary": "en", "rtl": false },
+  "message": { "hook": "Diamond hands, baby.", "key_points": ["the dip keeps dipping", "each crash = a bigger face", "he becomes the dip"], "cta": "" },
+  "style_brief": "Sarcastic Grotesque reaction-meme comedy. Face-first: >=50% close-ups/ECUs. Dirty dim trader bedroom at 3 AM (muted purple wall, purple LED strip, HODL + TO THE MOON posters, energy cans, pizza box) with thick #16110E ink outlines. Monitor inserts with a dutch tilt show the chart getting worse; each insert triggers a bigger snap reaction (rule of three, then an escalation run). Anton meme subtitles. Reaction backdrops: speed lines, burst, rage. Calm before every explosion; music cuts out before the final punchline.",
+  "cast": [
+    { "id": "vlad", "lib": "BM.GR", "role": "dramatic crypto trader, the victim" },
+    { "id": "pip", "lib": "BM.GR", "role": "chaotic best friend on a video call, laughs at him" }
+  ],
+  "sets": ["custom trader bedroom (BM.R/BM.PA, ink outlines) + GR.BG.desk + GR.monitor with custom chart screens", "custom Pip couch room (orange wall, WAGMI neon, couch, popcorn foreground)"],
+  "props": ["GR.monitor (screens: pump +420%, dip -5%, crash -40%, crash -80%, LIQUIDATED -99.9%)", "energy drink cans", "pizza box", "popcorn bucket", "posters"],
+  "dialogue": [
+    { "who": "vlad", "text": "Diamond hands, baby.", "t0": 0.4, "t1": 1.43 },
+    { "who": "vlad", "text": "It's just a dip.", "t0": 3.3, "t1": 3.98 },
+    { "who": "vlad", "text": "Buy the dip! Buy the dip!", "t0": 6.5, "t1": 7.74 },
+    { "who": "pip", "text": "Bro. Did you sell?", "t0": 12.0, "t1": 13.23 },
+    { "who": "vlad", "text": "I am the dip.", "t0": 13.9, "t1": 14.57 }
+  ],
+  "storyboard": [
+    { "t0": 0.0, "t1": 1.9, "shot": "S1 SETUP medium", "visual": "Vlad smug, thumbs up, chart +420% green; label 3:14 AM", "camera": "medium, slow drift", "text": "DIAMOND HANDS, BABY.", "sfx": ["register 0.2", "coin 1.5"], "music": "awkward" },
+    { "t0": 1.9, "t1": 2.8, "shot": "S2 insert monitor", "visual": "chart ticks to -5%", "camera": "hard cut to monitor, dutch -5", "text": "", "sfx": ["notify 2.1"], "music": "awkward" },
+    { "t0": 2.8, "t1": 4.4, "shot": "S3 close (calm beat)", "visual": "Vlad fake smile, slight tremble, 'It's just a dip.'", "camera": "close", "text": "IT'S JUST A DIP.", "sfx": ["cricket"], "music": "awkward" },
+    { "t0": 4.4, "t1": 5.0, "shot": "S4 insert monitor", "visual": "-40% red candles", "camera": "monitor, dutch 6", "text": "", "sfx": ["glitch 4.4", "alarm 4.5"], "music": "drama" },
+    { "t0": 5.0, "t1": 6.4, "shot": "S5 SNAP #1 close", "visual": "GR.react panic + eye pop + speed-lines backdrop; comedic hold", "camera": "punch to close", "text": "", "sfx": ["boom", "zoom_in", "eyepop"], "music": "drama" },
+    { "t0": 6.4, "t1": 7.9, "shot": "S6 medium", "visual": "Vlad greedy rubbing hands, 'Buy the dip!' (denial)", "camera": "medium, push", "text": "BUY THE DIP! BUY THE DIP!", "sfx": ["keys", "register"], "music": "drama" },
+    { "t0": 7.9, "t1": 8.4, "shot": "S7 insert monitor", "visual": "-80% cliff", "camera": "monitor, dutch -7", "text": "", "sfx": ["wrong", "alarm"], "music": "drama" },
+    { "t0": 8.4, "t1": 9.6, "shot": "S8 SNAP #2 ECU", "visual": "GR.react shockScream, eye pop, burst backdrop, hold", "camera": "punch to ECU", "text": "", "sfx": ["boom", "gasp"], "music": "drama" },
+    { "t0": 9.6, "t1": 11.6, "shot": "S9 ESCALATION close/ECU", "visual": "terrified -> hystericalCry -> unhingedRage, rage backdrop, camera shake", "camera": "punch ecu / close / close dutch", "text": "", "sfx": ["boom", "punch", "boom", "crash"], "music": "drama" },
+    { "t0": 11.6, "t1": 13.5, "shot": "S10 Pip on a call (normal beat)", "visual": "Pip on his couch holding phone, side-eye, popcorn", "camera": "medium, drift", "text": "BRO. DID YOU SELL?", "sfx": [], "music": "drama low" },
+    { "t0": 13.5, "t1": 15.0, "shot": "S11 close (calm)", "visual": "Vlad dead inside, 'I am the dip.' frozen hold, creep-in", "camera": "close + drift", "text": "I AM THE DIP.", "sfx": ["cricket"], "music": "none" },
+    { "t0": 15.0, "t1": 15.7, "shot": "S12 insert monitor", "visual": "LIQUIDATED -99.9%; label 3:15 AM", "camera": "monitor, shake", "text": "", "sfx": ["sub_drop", "gong"], "music": "none" },
+    { "t0": 15.7, "t1": 16.9, "shot": "S13 SNAP #3 Pip close", "visual": "Pip manic laugh, burst backdrop", "camera": "punch to close", "text": "", "sfx": ["boom", "laugh"], "music": "none" },
+    { "t0": 16.9, "t1": 20.0, "shot": "S14 PUNCHLINE ECU", "visual": "Vlad psycho smile with tears + twitch, dread backdrop, meme caption HODL'D TO ZERO, 3 s hold", "camera": "punch to ECU + slow drift", "text": "HODL'D TO ZERO", "sfx": ["boom", "trombone", "cricket"], "music": "none" }
+  ],
+  "gags": [
+    "Rule of three with the monitor: -5% (fake smile) -> -40% (panic) -> -80% (scream), then escalation run",
+    "Denial gag: 'Buy the dip!' greedy hand-rub right after the panic",
+    "Calm-before-boom: Pip's flat question and Vlad's dead-inside 'I am the dip.' in silence",
+    "Time labels 3:14 AM -> 3:15 AM: the whole meltdown took one minute",
+    "Punchline face: psycho smile through tears + meme caption + trombone"
+  ],
+  "narration": { "enabled": true, "provider": "piper", "voice": "tools/voice.py cast voices (vlad, pip)", "script": [], "allow_paid": false },
+  "music": { "style": "awkward 0-4.4 s, drama 4.4-13.5 s, silence for the punchline", "gain": 0.55 },
+  "qc": { "times": [0.9, 2.4, 3.6, 4.7, 5.6, 7.0, 8.2, 9.0, 9.9, 10.5, 11.2, 12.5, 14.2, 15.3, 16.2, 18.5], "checks": ["no clipped text", "no overlap", "character on model", "no frozen > 1.2 s", "loudness -14 LUFS"] },
+  "publish": { "enabled": false, "_note": "Publishing is intentionally not wired. Human review first." }
+}

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>crypto-meltdown</title>
+<!-- Motion Studio, Sarcastic Grotesque: a crypto trader (vlad) watches the market dump live at 3 AM.
+     Beats: SETUP smug -> -5% fake smile -> -40% SNAP panic -> denial "buy the dip" -> -80% SNAP scream -> escalation run
+     -> Pip on a call (calm) -> "I am the dip" (calm) -> LIQUIDATED -> Pip SNAP laugh -> PUNCHLINE ECU psycho smile + meme. -->
+<style>
+@font-face{font-family:Anton;src:url(../../vendor/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#4B4760}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="../../lib/grotesque.js"></script>
+<script src="voice/dialog.js" onerror="window.DIALOG=null"></script>
+<script>
+Promise.all([document.fonts.load('40px Anton'), document.fonts.load('800 40px Inter')]).then(() => {
+const { GR, CAM, R, CI, EL, PA, LN, TX, G } = BM, W = 1080, H = 1920, DUR = 20, INK = '#16110E';
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+BM.STYLE.use('grotesque');
+const FALLBACK = [
+  { who: 'vlad', text: 'Diamond hands, baby.', t0: .4, t1: 1.43 }, { who: 'vlad', text: "It's just a dip.", t0: 3.3, t1: 3.98 },
+  { who: 'vlad', text: 'Buy the dip! Buy the dip!', t0: 6.5, t1: 7.74 }, { who: 'pip', text: 'Bro. Did you sell?', t0: 12.0, t1: 13.23 },
+  { who: 'vlad', text: 'I am the dip.', t0: 13.9, t1: 14.57 }];
+const L = (window.DIALOG && DIALOG.lines) || FALLBACK;
+const say = (ch, l) => GR.say(ch, l.t0, l.t1, l.text, { visemes: l.visemes });
+const AN = { 'font-family': 'Anton, Impact, sans-serif' }, ink = (w = 7) => ({ stroke: INK, 'stroke-width': w, 'stroke-linejoin': 'round' });
+
+/* ---------- chart screens for the monitor (screen area -210..210 x -150..140) ---------- */
+const chart = (pct, col, pts, o = {}) => g => {
+  R(-210, -150, 420, 290, '#0E1116', 6, g);
+  for (let i = 0; i < 5; i++) LN(`M -200 ${-60 + i * 40} L 200 ${-60 + i * 40}`, '#262B36', 2, g);
+  TX(-192, -104, '$MOON', 38, '#FFFFFF', g, { ...AN, 'text-anchor': 'start' });
+  TX(194, -100, pct, 56, col, g, { ...AN, 'text-anchor': 'end' });
+  const d = pts.map((p, i) => `${i ? 'L' : 'M'} ${-190 + p[0] * 380} ${120 - p[1] * 180}`).join(' ');
+  PA(d + ` L 190 130 L -190 130 Z`, col, g, { opacity: .18 });
+  LN(d, col, 9, g);
+  const last = pts[pts.length - 1]; CI(-190 + last[0] * 380, 120 - last[1] * 180, 12, col, g, ink(4));
+  if (o.arrow) PA(`M 120 ${o.arrow} l 40 0 l -20 34 Z`, col, g, ink(3));
+};
+const UP = '#2EE06F', DN = '#FF3B3B';
+const pump = [[0, .1], [.12, .2], [.22, .16], [.34, .38], [.46, .32], [.58, .56], [.7, .5], [.82, .78], [.92, .74], [1, .95]];
+const dip = [[0, .1], [.12, .2], [.22, .16], [.34, .38], [.46, .32], [.58, .56], [.7, .5], [.82, .78], [.9, .86], [1, .74]];
+const c40 = [[0, .3], [.15, .5], [.3, .62], [.42, .85], [.52, .7], [.62, .66], [.72, .4], [.82, .44], [.9, .3], [1, .22]];
+const c80 = [[0, .9], [.12, .8], [.22, .84], [.32, .6], [.42, .64], [.52, .38], [.62, .42], [.74, .14], [.86, .08], [1, -.02]];
+const liq = g => { R(-210, -150, 420, 290, '#B3001B', 6, g); for (let i = 0; i < 8; i++) LN(`M ${-210 + i * 60} -150 L ${-150 + i * 60} 140`, '#8E0014', 18, g);
+  TX(0, -30, 'LIQUIDATED', 78, '#FFFFFF', g, { ...AN, ...ink(10), 'paint-order': 'stroke' }); TX(0, 70, '-99.9%', 80, '#FFE14D', g, { ...AN, ...ink(10), 'paint-order': 'stroke' });
+  TX(0, 124, 'BALANCE: $0.03', 26, '#FFFFFF', g, { 'font-weight': 800 }); };
+const SCREENS = { pump: chart('+420%', UP, pump), dip: chart('-5%', DN, dip, { arrow: -150 }), c40: chart('-40%', DN, c40), c80: chart('-80%', DN, c80), liq };
+
+/* ================= STAGE A: Vlad's trader bedroom, 3 AM ================= */
+const A = BM.scene('bedroom'), ag = A.g;
+R(-1000, -1000, 3200, 4000, '#4B4760', 0, ag); for (let i = -6; i < 16; i++) R(i * 120, -1000, 54, 3600, '#45405A', 0, ag);
+const led = R(-1000, 560, 3200, 26, '#C46BFF', 0, ag, ink(6)); BM.everyFrame(t => led.setAttribute('fill', Math.floor(t * 2) % 2 ? '#C46BFF' : '#E08BFF'));
+/* HODL poster (left) and TO THE MOON poster (right) */
+const P1 = G({ transform: 'translate(40,650) rotate(-5)' }, ag); R(0, 0, 250, 330, '#E8B93A', 6, P1, ink(8)); TX(125, 98, 'HODL', 92, INK, P1, AN);
+PA('M 125 140 C 160 170 165 230 150 280 L 100 280 C 85 230 90 170 125 140 Z', '#F2F0E8', P1, ink(6)); CI(125, 205, 16, '#4FA3D9', P1, ink(4)); PA('M 105 280 L 125 318 L 145 280 Z', '#FF7A1A', P1, ink(5));
+const P2 = G({ transform: 'translate(880,640) rotate(6)' }, ag); R(0, 0, 230, 300, '#2B2A5C', 6, P2, ink(8)); CI(150, 80, 46, '#F4E9B8', P2, ink(5)); TX(115, 200, 'TO THE', 44, '#FFFFFF', P2, AN); TX(115, 256, 'MOON', 60, '#FFE14D', P2, AN);
+/* the trader */
+const VX = 610, VY = 1000, VS = 1.2;
+const vlad = GR.make(ag, 'vlad', VX, VY, VS);
+/* desk (foreground) with trader junk, then the monitor */
+GR.BG.desk(ag, W / 2, 1540, { mug: false });
+const can = (x, y, c, r = 0) => { const g = G({ transform: `translate(${x},${y}) rotate(${r})` }, ag); R(-34, -120, 68, 120, c, 10, g, ink(6)); R(-34, -84, 68, 30, '#16110E', 0, g); TX(0, -60, 'ZAP', 22, c, g, AN); };
+can(820, 1544, '#9BE23C'); can(900, 1544, '#FF5FA2'); can(975, 1550, '#9BE23C', 82);
+const pz = G({ transform: 'translate(700,1542)' }, ag); PA('M -10 0 L 200 0 L 180 -30 L 10 -30 Z', '#D7A86E', pz, ink(6)); PA('M 30 -30 L 90 -70 L 150 -30 Z', '#F2C14E', pz, ink(5)); CI(80, -44, 8, '#C0392B', pz); CI(110, -40, 7, '#C0392B', pz);
+const MX = 300, MY = 1330, MS = .95;
+const mon = GR.monitor(ag, MX, MY, MS, SCREENS);
+const live = G({ transform: `translate(${MX},${MY}) scale(${MS})` }, ag); CI(-180, -168, 0, DN, live); const dot = CI(150, 150, 9, DN, live); TX(176, 158, 'LIVE', 22, '#FFF', live, AN);
+BM.everyFrame(t => dot.setAttribute('opacity', Math.floor(t * 3) % 2 ? .25 : 1));
+const INS = { x: MX, y: MY - 5 * MS, z: 2.3 };
+const insert = (at, r, key) => { BM.setCam(A, at, INS.x, INS.y, INS.z); BM.tl.set(A.cam, { r, onComplete: A.apply }, at); if (key) mon.flip(at + .2, key); };
+const unDutch = at => BM.tl.set(A.cam, { r: 0, onComplete: A.apply }, at);
+
+/* ================= STAGE B: Pip on his couch, video-calling ================= */
+const B = BM.scene('couch'), bg = B.g;
+R(-1000, -1000, 3200, 4000, '#C9743F', 0, bg); for (let i = 0; i < 40; i++) CI(-300 + (i % 8) * 220 + (Math.floor(i / 8) % 2) * 110, 300 + Math.floor(i / 8) * 260, 14, '#B5612E', bg);
+const neon = G({ transform: 'translate(540,690) rotate(-3)' }, bg); R(-230, -80, 460, 140, '#2A1830', 18, neon, ink(8)); const nt = TX(0, 34, 'WAGMI', 100, '#7CF2FF', neon, { ...AN, stroke: '#1C8C9A', 'stroke-width': 4 });
+PA('M -500 1180 Q 540 1100 1580 1180 L 1580 1900 L -500 1900 Z', '#5E7D4E', bg, ink(9));
+const pip = GR.make(bg, 'pip', 540, 1030, 1.2);
+PA('M -200 1560 Q 540 1490 1280 1560 L 1280 2100 L -200 2100 Z', '#6E8F5C', bg, ink(9));
+const pop = G({ transform: 'translate(880,1560)' }, bg); PA('M -90 -120 L 90 -120 L 70 140 L -70 140 Z', '#FFFFFF', pop, ink(7)); for (let i = 0; i < 3; i++) R(-80 + i * 54, -120, 28, 260, '#E8202F', 0, pop, { opacity: .85 });
+for (let i = 0; i < 7; i++) CI(-70 + i * 24, -130 - (i % 2) * 18, 22, '#FFF4C8', pop, ink(5));
+
+/* ================= TIMELINE ================= */
+BM.cut(0, null, A);
+/* S1 SETUP 0-1.9: medium, smug, +420% */
+mon.flip(0, 'pump'); { const f = GR.frame(vlad, 'medium'); BM.setCam(A, 0, 540, f.y, f.z); } CAM.push(A, .05, 1.42, 1.8);
+GR.expr(vlad, 0, 'smug', { hands: 'thumbs', dur: .01 }); say(vlad, L[0]); BM.sfx(.15, 'register', .6); BM.sfx(1.5, 'coin', .5);
+GR.label(.1, 1.75, '3:14 AM');
+/* S2 1.9-2.8: insert, -5% */
+insert(1.9, -5, 'dip'); BM.sfx(2.1, 'notify', .7); GR.expr(vlad, 2.2, 'suspicious');
+/* S3 2.8-4.4: calm close, fake smile */
+unDutch(2.8); GR.cutTo(A, 2.8, vlad, 'close'); GR.expr(vlad, 2.85, 'fakeSmile'); say(vlad, L[1]); GR.tremble(vlad, 3.0, 4.4, .3); GR.drift(A, 2.8, 1.6, .05);
+BM.sfx(3.0, 'cricket', .35, 1.2);
+/* S4 4.4-5.0: insert, -40% */
+insert(4.4, 6, 'c40'); BM.sfx(4.45, 'glitch', .6); BM.sfx(4.6, 'alarm', .45); BM.shake(A, 4.6, 14, .4);
+/* S5 5.0-6.4: SNAP #1 panic */
+unDutch(5.0); GR.cutTo(A, 4.99, vlad, 'medium');
+GR.react(vlad, 5.0, 'panic', { sc: A, shot: 'close', pop: .45 }); GR.backdrop(vlad, 5.0, 1.4, 'speed'); BM.sfx(5.05, 'eyepop', .7); GR.hold(vlad, 5.5, 6.4);
+/* S6 6.4-7.9: denial, greedy medium */
+GR.cutTo(A, 6.4, vlad, 'medium'); CAM.push(A, 6.4, 1.6, 1.5); GR.expr(vlad, 6.4, 'greedy'); say(vlad, L[2]);
+BM.sfx(6.45, 'keys', .6); BM.sfx(7.2, 'register', .55);
+/* S7 7.9-8.4: insert, -80% */
+insert(7.9, -7, 'c80'); BM.sfx(7.95, 'wrong', .7); BM.sfx(8.1, 'alarm', .5); BM.shake(A, 8.0, 18, .35);
+/* S8 8.4-9.6: SNAP #2 shock scream, ECU */
+unDutch(8.4); GR.cutTo(A, 8.39, vlad, 'close');
+GR.react(vlad, 8.4, 'shockScream', { sc: A, shot: 'ecu', pop: .6 }); GR.backdrop(vlad, 8.4, 1.2, 'burst'); BM.sfx(8.45, 'gasp', .6); GR.hold(vlad, 8.9, 9.6);
+/* S9 9.6-11.6: escalation run */
+GR.react(vlad, 9.6, 'terrified', { sc: A, shot: 'close', sfx: 'punch', antic: .06 }); GR.backdrop(vlad, 9.6, .6, 'dread');
+GR.react(vlad, 10.2, 'hystericalCry', { sc: A, shot: 'close', sfx: 'boom', antic: .06 }); GR.tearBurst(vlad, 10.2, 10.8); GR.backdrop(vlad, 10.2, .6, 'speed');
+GR.react(vlad, 10.8, 'unhingedRage', { sc: A, shot: 'close', sfx: 'boom', antic: .06, gain: 1 }); GR.backdrop(vlad, 10.8, .8, 'rage');
+BM.tl.set(A.cam, { r: -6, onComplete: A.apply }, 10.8); BM.shake(A, 10.85, 34, .7); BM.sfx(10.9, 'crash', .6); GR.hold(vlad, 11.1, 11.6);
+/* S10 11.6-13.5: Pip on a call (normal beat) */
+BM.cut(11.6, A, B); unDutch(11.6); { const f = GR.frame(pip, 'medium'); BM.setCam(B, 11.6, 540, f.y - 110, f.z); } GR.drift(B, 11.6, 1.9, .08);
+GR.expr(pip, 11.6, 'sideEye', { hands: 'rest', dur: .01 }); say(pip, L[3]); BM.sfx(11.65, 'slurp', .35);
+/* S11 13.5-15.0: Vlad calm, dead inside */
+BM.cut(13.5, B, A); GR.cutTo(A, 13.5, vlad, 'close'); GR.expr(vlad, 13.5, 'deadInside', { dur: .01 }); GR.drift(A, 13.5, 1.5, .1);
+say(vlad, L[4]); GR.hold(vlad, 14.6, 15.0); BM.sfx(13.6, 'cricket', .45, 1.3);
+/* S12 15.0-15.7: LIQUIDATED */
+insert(15.0, 4, 'liq'); BM.sfx(15.2, 'sub_drop', .8); BM.sfx(15.2, 'gong', .5); BM.shake(A, 15.2, 22, .45);
+GR.label(15.2, .5, '3:15 AM', { x: 70, y: 1620 });
+/* S13 15.7-16.9: SNAP #3 Pip laughs */
+BM.cut(15.7, A, B); unDutch(15.7); GR.cutTo(B, 15.69, pip, 'medium');
+GR.react(pip, 15.7, 'manicLaugh', { sc: B, shot: 'close', hands: 'clap' }); GR.laugh(pip, 15.75, 16.9); GR.backdrop(pip, 15.7, 1.2, 'burst', { cols: ['#7CF2FF', '#2EC4D6'] });
+/* S14 16.9-20: PUNCHLINE, psycho smile through tears, ECU, meme */
+BM.cut(16.9, B, A); GR.cutTo(A, 16.89, vlad, 'close'); GR.expr(vlad, 16.6, 'deadInside', { dur: .01 });
+BM.tl.set([mon.g, live], { opacity: 0 }, 16.9);
+GR.react(vlad, 16.9, 'psychoSmile', { sc: A, shot: 'close', sfx: 'boom', pop: .3 });
+GR.punch(A, 18.3, vlad, 'ecu', { sfx: 'whoosh' }); GR.pop(vlad, 18.32, 1.2); BM.sfx(18.32, 'eyepop', .8); GR.jerk(vlad, 18.3, 0, -24); GR.backdrop(vlad, 16.9, 3.1, 'dread', { col: '#3A0F2A' });
+BM.tl.to(vlad.P, { tears: 1, sweat: 1, twitch: 1, duration: .2 }, 17.1); GR.hold(vlad, 17.3, 20); GR.drift(A, 17.1, 1.2, .05); GR.drift(A, 18.5, 1.5, .08);
+GR.meme(17.1, 2.9, "HODL'D TO ZERO", { pos: 'top', size: 110 }); BM.sfx(17.3, 'trombone', .8); BM.sfx(18.9, 'cricket', .5, 1.1);
+/* music: awkward calm, drama under the dump, silence for the punchline */
+BM.music(0, 4.4, 'awkward', .5); BM.music(4.4, 13.5, 'drama', .55);
+BM.finish();
+});
+</script>
+</body>
+</html>

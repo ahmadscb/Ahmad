@@ -1,0 +1,28 @@
+{
+ "name": "crypto-meltdown",
+ "status": "ok",
+ "exit": 0,
+ "mp4": "projects/crypto-meltdown/out/crypto-meltdown.mp4",
+ "qc": "spec: h264|1080|1920|yuv420p|30/1|600 20.000000 \nblack stretches (>0.15 s): 0\nfrozen stretches (>1.2 s) start at: none\nloudness: -14.5 LUFS, true peak -1.3 dBTP\n",
+ "render_metrics": {
+  "mode": "watchdog",
+  "cores_allowed": 3,
+  "mem_cap": "6G",
+  "wall_s": 243.9,
+  "peak_rss_mb": 755,
+  "peak_cpu_pct": 197,
+  "exit": 0
+ },
+ "agent": {
+  "turns": 28,
+  "wall_s": 567,
+  "cost_usd_equivalent": 1.7785606000000003,
+  "is_error": false,
+  "tool_calls": {
+   "Bash": 19,
+   "Write": 3,
+   "Read": 5
+  },
+  "final_report": "I rendered the video and it passed QC. It's a 20-second vertical cartoon of the crypto trader losing everything, told mostly through his face, and the frames pulled from the MP4 look right.\n\n**MP4:** `/home/user/Ahmad/motion-studio/projects/crypto-meltdown/out/crypto-meltdown.mp4`, 1080\u00d71920 at 30 fps, exactly 20.0 s (600 frames), H.264 with AAC audio.\n\n**QC (`out/qc.txt`):** passed. Format matches the spec, there are no black frames and no frozen stretches over 1.2 s, and loudness is \u221214.5 LUFS with a true peak of \u22121.3 dBTP.\n\n**Render metrics (`out/render-metrics.json`):** 243.9 s wall time, 755 MB peak memory, 197% peak CPU (3 cores, 6 GB cap), exit code 0.\n\n**The story:** Vlad, the crypto trader from the grotesque cast, sits in his bedroom at 3:14 AM saying \"Diamond hands, baby\" while his coin is up 420%. Each time the chart gets worse, his face gets bigger:\n- \u22125%: a sweaty fake smile and \"It's just a dip.\"\n- \u221240%: he snaps into panic, with popping eyes and speed lines behind him.\n- He tries denial with \"Buy the dip!\", rubbing his hands with dollar-sign eyes.\n- \u221280%: a screaming extreme close-up, then he runs through terror, hysterical crying and full rage.\n- His friend Pip (also from the cast) asks flatly \"Bro. Did you sell?\" and Vlad answers in silence: \"I am the dip.\"\n- The screen reads LIQUIDATED at 3:15 AM. Pip bursts out laughing.\n- Last shot: Vlad's frozen psycho smile through tears, an eye-pop extreme close-up, the caption \"HODL'D TO ZERO\" and a sad trombone, held for about 3 s.\n\nBoth voices are free local ones, lip-synced and subtitled. The music drops out before the punchline.\n\n**Quality gate (all yes):**\n1. **Readable within 0.5 s from the face alone?** Yes. Every reaction snaps in and is backed by a camera punch and a backdrop.\n2. **Do the faces really deform?** Yes. The jaw drops, eyes pop out at different sizes, and the mouth changes shape (square grimace, wide scream, tongue out), with tears and snot added.\n3. **At least half close-ups, at least three snap reactions?** Yes. About 60% of screen time is close-ups or extreme close-ups, and there are 8 snap reactions.\n4. **A calm beat before each big face?** Yes. Each dump is first shown on the monitor before Vlad reacts, and the call with Pip plus \"I am the dip\" play quiet before the final blow.\n5. **Ends on a face held at least 1 s?** Yes. The final face is held for about 3 s, with the extreme close-up making up the last 1.7 s.\n6. **Nothing cute or plain on screen?** Yes. Both characters hold a strong attitude the whole time.\n\n**What I fixed after the snapshot checks:**\n- **Pip's eye:** his phone hand covered one eye during his line, so I dropped the phone and lowered the WAGMI sign so it stays in frame.\n- **Final shot:** the extreme close-up cut off the grin and showed part of the monitor in the corner. Now the grin shows in a close-up first, then the camera snaps to the eyes, and the monitor is hidden.\n- **Opening shot:** I moved the camera so the monitor isn't clipped at the left edge.\n\nThe brief, dialogue and page are in `projects/crypto-meltdown/` (`brief.json`, `dialogue.json`, `index.html`). I didn't edit anything outside that folder and nothing was published."
+ }
+}
