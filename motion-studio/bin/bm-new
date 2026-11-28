@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Scaffold a new Motion Studio project from a template (reel = blank kinetic stage, cartoon = characters/sets/voice demo).
-#   bin/bm-new <name> [--size 1080x1920] [--dur 20] [--title "Text"] [--template reel|cartoon]
+# Scaffold a new Motion Studio project from a template (reel = blank kinetic stage, cartoon = simple characters/sets/voice demo, grotesque = face-first reaction comedy).
+#   bin/bm-new <name> [--size 1080x1920] [--dur 20] [--title "Text"] [--template reel|cartoon|grotesque]
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 NAME=${1:?usage: bm-new <name> [--size WxH] [--dur S] [--title T]}; shift

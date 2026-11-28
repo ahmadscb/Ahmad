@@ -46,6 +46,7 @@ The studio lives at `motion-studio/` in the `ahmadscb/ahmad` repository (VPS: wh
 
 ## References
 
+- **Sarcastic Grotesque** (face-first reaction-meme comedy, separate cast of 10 with 33 deforming expressions): `workflow/GROTESQUE.md`, `templates/grotesque`; agent: `bin/bm-agent "<brief>" --style grotesque --run`.
 - **Library API:** `workflow/LIBRARY.md`. Visual catalog: `library/catalog`. Six-style showcase: `library/styles`.
 - **Worked examples:** `templates/cartoon` (library demo with voice), `projects/crypto-crash` (2D comedy), `projects/aether-ad` (3D product ad).
 - **Sound:** `tools/sound.py` (53 effects, 12 music styles, two-pass −14 LUFS).

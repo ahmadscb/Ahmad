@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sarcastic Grotesque sheets</title>
+<!-- Character + expression sheets for lib/grotesque.js. Stage per second:
+     t=0 cast, 1-10 one character's 33 expressions each, 11 close-up hero grid, 12 animation strip. ?only=<id> limits. -->
+<style>
+@font-face{font-family:Anton;src:url(../../vendor/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;overflow:hidden;background:#F2E6CF}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="1080" height="1920" viewBox="0 0 1080 1920" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="../../lib/grotesque.js"></script>
+<script>
+Promise.all([document.fonts.load('40px Anton'), document.fonts.load('800 40px Inter')]).then(() => {
+const { G, R, TX, GR } = BM, W = 1080, H = 1920, DUR = 13;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+const ids = Object.keys(GR.CAST), ex = Object.keys(GR.EXPR); let prev = null, T = 0;
+const stage = (name, bg = '#F2E6CF') => { const sc = BM.scene(name); Object.assign(sc.cam, { x: W / 2, y: H / 2, z: 1 }); sc.apply(); R(-50, -50, W + 100, H + 100, bg, 0, sc.g); BM.cut(T, prev, sc); prev = sc; T += 1; return sc; };
+const lab = (p, x, y, t, s = 30, c = '#16110E') => TX(x, y, t, s, c, p, { 'font-family': 'Anton, sans-serif' });
+const clip = (p, x, y, w, h) => { const id = 'c' + Math.round(x * 7 + y * 13 + w); const cp = BM.N('clipPath', { id }, BM.defs); R(x, y, w, h, '#fff', 0, cp); return G({ 'clip-path': `url(#${id})` }, p); };
+/* 0: cast */
+{ const sc = stage('cast', '#FFD23F'); lab(sc.g, W / 2, 110, 'THE SARCASTIC GROTESQUE CAST', 64);
+  ids.forEach((id, i) => { const c = i % 2, r = Math.floor(i / 2), x = 270 + c * 540, y = 330 + r * 330; const cg = clip(sc.g, x - 260, y - 160, 520, 320);
+    R(x - 260, y - 160, 520, 320, ['#F2E6CF', '#FFFFFF'][(c + r) % 2], 0, cg); const ch = GR.make(cg, id, x - 90, y + 10, .58); GR.expr(ch, 0.001, ['smug', 'deadInside', 'fakeSmile', 'panic', 'judgmental', 'judgmental', 'psychoSmile', 'overconfident', 'overconfident', 'manicLaugh'][i], { dur: .01 });
+    lab(sc.g, x + 150, y - 20, GR.CAST[id].name.toUpperCase(), 44); TX(x + 150, y + 20, GR.CAST[id].role, 22, '#16110E', sc.g, { 'font-weight': 800 }); }); }
+/* 1-10: 33 expressions per character */
+ids.forEach(id => { const sc = stage('ex-' + id); lab(sc.g, W / 2, 78, GR.CAST[id].name.toUpperCase() + ' · ' + ex.length + ' EXPRESSIONS', 54);
+  ex.forEach((e, i) => { const c = i % 5, r = Math.floor(i / 5), x = 108 + c * 216, y = 230 + r * 246; const cg = clip(sc.g, x - 106, y - 120, 212, 240);
+    const ch = GR.make(cg, id, x, y - 4, .4, { boil: false }); GR.expr(ch, 0, e, { dur: .01 }); lab(sc.g, x, y + 112, e, 24); }); });
+/* 11: hero close-ups */
+{ const sc = stage('hero', '#16110E'); const picks = [['gary', 'deadInside'], ['brock', 'smug'], ['vlad', 'unhingedRage'], ['tiff', 'shockScream'], ['bev', 'judgmental'], ['marco', 'caughtLying']];
+  picks.forEach(([id, e], i) => { const c = i % 2, r = Math.floor(i / 2), x = 270 + c * 540, y = 320 + r * 640; const cg = clip(sc.g, x - 266, y - 316, 532, 632);
+    GR.backdrop; R(x - 266, y - 316, 532, 632, ['#FFD23F', '#F2E6CF', '#E8202F', '#9EE7FF', '#FF9EC7', '#C8F03C'][i], 0, cg); const ch = GR.make(cg, id, x, y - 10, 1.05); GR.expr(ch, 0, e, { dur: .01 }); lab(sc.g, x, y + 300, e, 40, '#FFFFFF'); }); }
+/* 12: animation strip (one reaction over time) */
+{ const sc = stage('anim', '#9EE7FF'); const ch = GR.make(sc.g, 'gary', W / 2, 900, 1.5); GR.expr(ch, 11.9, 'neutral', { dur: .01 }); GR.react(ch, 12.3, 'shockScream', { pop: .4 }); }
+BM.finish();
+});
+</script>
+</body>
+</html>

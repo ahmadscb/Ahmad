@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>__TITLE__</title>
+<!-- Motion Studio "Sarcastic Grotesque" template (bin/bm-new <name> --template grotesque). Face-first reaction comedy.
+     Read workflow/GROTESQUE.md first. Shot grammar shown here: SETUP (medium) -> TRIGGER -> SNAP REACTION (GR.react +
+     GR.punch to close/ecu + backdrop + boom) -> COMEDIC HOLD -> hard cut -> PUNCHLINE face + meme caption.
+     Voice: python3 tools/voice.py dialogue.json voice (who = grotesque cast id; voices are mapped in tools/voice.py). -->
+<style>
+@font-face{font-family:Anton;src:url(../../vendor/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Inter;font-weight:800;src:url(../../vendor/fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:__W__px;height:__H__px;overflow:hidden;background:#B8C4B0}
+svg text{font-family:Inter,sans-serif}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="scene" width="__W__" height="__H__" viewBox="0 0 __W__ __H__" style="position:absolute;inset:0"></svg></div>
+<script src="../../vendor/gsap.min.js"></script>
+<script src="../../lib/bm-core.js"></script>
+<script src="../../lib/camera.js"></script>
+<script src="../../lib/styles.js"></script>
+<script src="../../lib/grotesque.js"></script>
+<script src="voice/dialog.js" onerror="window.DIALOG=null"></script>
+<script>
+Promise.all([document.fonts.load('40px Anton'), document.fonts.load('800 40px Inter')]).then(() => {
+const { GR, CAM, TR } = BM, W = __W__, H = __H__, DUR = __DUR__;
+BM.init({ W, H, DUR, svg: document.getElementById('scene') });
+BM.STYLE.use('grotesque');
+const LINES = (window.DIALOG && DIALOG.lines) || [{ who: 'brock', text: 'Busy, Gary?', t0: 3.0, t1: 3.9 }, { who: 'gary', text: 'Synergizing, sir.', t0: 4.5, t1: 5.5 }];
+const say = (ch, l) => GR.say(ch, l.t0, l.t1, l.text, { visemes: l.visemes });
+
+/* ONE office stage: background -> boss (back plane) -> employee bust -> desk -> monitor (front) */
+const A = BM.scene('office'); GR.BG.office(A.g);
+const boss = GR.make(A.g, 'brock', -260, 820, 1.05);
+const gary = GR.make(A.g, 'gary', 660, 1010, 1.2);
+GR.BG.desk(A.g, W / 2, 1520);
+const mon = GR.monitor(A.g, 290, 1330, .82, { meme: GR.SCREENS.meme, sheet: GR.SCREENS.spreadsheet });
+BM.cut(0, null, A); GR.cutTo(A, 0, gary, 'medium'); Object.assign(A.cam, { x: W / 2, y: 1150, z: 1.08 }); A.apply();
+
+/* SETUP: normal moment (cat video, dumb happy face) */
+mon.flip(0, 'meme'); GR.expr(gary, .2, 'manicLaugh'); BM.sfx(.3, 'laugh', .5);
+/* TRIGGER: boss slides in behind */
+GR.slide(boss, 1.4, 520, .9); BM.sfx(1.4, 'step', .6); BM.sfx(1.8, 'step', .6); GR.expr(boss, 1.4, 'suspicious');
+/* SNAP REACTION: punch to Gary's face, panic, burst backdrop, boom */
+GR.react(gary, 2.35, 'panic', { sc: A, shot: 'close', pop: .35 }); GR.backdrop(gary, 2.35, .6, 'speed');
+mon.flip(2.75, 'sheet'); BM.sfx(2.75, 'zip', .6); GR.cutTo(A, 2.75, gary, 'medium');
+/* the line exchange */
+GR.punch(A, LINES[0].t0, boss, 'close', { sfx: null }); say(boss, LINES[0]); GR.expr(boss, LINES[0].t0, 'judgmental');
+GR.cutTo(A, LINES[1].t0, gary, 'close'); say(gary, LINES[1]); GR.expr(gary, LINES[1].t0, 'fakePro'); GR.tremble(gary, LINES[1].t0, LINES[1].t1 + .4, .25);
+/* COMEDIC HOLD on the lie, then PUNCHLINE: ECU dead eyes + meme caption */
+const tp = LINES[1].t1 + .5; GR.react(gary, tp, 'deadInside', { sc: A, shot: 'ecu', sfx: 'boom', smear: false }); GR.hold(gary, tp, tp + 1.6);
+GR.meme(tp + .2, 1.6, 'MONDAY 9:01 AM', { pos: 'top' }); BM.sfx(tp + .6, 'cricket', .5, 1.5);
+BM.music(0, DUR, 'awkward', .6);
+BM.finish();
+});
+</script>
+</body>
+</html>

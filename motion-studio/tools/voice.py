@@ -15,7 +15,10 @@ HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VDIR = os.environ.get('BM_VOICES', os.path.join(HERE, 'voices', 'vits-piper-en_US-libritts_r-medium'))
 # fixed casting (speaker id, speed): chosen by measured pitch; male ~86-92 Hz, female ~200-245 Hz
 CAST = {'dave': (552, 1.05), 'omar': (132, .95), 'kenji': (426, 1.0), 'sam': (36, 1.05), 'rex': (186, .92),
-        'maya': (624, 1.03), 'lina': (372, 1.0), 'grace': (450, .93), 'zara': (378, 1.06), 'leo': (60, 1.1), 'narrator': (186, 1.0)}
+        'maya': (624, 1.03), 'lina': (372, 1.0), 'grace': (450, .93), 'zara': (378, 1.06), 'leo': (60, 1.1), 'narrator': (186, 1.0),
+        # Sarcastic Grotesque cast (lib/grotesque.js)
+        'gary': (426, .9), 'brock': (186, .94), 'kyle': (552, 1.14), 'vlad': (36, 1.12), 'tiff': (378, 1.1), 'bev': (450, .95),
+        'zeke': (342, 1.08), 'marco': (594, 1.02), 'dale': (738, 1.1), 'pip': (60, 1.15)}
 SR_OUT = 48000
 
 def engine():

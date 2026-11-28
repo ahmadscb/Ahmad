@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Natural-language brief -> finished video, by a headless Claude Code session using the motion-studio skill + asset library.
-#   bin/bm-agent "<brief>" [--name my-video] [--run] [--max-turns 200] [--model M]
+#   bin/bm-agent "<brief>" [--name my-video] [--style grotesque] [--run] [--max-turns 200] [--model M]
 # Default is a DRY RUN: prints the exact command and allowed tools, so a human (or Hermes) can approve it.
 # With --run it starts `claude -p` (uses the operator's Claude plan; no other paid API is called) and writes
 #   projects/<name>.agent.jsonl   full event stream (every tool call, for audit)
@@ -9,8 +9,8 @@
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 PROMPT=${1:?usage: bm-agent "<brief>" [--name NAME] [--run] [--max-turns N] [--model M]}; shift
-NAME="video-$(date +%Y%m%d-%H%M%S)"; RUN=0; TURNS=200; MODEL=()
-while (( $# )); do case $1 in --name) NAME=$2; shift 2;; --run) RUN=1; shift;; --max-turns) TURNS=$2; shift 2;; --model) MODEL=(--model "$2"); shift 2;; *) echo "unknown $1"; exit 2;; esac; done
+NAME="video-$(date +%Y%m%d-%H%M%S)"; RUN=0; TURNS=200; MODEL=(); STYLE=""
+while (( $# )); do case $1 in --name) NAME=$2; shift 2;; --run) RUN=1; shift;; --max-turns) TURNS=$2; shift 2;; --model) MODEL=(--model "$2"); shift 2;; --style) STYLE=$2; shift 2;; *) echo "unknown $1"; exit 2;; esac; done
 [[ "$NAME" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo "name: lowercase letters, digits, dashes"; exit 2; }
 TASK="You are the autonomous production engine of Motion Studio (directory: $HERE). Project name: $NAME.
 Creative brief (this is all you get; make every creative decision yourself): $PROMPT
@@ -23,7 +23,14 @@ Then do the whole job without asking questions:
 4. Visual inspection: node tools/snap.mjs projects/$NAME /tmp/$NAME-check <8-16 times> then Read the sheet.jpg image and the individual PNGs. Fix every problem you see (overlaps, clipping, off-model, hidden props, empty frames, unreadable subtitles). Repeat.
 5. bin/bm-render projects/$NAME --voice projects/$NAME/voice/dialog.wav ; then extract frames from the MP4 (ffmpeg ... tile) and Read them; read out/qc.txt. Repair and re-render until QC passes and the frames look right.
 6. Finish with a short report: MP4 path, duration, QC result, render metrics (out/render-metrics.json), what you fixed.
+STYLE_NOTE_PLACEHOLDER
 Rules: never publish or upload anything; no paid APIs; never edit files outside projects/$NAME (the library is read-only for you); never put a // comment in the middle of a line of code."
+case "$STYLE" in
+  "") SN="";;
+  grotesque) SN="STYLE: Sarcastic Grotesque (face-first reaction-meme comedy). Read workflow/GROTESQUE.md and templates/grotesque/index.html BEFORE writing anything; scaffold with --template grotesque; use only the lib/grotesque.js cast (BM.GR), never the simple BM.CH puppets. Follow its shot grammar (>=50% close-ups/ECUs, >=3 snap reactions with GR.react + punch + backdrop, comedic holds, face punchline + meme caption). Before rendering, run its 6-point quality gate on the snap frames and iterate until every answer is yes; include the gate answers in your final report.";;
+  *) SN="STYLE: use the $STYLE style pack (lib/styles.js).";;
+esac
+TASK=${TASK/STYLE_NOTE_PLACEHOLDER/$SN}
 ALLOWED="Read,Write,Edit,Glob,Grep,Skill,Bash(node:*),Bash(python3:*),Bash(bin/bm-new:*),Bash(bin/bm-render:*),Bash(tools/qc.sh:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(mkdir:*),Bash(cp:*),Bash(wc:*),Bash(grep:*),Bash(jq:*)"
 DENIED="WebFetch,WebSearch,Bash(git:*),Bash(curl:*),Bash(wget:*),Bash(rm:*),Bash(ssh:*)"
 echo "claude -p <task> --allowedTools '$ALLOWED' --disallowedTools '$DENIED' --max-turns $TURNS   (cwd: $HERE)"

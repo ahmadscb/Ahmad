@@ -92,6 +92,16 @@ FX = {
  'shutter': lambda d: norm(fit(np.concatenate([hp(noise(.03), 2000) * np.exp(-tt(.03) * 90), np.zeros(int(.05 * SR)), hp(noise(.04), 1500) * np.exp(-tt(.04) * 70)]), .2), .4),
  'squeak':  lambda d: norm(osc(1400 + 500 * np.sin(2 * np.pi * 9 * tt(.25)), .25) * env(.25, .02, .08), .2),
  'laugh':   lambda d: norm(sum(fit(np.concatenate([np.zeros(int(k * .16 * SR)), bp(noise(.11), 500, 2200) * osc(1, .11) ** 0 * np.sin(np.linspace(0, np.pi, int(.11 * SR)))]), 1.1) for k in range(6)), .4),
+ 'boom':    lambda d: norm(verb(np.concatenate([sweep(95, 38, 1.6) * np.exp(-tt(1.6) * 2.2) + .35 * lp(noise(1.6), 300) * np.exp(-tt(1.6) * 5)]), .5), 1.),
+ 'zoom_in': lambda d: norm(bp(noise(.28), 800, 9000) * (tt(.28) / .28) ** 2 + .5 * sweep(300, 2400, .28, 'saw', 2) * (tt(.28) / .28) ** 2, .45),
+ 'clap':    lambda d: norm(bp(noise(.12), 900, 5000) * np.exp(-tt(.12) * 45) + .3 * bp(noise(.12), 300, 900) * np.exp(-tt(.12) * 60), .55),
+ 'slide_down': lambda d: norm(sweep(1600, 300, .6) * env(.6, .02, .1) * (1 + .1 * np.sin(2 * np.pi * 7 * tt(.6))), .35),
+ 'slide_up': lambda d: norm(sweep(300, 1600, .45) * env(.45, .02, .08), .35),
+ 'wrong':   lambda d: norm(lp(osc(110, .6, 'square') + osc(116, .6, 'square'), 1400) * env(.6, .01, .1), .4),
+ 'dun':     lambda d: norm(np.concatenate([lp(osc(hz(n), L, 'saw') + osc(hz(n - 12), L, 'saw'), 1200) * env(L, .01, L * .6) for n, L in ((45, .28), (45, .28), (44, 1.3))]), .7),
+ 'eyepop':  lambda d: norm(sweep(400, 1800, .12) * np.exp(-tt(.12) * 10) + fit(bell(hz(96), .3, 9), .12) * .3, .5),
+ 'squish':  lambda d: norm(lp(noise(.25), 1200) * (np.sin(2 * np.pi * 18 * tt(.25)) > 0) * env(.25, .01, .1) + .4 * sweep(200, 90, .25), .45),
+ 'gong':    lambda d: norm(verb(sum(np.sin(2 * np.pi * f0 * tt(2.5)) * np.exp(-tt(2.5) * k) for f0, k in ((110, 1.2), (164, 1.6), (243, 2.2), (318, 3))), .3), .7),
 }
 
 # ---------------- music ----------------
@@ -180,6 +190,18 @@ def music(style, d):
             if k % 4 == 2: place(out, hp(noise(.3), 6000) * np.exp(-tt(.3) * 10), b0, .3)
         place(out, lp(sum(osc(hz(n) * (1 + .003 * i), d, 'saw') for i, n in enumerate((50, 57, 62, 69))), 1400) * .05, 0)
         out = verb(out, .3)
+    elif style == 'awkward':   # sparse, hesitant: lonely bass + muted piano plinks with long rests
+        beat = 60 / 84
+        for k, b0 in enumerate(np.arange(0, d, beat)):
+            if k % 4 == 0: place(out, lp(osc(hz(36 + [0, 3, -2, 1][(k // 4) % 4]), beat * .6, 'tri'), 300) * env(beat * .6, .01, .3), b0, .5)
+            if k % 8 in (2, 5): place(out, ep(hz([67, 66, 70, 63][(k // 8) % 4]), .5) * np.exp(-tt(.5) * 6), b0, .3)
+            if k % 2: place(out, bp(noise(.02), 4000, 9000) * np.exp(-tt(.02) * 150), b0, .1)
+    elif style == 'drama':   # soap-opera low strings + timpani hits
+        bar = 2.6
+        for k, b0 in enumerate(np.arange(0, d, bar)):
+            for n in ((38, 45, 50), (37, 44, 49), (36, 43, 48), (35, 42, 47))[k % 4]: place(out, lp(osc(hz(n) * (1 + .003 * (n % 3)), bar + .5, 'saw') * (1 + .15 * np.sin(2 * np.pi * 5.5 * tt(bar + .5))), 800) * env(bar + .5, .4, .8), b0, .12)
+            place(out, kick(.8, 70) * 1.2, b0, .6)
+        out = verb(out, .4)
     return out * env(d, .25, .4)
 
 def main():
